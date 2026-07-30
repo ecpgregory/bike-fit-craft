@@ -21,7 +21,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { bikes, type BikeRecord } from "@/lib/bike-data";
+import { bikes } from "@/data/bikes";
+import type { Bike } from "@/types";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/bikes")({
@@ -44,7 +45,7 @@ export const Route = createFileRoute("/bikes")({
 });
 
 type Column = {
-  key: keyof BikeRecord;
+  key: keyof Bike;
   label: string;
   numeric?: boolean;
 };
@@ -71,7 +72,7 @@ function BikeDatabase() {
   const [query, setQuery] = useState("");
   const [brand, setBrand] = useState("all");
   const [size, setSize] = useState("all");
-  const [sortKey, setSortKey] = useState<keyof BikeRecord>("brand");
+  const [sortKey, setSortKey] = useState<keyof Bike>("brand");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
 
   const brands = useMemo(
@@ -107,7 +108,7 @@ function BikeDatabase() {
     });
   }, [query, brand, size, sortKey, sortDir]);
 
-  const toggleSort = (key: keyof BikeRecord) => {
+  const toggleSort = (key: keyof Bike) => {
     if (key === sortKey) {
       setSortDir((d) => (d === "asc" ? "desc" : "asc"));
     } else {
