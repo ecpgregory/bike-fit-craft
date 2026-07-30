@@ -1,10 +1,9 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { ArrowUpDown, Search, Plus, Database } from "lucide-react";
+import { ArrowUpDown, Search, Database } from "lucide-react";
 
 import { PageHeader } from "@/components/page-header";
 import { Panel, EmptyState } from "@/components/panel";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -120,13 +119,7 @@ function BikeDatabase() {
     <div className="mx-auto w-full max-w-[1400px] space-y-6">
       <PageHeader
         title="Bike Database"
-        description="Frame geometry library. Add frames to start ranking matches against your fit."
-        action={
-          <Button size="sm" variant="outline">
-            <Plus className="size-4" />
-            Add bike
-          </Button>
-        }
+        description="Verified frame geometry library. Search and sort by brand, model, stack or reach."
       />
 
       <Panel className="overflow-hidden" >
@@ -196,8 +189,8 @@ function BikeDatabase() {
                   <TableCell colSpan={columns.length} className="p-4">
                     <EmptyState
                       icon={<Database className="size-5" />}
-                      title="No bikes in the database"
-                      description="Geometry rows are intentionally empty. Add frames to enable sorting, filtering and match ranking."
+                      title="No matching frames"
+                      description="Try a different search term or clear the brand and size filters."
                     />
                   </TableCell>
                 </TableRow>
