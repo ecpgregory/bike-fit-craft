@@ -21,7 +21,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { bikes, type BikeRecord } from "@/lib/bike-data";
+import { bikes } from "@/data/bikes";
+import type { Bike } from "@/types";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/bikes")({
@@ -44,7 +45,7 @@ export const Route = createFileRoute("/bikes")({
 });
 
 type Column = {
-  key: keyof BikeRecord;
+  key: keyof Bike;
   label: string;
   numeric?: boolean;
 };
@@ -54,15 +55,14 @@ const columns: Column[] = [
   { key: "model", label: "Model" },
   { key: "year", label: "Year", numeric: true },
   { key: "size", label: "Size" },
-  { key: "frameReach", label: "Frame Reach", numeric: true },
   { key: "frameStack", label: "Frame Stack", numeric: true },
+  { key: "frameReach", label: "Frame Reach", numeric: true },
   { key: "headTube", label: "Head Tube", numeric: true },
   { key: "wheelbase", label: "Wheelbase", numeric: true },
   { key: "frontCentre", label: "Front Centre", numeric: true },
+  { key: "chainstay", label: "Chainstay", numeric: true },
   { key: "bbDrop", label: "BB Drop", numeric: true },
   { key: "tyreClearance", label: "Tyre Clearance", numeric: true },
-  { key: "weight", label: "Weight", numeric: true },
-  { key: "stem", label: "Stem", numeric: true },
   { key: "integratedCockpit", label: "Integrated Cockpit" },
   { key: "notes", label: "Notes" },
 ];
@@ -71,7 +71,7 @@ function BikeDatabase() {
   const [query, setQuery] = useState("");
   const [brand, setBrand] = useState("all");
   const [size, setSize] = useState("all");
-  const [sortKey, setSortKey] = useState<keyof BikeRecord>("brand");
+  const [sortKey, setSortKey] = useState<keyof Bike>("brand");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
 
   const brands = useMemo(
@@ -107,7 +107,7 @@ function BikeDatabase() {
     });
   }, [query, brand, size, sortKey, sortDir]);
 
-  const toggleSort = (key: keyof BikeRecord) => {
+  const toggleSort = (key: keyof Bike) => {
     if (key === sortKey) {
       setSortDir((d) => (d === "asc" ? "desc" : "asc"));
     } else {

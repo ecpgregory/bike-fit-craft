@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { bikes } from "@/lib/bike-data";
+import { bikes } from "@/data/bikes";
 
 export const Route = createFileRoute("/compare")({
   head: () => ({

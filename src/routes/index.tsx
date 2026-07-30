@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/page-header";
 import { Panel, SpecRow, EmptyState } from "@/components/panel";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { fitProfile, currentBike } from "@/lib/bike-data";
+import { riderProfile } from "@/data/rider-profile";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -49,17 +49,17 @@ function Dashboard() {
           <div className="grid gap-x-8 sm:grid-cols-2">
             <div>
               <p className="label-caps mb-1">Cockpit</p>
-              <SpecRow label="Handlebar X" value={fitProfile.handlebarX} unit="mm" emphasis />
-              <SpecRow label="Handlebar Y" value={fitProfile.handlebarY} unit="mm" emphasis />
-              <SpecRow label="Stem" value={fitProfile.stem} unit="mm" />
-              <SpecRow label="Spacer Height" value={fitProfile.spacerHeight} unit="mm" />
+              <SpecRow label="Handlebar X" value={riderProfile.handlebarX} unit="mm" emphasis />
+              <SpecRow label="Handlebar Y" value={riderProfile.handlebarY} unit="mm" emphasis />
+              <SpecRow label="Stem" value={riderProfile.stemLength} unit="mm" />
+              <SpecRow label="Spacer Height" value={riderProfile.spacerHeight} unit="mm" />
             </div>
             <div className="mt-4 sm:mt-0">
               <p className="label-caps mb-1">Frame &amp; Saddle</p>
-              <SpecRow label="Frame Reach" value={fitProfile.frameReach} unit="mm" />
-              <SpecRow label="Frame Stack" value={fitProfile.frameStack} unit="mm" />
-              <SpecRow label="Saddle Height" value={fitProfile.saddleHeight} unit="mm" />
-              <SpecRow label="Saddle Setback" value={fitProfile.saddleSetback} unit="mm" />
+              <SpecRow label="Frame Reach" value={riderProfile.frameReach} unit="mm" />
+              <SpecRow label="Frame Stack" value={riderProfile.frameStack} unit="mm" />
+              <SpecRow label="Saddle Height" value={riderProfile.saddleHeight} unit="mm" />
+              <SpecRow label="Saddle Setback" value={riderProfile.saddleSetback} unit="mm" />
             </div>
           </div>
         </Panel>
@@ -70,13 +70,13 @@ function Dashboard() {
           action={<BikeIcon className="size-4 shrink-0 text-muted-foreground" />}
         >
           <div className="mb-3 flex flex-wrap items-center gap-2">
-            <p className="text-base font-semibold tracking-tight">
-              {currentBike.brand} {currentBike.model}
-            </p>
-            <Badge variant="secondary">{currentBike.year}</Badge>
+            <p className="text-base font-semibold tracking-tight">{riderProfile.currentBike}</p>
+            {riderProfile.preferredBikeType ? (
+              <Badge variant="secondary">{riderProfile.preferredBikeType}</Badge>
+            ) : null}
           </div>
-          <SpecRow label="Frame Reach" value={currentBike.frameReach} unit="mm" />
-          <SpecRow label="Frame Stack" value={currentBike.frameStack} unit="mm" />
+          <SpecRow label="Frame Reach" value={riderProfile.frameReach} unit="mm" />
+          <SpecRow label="Frame Stack" value={riderProfile.frameStack} unit="mm" />
         </Panel>
 
         <Panel
