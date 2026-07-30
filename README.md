@@ -1,216 +1,173 @@
-# Bike Fit Precision
+# Bike Fit Finder
 
-Build a modern web application called "Bike Fit Finder".
+Bike Fit Finder is a web application that helps cyclists identify which road bike frame and size best matches their professional bike fit.
 
-This application is designed to help cyclists determine which high-end road bike frames best match a professional bike fit.
+Unlike traditional geometry comparison tools, Bike Fit Finder focuses on reproducing a rider's contact points (handlebar and saddle position) rather than relying solely on stack, reach or generic sizing charts.
 
-The design should be clean, minimalist and premium, similar to Apple, Garmin Connect or Notion.
+The long-term goal is to create the most accurate consumer bike fit comparison platform available.
 
-Use a white background with subtle greys, blue accents and modern typography.
+---
 
-The application should be responsive and work on desktop, tablet and mobile.
+# Vision
 
--------------------------------------------------------
+The application should answer one simple question:
 
-HOME PAGE
+> **Can this bike reproduce my riding position?**
 
--------------------------------------------------------
+Rather than recommending a bike based on height, Bike Fit Finder evaluates whether a specific frame and size can achieve the rider's professional fit while remaining within sensible stem, spacer and cockpit limits.
 
-Display a dashboard with four cards.
+---
 
-Card 1:
+# Current Status
 
-"My Fit"
+The project is currently under active development.
 
-Display:
+Current completed features include:
 
-Handlebar X: 470 mm
+- Rider Profile
+- Dashboard
+- Bike Database
+- Bike Comparison framework
+- Local geometry database
+- Search and filtering
 
-Handlebar Y: 631 mm
+Upcoming features include:
 
-Frame Reach: 381 mm
+- Fit Engine
+- Cockpit estimation
+- Fit Confidence calculation
+- Bike detail pages
+- Geometry visualisation
+- Marketplace evaluation
 
-Frame Stack: 586 mm
+---
 
-Stem: 100 mm
+# Project Documentation
 
-Spacer Height: 0 mm
+Project documentation is maintained in the repository.
 
-Saddle Height: 916 mm
+| File | Purpose |
+|------|---------|
+| `PROJECT_PLAN.md` | Overall vision, architecture and sprint roadmap |
+| `PROMPT_HISTORY.md` | History of Lovable prompts |
+| `CHANGELOG.md` | Project release history |
+| `docs/DATA_MODEL.md` | Database structure |
+| `docs/FIT_ENGINE.md` | Fit engine design |
+| `docs/ROADMAP.md` | Development roadmap |
+| `docs/GEOMETRY_NOTES.md` | Geometry data standards |
 
-Saddle Setback: 62 mm
+---
 
--------------------------------------------------------
+# Core Principles
 
-Card 2
+The project follows several guiding principles:
 
-"Current Bike"
+- Rider-first architecture
+- Contact points over frame geometry
+- Transparent recommendations
+- Evidence-based Fit Confidence
+- Strong TypeScript typing
+- Separation of data, business logic and UI
+- One bike size per database record
 
-Giant Defy Advanced 1 (2014)
+---
 
-Frame Reach: 381
+# Technology Stack
 
-Frame Stack: 586
+Current stack:
 
--------------------------------------------------------
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+- shadcn/ui
+- Lovable
+- GitHub
 
-Card 3
+Future additions:
 
-"Target Bike"
+- Supabase
+- PostgreSQL
+- Marketplace integrations
 
-This should initially display:
+---
 
-"No bike selected"
+# Repository Structure
 
--------------------------------------------------------
+```
+bike-fit-craft/
 
-Card 4
+├── PROJECT_PLAN.md
+├── PROMPT_HISTORY.md
+├── CHANGELOG.md
+├── README.md
 
-"Top Matches"
+├── docs/
+│   ├── DATA_MODEL.md
+│   ├── FIT_ENGINE.md
+│   ├── ROADMAP.md
+│   └── GEOMETRY_NOTES.md
 
-Initially empty.
+├── data/
+├── lib/
+├── src/
+├── components/
+└── public/
+```
 
--------------------------------------------------------
+---
 
-SIDEBAR
+# Development Workflow
 
--------------------------------------------------------
+GitHub is the source of truth for this project.
 
-Create a sidebar containing:
+Documentation is maintained manually in GitHub.
 
-Dashboard
+Application development is performed using Lovable.
 
-Bike Database
+Major architectural decisions are documented before implementation.
 
-Compare Bikes
+---
 
-Fit Calculator
+# Running the Project Locally
 
-Settings
+Clone the repository:
 
--------------------------------------------------------
+```bash
+git clone <repository-url>
+cd bike-fit-craft
+```
 
-BIKE DATABASE
+Install dependencies:
 
--------------------------------------------------------
+```bash
+npm install
+```
 
-Create an empty table with these columns:
+Start the development server:
 
-Brand
-
-Model
-
-Year
-
-Size
-
-Frame Reach
-
-Frame Stack
-
-Head Tube
-
-Wheelbase
-
-Front Centre
-
-BB Drop
-
-Tyre Clearance
-
-Weight
-
-Stem
-
-Integrated Cockpit
-
-Notes
-
-The table should support:
-
-Sorting
-
-Filtering
-
-Searching
-
--------------------------------------------------------
-
-COMPARE PAGE
-
--------------------------------------------------------
-
-Create a comparison page with two dropdowns.
-
-Bike A
-
-Bike B
-
-Display comparison cards underneath.
-
-Leave calculations empty for now.
-
--------------------------------------------------------
-
-FIT CALCULATOR
-
--------------------------------------------------------
-
-Create a page that contains:
-
-Target Handlebar X
-
-Target Handlebar Y
-
-Target Stem Length
-
-Target Spacer Height
-
-Target Saddle Height
-
-Target Saddle Setback
-
-Leave calculated outputs blank.
-
--------------------------------------------------------
-
-SETTINGS
-
--------------------------------------------------------
-
-Create placeholder settings.
-
--------------------------------------------------------
-
-Do NOT use fake geometry data.
-
-Leave all bike database rows empty.
-
-Focus on building an excellent user interface and application structure that can be populated later.
-
-Use modern React best practices.
-
-Use reusable components throughout.
-
-Make the application feel like a premium engineering tool rather than a shopping website.
-
-This project was built with [Lovable](https://lovable.dev).
-
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/b6c7c358-2076-4e4e-ac81-d50423032fe2).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
-
-## Development
-
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
-
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
+```bash
 npm run dev
 ```
+
+---
+
+# Contributing
+
+This is currently a private project.
+
+Development follows the roadmap defined in `PROJECT_PLAN.md`.
+
+New features should:
+
+- satisfy a single sprint objective;
+- keep business logic separate from UI components;
+- avoid hardcoded geometry;
+- remain reusable and strongly typed.
+
+---
+
+# Licence
+
+Private repository.
+All rights reserved.
