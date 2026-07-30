@@ -1,0 +1,48 @@
+# Fit Engine
+
+## Purpose
+
+Determine whether a bicycle can reproduce a rider's position.
+
+The engine should prioritise contact points over frame geometry.
+
+---
+
+## Inputs
+
+Rider
+
+Bike
+
+Cockpit
+
+---
+
+## Outputs
+
+Predicted Handlebar X
+
+Predicted Handlebar Y
+
+Stem Recommendation
+
+Spacer Recommendation
+
+Fit Confidence
+
+Recommendation
+
+---
+
+## Calculation Order
+
+1. Frame geometry
+2. Cockpit geometry
+3. Predicted contact points
+4. Compare to rider
+5. Fit Confidence
+6. Recommendation
+
+---
+
+Frame geometry alone should never determine the recommendation.FIT_ENGINE
