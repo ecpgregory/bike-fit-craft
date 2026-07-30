@@ -70,13 +70,13 @@ function Dashboard() {
           action={<BikeIcon className="size-4 shrink-0 text-muted-foreground" />}
         >
           <div className="mb-3 flex flex-wrap items-center gap-2">
-            <p className="text-base font-semibold tracking-tight">
-              {currentBike.brand} {currentBike.model}
-            </p>
-            <Badge variant="secondary">{currentBike.year}</Badge>
+            <p className="text-base font-semibold tracking-tight">{riderProfile.currentBike}</p>
+            {riderProfile.preferredBikeType ? (
+              <Badge variant="secondary">{riderProfile.preferredBikeType}</Badge>
+            ) : null}
           </div>
-          <SpecRow label="Frame Reach" value={currentBike.frameReach} unit="mm" />
-          <SpecRow label="Frame Stack" value={currentBike.frameStack} unit="mm" />
+          <SpecRow label="Frame Reach" value={riderProfile.frameReach} unit="mm" />
+          <SpecRow label="Frame Stack" value={riderProfile.frameStack} unit="mm" />
         </Panel>
 
         <Panel
