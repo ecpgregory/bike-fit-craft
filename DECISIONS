@@ -1,0 +1,215 @@
+# Architecture Decision Log (ADL)
+
+This document records significant architectural and product decisions made during the development of Bike Fit Finder.
+
+The purpose of this file is to explain **why** important decisions were made. It is not a changelog.
+
+---
+
+# Decision Record Template
+
+Each decision should contain:
+
+- Decision ID
+- Date
+- Status
+- Decision
+- Rationale
+- Consequences
+
+Status should be one of:
+
+- Proposed
+- Accepted
+- Superseded
+- Deprecated
+
+---
+
+# ADR-001
+
+**Date:** 2026-07-31
+
+**Status:** Accepted
+
+## Decision
+
+GitHub is the source of truth for the project.
+
+## Rationale
+
+Documentation, project planning and architecture should exist independently of Lovable.
+
+Lovable is used exclusively as an AI development environment for generating and modifying application code.
+
+This avoids unnecessary Lovable credit usage and ensures project documentation remains accessible regardless of development tools.
+
+## Consequences
+
+- Documentation is edited directly in GitHub.
+- Lovable is used only for application code.
+- Repository history becomes the permanent record.
+
+---
+
+# ADR-002
+
+**Date:** 2026-07-31
+
+**Status:** Accepted
+
+## Decision
+
+The Rider Profile is the centre of the application architecture.
+
+## Rationale
+
+The application is intended to answer:
+
+> Can this bike reproduce this rider's fit?
+
+Every recommendation begins with the rider rather than the bicycle.
+
+## Consequences
+
+The application architecture is:
+
+Rider Profile
+
+↓
+
+Bike Database
+
+↓
+
+Fit Engine
+
+↓
+
+Fit Result
+
+↓
+
+Recommendation
+
+---
+
+# ADR-003
+
+**Date:** 2026-07-31
+
+**Status:** Accepted
+
+## Decision
+
+Each bike size is stored as an independent database record.
+
+## Rationale
+
+Different sizes have different geometry.
+
+Treating each size independently simplifies searching, filtering and fit calculations.
+
+## Consequences
+
+Example:
+
+Specialized Tarmac SL8 52
+
+Specialized Tarmac SL8 54
+
+Specialized Tarmac SL8 56
+
+Each is stored as its own record.
+
+---
+
+# ADR-004
+
+**Date:** 2026-07-31
+
+**Status:** Accepted
+
+## Decision
+
+Business logic must be separated from the user interface.
+
+## Rationale
+
+Fit calculations should be reusable throughout the application.
+
+React components should display results only.
+
+## Consequences
+
+Calculation logic belongs inside reusable utility modules such as:
+
+- fitEngine.ts
+
+UI components should never contain fit calculations.
+
+---
+
+# ADR-005
+
+**Date:** 2026-07-31
+
+**Status:** Accepted
+
+## Decision
+
+Fit recommendations will ultimately be based on predicted rider contact points rather than frame geometry alone.
+
+## Rationale
+
+Stack and reach are insufficient to determine whether a bicycle can reproduce a rider's position.
+
+The application should compare:
+
+- Handlebar X
+- Handlebar Y
+- Saddle position
+- Stem configuration
+- Spacer configuration
+
+Frame geometry is only one input into the calculation.
+
+## Consequences
+
+The Fit Engine will eventually estimate cockpit position before generating recommendations.
+
+---
+
+# ADR-006
+
+**Date:** 2026-07-31
+
+**Status:** Accepted
+
+## Decision
+
+The project will be developed incrementally using sprint-based milestones.
+
+## Rationale
+
+Implementing one well-defined feature at a time reduces technical debt, simplifies testing and improves maintainability.
+
+## Consequences
+
+Every sprint should have:
+
+- One primary objective
+- Clear acceptance criteria
+- A review before the next sprint begins
+
+---
+
+# Future Decisions
+
+Additional architectural decisions should be appended to this document rather than modifying previous decisions.
+
+If a decision changes, create a new ADR referencing the previous one instead of editing history.
+
+Example:
+
+ADR-012 supersedes ADR-005.
