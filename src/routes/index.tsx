@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/page-header";
 import { Panel, SpecRow, EmptyState } from "@/components/panel";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { fitProfile, currentBike } from "@/lib/bike-data";
+import { riderProfile } from "@/data/rider-profile";
 
 export const Route = createFileRoute("/")({
   head: () => ({
