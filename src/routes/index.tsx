@@ -49,17 +49,17 @@ function Dashboard() {
           <div className="grid gap-x-8 sm:grid-cols-2">
             <div>
               <p className="label-caps mb-1">Cockpit</p>
-              <SpecRow label="Handlebar X" value={fitProfile.handlebarX} unit="mm" emphasis />
-              <SpecRow label="Handlebar Y" value={fitProfile.handlebarY} unit="mm" emphasis />
-              <SpecRow label="Stem" value={fitProfile.stem} unit="mm" />
-              <SpecRow label="Spacer Height" value={fitProfile.spacerHeight} unit="mm" />
+              <SpecRow label="Handlebar X" value={riderProfile.handlebarX} unit="mm" emphasis />
+              <SpecRow label="Handlebar Y" value={riderProfile.handlebarY} unit="mm" emphasis />
+              <SpecRow label="Stem" value={riderProfile.stemLength} unit="mm" />
+              <SpecRow label="Spacer Height" value={riderProfile.spacerHeight} unit="mm" />
             </div>
             <div className="mt-4 sm:mt-0">
               <p className="label-caps mb-1">Frame &amp; Saddle</p>
-              <SpecRow label="Frame Reach" value={fitProfile.frameReach} unit="mm" />
-              <SpecRow label="Frame Stack" value={fitProfile.frameStack} unit="mm" />
-              <SpecRow label="Saddle Height" value={fitProfile.saddleHeight} unit="mm" />
-              <SpecRow label="Saddle Setback" value={fitProfile.saddleSetback} unit="mm" />
+              <SpecRow label="Frame Reach" value={riderProfile.frameReach} unit="mm" />
+              <SpecRow label="Frame Stack" value={riderProfile.frameStack} unit="mm" />
+              <SpecRow label="Saddle Height" value={riderProfile.saddleHeight} unit="mm" />
+              <SpecRow label="Saddle Setback" value={riderProfile.saddleSetback} unit="mm" />
             </div>
           </div>
         </Panel>
