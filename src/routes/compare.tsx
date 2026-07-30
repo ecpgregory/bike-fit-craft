@@ -1,17 +1,15 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { GitCompareArrows } from "lucide-react";
 
 import { PageHeader } from "@/components/page-header";
 import { Panel, SpecRow, EmptyState } from "@/components/panel";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { BikeSelect } from "@/components/compare/bike-select";
+import { BikeSummaryCard } from "@/components/compare/bike-summary-card";
+import { GeometryDifferenceCard } from "@/components/compare/geometry-difference-card";
+import { FitAssessmentCard } from "@/components/compare/fit-assessment-card";
 import { bikes } from "@/data/bikes";
+import { compareBikes } from "@/lib/fit-engine";
 
 export const Route = createFileRoute("/compare")({
   head: () => ({
@@ -20,93 +18,75 @@ export const Route = createFileRoute("/compare")({
       {
         name: "description",
         content:
-          "Compare two road bike frames side by side: reach, stack, head tube, wheelbase and cockpit deltas.",
+          "Compare two road bike frames side by side: stack and reach differences plus a first-pass fit assessment.",
       },
       { property: "og:title", content: "Compare Bikes — Bike Fit Finder" },
       {
         property: "og:description",
-        content: "Side-by-side road frame geometry comparison.",
+        content: "Side-by-side road frame geometry comparison with fit assessment.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: ComparePage,
 });
 
-const specs = [
-  "Frame Reach",
-  "Frame Stack",
-  "Head Tube",
-  "Wheelbase",
-  "Front Centre",
-  "BB Drop",
-  "Tyre Clearance",
-  "Weight",
-  "Stem",
-] as const;
-
-function BikeSelect({
-  label,
-  value,
-  onChange,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-}) {
-  return (
-    <div className="min-w-0 space-y-1.5">
-      <p className="label-caps">{label}</p>
-      <Select value={value} onValueChange={onChange} disabled={bikes.length === 0}>
-        <SelectTrigger aria-label={label}>
-          <SelectValue placeholder={bikes.length === 0 ? "No bikes available" : "Select a bike"} />
-        </SelectTrigger>
-        <SelectContent>
-          {bikes.map((b) => (
-            <SelectItem key={b.id} value={b.id}>
-              {b.brand} {b.model} · {b.size}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </div>
-  );
-}
-
 function ComparePage() {
-  const [bikeA, setBikeA] = useState("");
-  const [bikeB, setBikeB] = useState("");
+  const [currentId, setCurrentId] = useState("");
+  const [comparisonId, setComparisonId] = useState("");
+
+  const result = useMemo(() => {
+    const current = bikes.find((b) => b.id === currentId);
+    const comparison = bikes.find((b) => b.id === comparisonId);
+    if (!current || !comparison) return null;
+    return compareBikes(current, comparison);
+  }, [currentId, comparisonId]);
 
   return (
     <div className="mx-auto w-full max-w-5xl space-y-6">
       <PageHeader
         title="Compare Bikes"
-        description="Put two frames head to head and read the geometry deltas."
+        description="Put two frames head to head and read the stack and reach deltas."
       />
 
-      <Panel title="Selection" subtitle="Choose two frames to compare">
+      <Panel title="Bike Selection" subtitle="Choose a current bike and a comparison bike">
         <div className="grid gap-4 sm:grid-cols-2">
-          <BikeSelect label="Bike A" value={bikeA} onChange={setBikeA} />
-          <BikeSelect label="Bike B" value={bikeB} onChange={setBikeB} />
+          <BikeSelect
+            label="Current Bike"
+            value={currentId}
+            onChange={setCurrentId}
+            bikes={bikes}
+          />
+          <BikeSelect
+            label="Comparison Bike"
+            value={comparisonId}
+            onChange={setComparisonId}
+            bikes={bikes}
+          />
         </div>
       </Panel>
 
-      <div className="grid gap-5 md:grid-cols-2">
-        {(["Bike A", "Bike B"] as const).map((title) => (
-          <Panel key={title} title={title} subtitle="Geometry">
-            {specs.map((spec) => (
-              <SpecRow key={spec} label={spec} />
-            ))}
-          </Panel>
-        ))}
-      </div>
-
-      <Panel title="Delta" subtitle="Bike B relative to Bike A">
-        <EmptyState
-          icon={<GitCompareArrows className="size-5" />}
-          title="Nothing to compare yet"
-          description="Deltas are calculated once both frames are selected and geometry data exists."
-        />
-      </Panel>
+      {result ? (
+        <div className="grid gap-5 md:grid-cols-2">
+          <BikeSummaryCard title="Current Bike" bike={result.current} />
+          <BikeSummaryCard title="Comparison Bike" bike={result.comparison} />
+          <GeometryDifferenceCard delta={result.delta} />
+          <FitAssessmentCard verdict={result.verdict} delta={result.delta} />
+        </div>
+      ) : (
+        <Panel title="Comparison Summary" subtitle="Geometry difference and fit assessment">
+          <EmptyState
+            icon={<GitCompareArrows className="size-5" />}
+            title="Select two bikes to compare"
+            description="Stack and reach differences appear once both a current bike and a comparison bike are chosen."
+          />
+          <div className="mt-5 grid gap-2 opacity-60">
+            <SpecRow label="Stack Difference" />
+            <SpecRow label="Reach Difference" />
+          </div>
+        </Panel>
+      )}
     </div>
   );
 }
