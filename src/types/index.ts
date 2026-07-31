@@ -32,6 +32,14 @@ export interface RiderProfile {
   preferredTyreWidth: Millimetres | null;
   /** Budget ceiling in the user's currency. */
   budget: number | null;
+
+  // --- Cockpit preferences (optional; used by future cockpit calculations) ---
+  preferredStemLength?: Millimetres | null;
+  /** Degrees. */
+  preferredStemAngle?: number | null;
+  preferredHandlebarReach?: Millimetres | null;
+  preferredHandlebarStack?: Millimetres | null;
+  preferredCrankLength?: Millimetres | null;
 }
 
 /** One row = ONE bike size. */
@@ -51,7 +59,27 @@ export interface Bike {
   tyreClearance: Millimetres | null;
   integratedCockpit: boolean | null;
   notes: string;
+
+  // --- Advanced / cockpit geometry (optional; not used in calculations yet) ---
+  /** Degrees. */
+  headTubeAngle?: number | null;
+  /** Degrees. */
+  seatTubeAngle?: number | null;
+  forkOffset?: Millimetres | null;
+  stockStemLength?: Millimetres | null;
+  /** Degrees. */
+  stockStemAngle?: number | null;
+  stockHandlebarReach?: Millimetres | null;
+  stockHandlebarStack?: Millimetres | null;
+  stockSpacerHeight?: Millimetres | null;
+  headsetTopCapHeight?: Millimetres | null;
+  stockCrankLength?: Millimetres | null;
+  maxSpacerHeight?: Millimetres | null;
+  minimumStemLength?: Millimetres | null;
+  maximumStemLength?: Millimetres | null;
+  cockpitModel?: string | null;
 }
+
 
 /** Result of evaluating one bike size against a rider profile. */
 export interface FitResult {

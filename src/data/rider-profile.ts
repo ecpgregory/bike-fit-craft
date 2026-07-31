@@ -16,4 +16,11 @@ export const riderProfile: RiderProfile = {
   preferredBikeType: "Race",
   preferredTyreWidth: null,
   budget: null,
+
+  // Cockpit preferences — only stem length is known today.
+  preferredStemLength: 100,
+  preferredStemAngle: null,
+  preferredHandlebarReach: null,
+  preferredHandlebarStack: null,
+  preferredCrankLength: null,
 };
