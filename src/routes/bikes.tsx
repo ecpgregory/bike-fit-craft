@@ -5,6 +5,8 @@ import { ArrowUpDown, Search, Database } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { Panel, EmptyState } from "@/components/panel";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
@@ -186,6 +188,27 @@ function BikeDatabase() {
             </SelectContent>
           </Select>
         </div>
+
+        <div className="mb-4 flex items-center gap-2.5">
+          <Switch
+            id="show-advanced-geometry"
+            checked={showAdvanced}
+            onCheckedChange={(checked) => {
+              setShowAdvanced(checked);
+              if (!checked && advancedColumns.some((c) => c.key === sortKey)) {
+                setSortKey("brand");
+                setSortDir("asc");
+              }
+            }}
+          />
+          <Label
+            htmlFor="show-advanced-geometry"
+            className="text-xs font-medium uppercase tracking-wider text-muted-foreground"
+          >
+            Show Advanced Geometry
+          </Label>
+        </div>
+
 
         <div className="overflow-x-auto rounded-lg border border-border">
           <Table>
