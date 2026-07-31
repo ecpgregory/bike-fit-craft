@@ -31,17 +31,32 @@ export interface GeometryComparison {
 /** Backwards-compatible alias used by presentation components. */
 export type GeometryDelta = GeometryComparison;
 
+/** The geometry the candidate bike is measured against. */
+export interface ReferenceGeometry {
+  frameStack: Millimetres | null;
+  frameReach: Millimetres | null;
+  /** The bike the reference geometry came from, when one is known. */
+  bike: Bike | null;
+  /** True when the numbers came from the rider profile rather than an override bike. */
+  fromRiderProfile: boolean;
+}
+
 /**
  * Everything the engine needs to produce a fit result.
- * Future sprints add optional `rider` / `cockpit` inputs here.
+ * Future sprints add optional cockpit inputs here.
  */
 export interface FitInput {
-  currentBike: Bike;
-  comparisonBike: Bike;
+  rider: RiderProfile;
+  candidateBike: Bike;
+  /** Optional override of the rider's current bike as the reference. */
+  currentBike?: Bike | null;
 }
 
 export interface FitResult {
-  currentBike: Bike;
+  rider: RiderProfile;
+  /** Reference geometry used for the comparison (rider profile by default). */
+  reference: ReferenceGeometry;
+  currentBike: Bike | null;
   comparisonBike: Bike;
   frameReachDifference: Millimetres | null;
   frameStackDifference: Millimetres | null;
