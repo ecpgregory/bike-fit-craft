@@ -6,10 +6,12 @@ import { PageHeader } from "@/components/page-header";
 import { Panel, SpecRow, EmptyState } from "@/components/panel";
 import { BikeSelect } from "@/components/compare/bike-select";
 import { BikeSummaryCard } from "@/components/compare/bike-summary-card";
+import { RiderReferenceCard } from "@/components/compare/rider-reference-card";
 import { GeometryDifferenceCard } from "@/components/compare/geometry-difference-card";
 import { FitAssessmentCard } from "@/components/compare/fit-assessment-card";
 import { bikes } from "@/data/bikes";
-import { calculateFit } from "@/lib/fitEngine";
+import { riderProfile } from "@/data/rider-profile";
+import { calculateFit, findRiderCurrentBike } from "@/lib/fitEngine";
 
 export const Route = createFileRoute("/compare")({
   head: () => ({
