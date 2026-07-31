@@ -75,7 +75,10 @@ function ComparePage() {
 
       {result ? (
         <div className="grid gap-5 md:grid-cols-2">
-          <BikeSummaryCard title="Current Bike" bike={result.currentBike} />
+          <RiderReferenceCard rider={result.rider} />
+          {result.currentBike && (
+            <BikeSummaryCard title="Current Bike" bike={result.currentBike} />
+          )}
           <BikeSummaryCard title="Comparison Bike" bike={result.comparisonBike} />
           <GeometryDifferenceCard delta={result.geometry} />
           <FitAssessmentCard verdict={result.assessment} delta={result.geometry} />
