@@ -6,10 +6,12 @@ import { PageHeader } from "@/components/page-header";
 import { Panel, SpecRow, EmptyState } from "@/components/panel";
 import { BikeSelect } from "@/components/compare/bike-select";
 import { BikeSummaryCard } from "@/components/compare/bike-summary-card";
+import { RiderReferenceCard } from "@/components/compare/rider-reference-card";
 import { GeometryDifferenceCard } from "@/components/compare/geometry-difference-card";
 import { FitAssessmentCard } from "@/components/compare/fit-assessment-card";
 import { bikes } from "@/data/bikes";
-import { calculateFit } from "@/lib/fitEngine";
+import { riderProfile } from "@/data/rider-profile";
+import { calculateFit, findRiderCurrentBike } from "@/lib/fitEngine";
 
 export const Route = createFileRoute("/compare")({
   head: () => ({
@@ -33,14 +35,18 @@ export const Route = createFileRoute("/compare")({
 });
 
 function ComparePage() {
-  const [currentId, setCurrentId] = useState("");
+  const defaultCurrentId = useMemo(
+    () => findRiderCurrentBike(riderProfile, bikes)?.id ?? "",
+    [],
+  );
+  const [currentId, setCurrentId] = useState(defaultCurrentId);
   const [comparisonId, setComparisonId] = useState("");
 
   const result = useMemo(() => {
-    const currentBike = bikes.find((b) => b.id === currentId);
-    const comparisonBike = bikes.find((b) => b.id === comparisonId);
-    if (!currentBike || !comparisonBike) return null;
-    return calculateFit({ currentBike, comparisonBike });
+    const currentBike = bikes.find((b) => b.id === currentId) ?? null;
+    const candidateBike = bikes.find((b) => b.id === comparisonId);
+    if (!candidateBike) return null;
+    return calculateFit({ rider: riderProfile, candidateBike, currentBike });
   }, [currentId, comparisonId]);
 
   return (
@@ -69,7 +75,10 @@ function ComparePage() {
 
       {result ? (
         <div className="grid gap-5 md:grid-cols-2">
-          <BikeSummaryCard title="Current Bike" bike={result.currentBike} />
+          <RiderReferenceCard rider={result.rider} />
+          {result.currentBike && (
+            <BikeSummaryCard title="Current Bike" bike={result.currentBike} />
+          )}
           <BikeSummaryCard title="Comparison Bike" bike={result.comparisonBike} />
           <GeometryDifferenceCard delta={result.geometry} />
           <FitAssessmentCard verdict={result.assessment} delta={result.geometry} />
