@@ -1,4 +1,4 @@
-import type { Bike, Millimetres } from "@/types";
+import type { Bike, Millimetres, RiderProfile } from "@/types";
 
 /**
  * Bike Fit Engine — v1.
@@ -85,9 +85,12 @@ export function deltaSeverity(delta: Millimetres | null): DeltaSeverity | null {
   return "far";
 }
 
-function compareGeometry(current: Bike, comparison: Bike): GeometryComparison {
-  const stack = difference(current.frameStack, comparison.frameStack);
-  const reach = difference(current.frameReach, comparison.frameReach);
+function compareGeometry(
+  reference: ReferenceGeometry,
+  comparison: Bike,
+): GeometryComparison {
+  const stack = difference(reference.frameStack, comparison.frameStack);
+  const reach = difference(reference.frameReach, comparison.frameReach);
   return {
     stack,
     reach,
@@ -109,13 +112,54 @@ function assessFit(geometry: GeometryComparison): FitVerdict | null {
   return "Requires Further Analysis";
 }
 
+/**
+ * The rider profile is the reference by default. A selected current bike only
+ * overrides it when it is not the rider's own current bike.
+ */
+export function resolveReference(
+  rider: RiderProfile,
+  currentBike?: Bike | null,
+): ReferenceGeometry {
+  if (currentBike && !isRiderCurrentBike(rider, currentBike)) {
+    return {
+      frameStack: currentBike.frameStack,
+      frameReach: currentBike.frameReach,
+      bike: currentBike,
+      fromRiderProfile: false,
+    };
+  }
+  return {
+    frameStack: rider.frameStack,
+    frameReach: rider.frameReach,
+    bike: currentBike ?? null,
+    fromRiderProfile: true,
+  };
+}
+
+/** Does this bike look like the bike named in the rider profile? */
+export function isRiderCurrentBike(rider: RiderProfile, bike: Bike): boolean {
+  const target = rider.currentBike.toLowerCase();
+  if (!target) return false;
+  return (
+    target.includes(bike.brand.toLowerCase()) && target.includes(bike.model.toLowerCase())
+  );
+}
+
+/** The bike from the database that matches the rider profile's current bike. */
+export function findRiderCurrentBike(rider: RiderProfile, bikes: Bike[]): Bike | null {
+  return bikes.find((bike) => isRiderCurrentBike(rider, bike)) ?? null;
+}
+
 /** The single public entry point of the fit engine. */
 export function calculateFit(input: FitInput): FitResult {
-  const { currentBike, comparisonBike } = input;
-  const geometry = compareGeometry(currentBike, comparisonBike);
+  const { rider, candidateBike, currentBike } = input;
+  const reference = resolveReference(rider, currentBike);
+  const geometry = compareGeometry(reference, candidateBike);
   return {
-    currentBike,
-    comparisonBike,
+    rider,
+    reference,
+    currentBike: currentBike ?? null,
+    comparisonBike: candidateBike,
     frameReachDifference: geometry.reach,
     frameStackDifference: geometry.stack,
     geometry,
