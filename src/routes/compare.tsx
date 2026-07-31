@@ -9,7 +9,7 @@ import { BikeSummaryCard } from "@/components/compare/bike-summary-card";
 import { GeometryDifferenceCard } from "@/components/compare/geometry-difference-card";
 import { FitAssessmentCard } from "@/components/compare/fit-assessment-card";
 import { bikes } from "@/data/bikes";
-import { compareBikes } from "@/lib/fitEngine";
+import { calculateFit } from "@/lib/fitEngine";
 
 export const Route = createFileRoute("/compare")({
   head: () => ({
@@ -37,10 +37,10 @@ function ComparePage() {
   const [comparisonId, setComparisonId] = useState("");
 
   const result = useMemo(() => {
-    const current = bikes.find((b) => b.id === currentId);
-    const comparison = bikes.find((b) => b.id === comparisonId);
-    if (!current || !comparison) return null;
-    return compareBikes(current, comparison);
+    const currentBike = bikes.find((b) => b.id === currentId);
+    const comparisonBike = bikes.find((b) => b.id === comparisonId);
+    if (!currentBike || !comparisonBike) return null;
+    return calculateFit({ currentBike, comparisonBike });
   }, [currentId, comparisonId]);
 
   return (
@@ -69,10 +69,10 @@ function ComparePage() {
 
       {result ? (
         <div className="grid gap-5 md:grid-cols-2">
-          <BikeSummaryCard title="Current Bike" bike={result.current} />
-          <BikeSummaryCard title="Comparison Bike" bike={result.comparison} />
-          <GeometryDifferenceCard delta={result.delta} />
-          <FitAssessmentCard verdict={result.verdict} delta={result.delta} />
+          <BikeSummaryCard title="Current Bike" bike={result.currentBike} />
+          <BikeSummaryCard title="Comparison Bike" bike={result.comparisonBike} />
+          <GeometryDifferenceCard delta={result.geometry} />
+          <FitAssessmentCard verdict={result.assessment} delta={result.geometry} />
         </div>
       ) : (
         <Panel title="Comparison Summary" subtitle="Geometry difference and fit assessment">
