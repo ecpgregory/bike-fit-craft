@@ -9,7 +9,7 @@ import { BikeSummaryCard } from "@/components/compare/bike-summary-card";
 import { GeometryDifferenceCard } from "@/components/compare/geometry-difference-card";
 import { FitAssessmentCard } from "@/components/compare/fit-assessment-card";
 import { bikes } from "@/data/bikes";
-import { compareBikes } from "@/lib/fit-engine";
+import { compareBikes } from "@/lib/fitEngine";
 
 export const Route = createFileRoute("/compare")({
   head: () => ({

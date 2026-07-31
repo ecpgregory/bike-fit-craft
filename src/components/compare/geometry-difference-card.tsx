@@ -1,6 +1,6 @@
 import { Panel } from "@/components/panel";
 import { cn } from "@/lib/utils";
-import { formatDelta, type DeltaSeverity, type GeometryDelta } from "@/lib/fit-engine";
+import { formatDelta, type DeltaSeverity, type GeometryDelta } from "@/lib/fitEngine";
 
 const severityClass: Record<DeltaSeverity, string> = {
   close: "text-success",
