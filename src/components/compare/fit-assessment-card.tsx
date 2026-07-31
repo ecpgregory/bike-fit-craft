@@ -1,6 +1,6 @@
 import { Panel } from "@/components/panel";
 import { cn } from "@/lib/utils";
-import { formatDelta, type FitVerdict, type GeometryDelta } from "@/lib/fit-engine";
+import { formatDelta, type FitVerdict, type GeometryDelta } from "@/lib/fitEngine";
 
 const verdictStyle: Record<FitVerdict, string> = {
   "Excellent Candidate": "border-success/30 bg-success/10 text-success",

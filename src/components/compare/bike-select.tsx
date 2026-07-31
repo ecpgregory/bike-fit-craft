@@ -6,7 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { bikeLabel } from "@/lib/fit-engine";
+import { bikeLabel } from "@/lib/fitEngine";
 
 export function BikeSelect({
   label,
