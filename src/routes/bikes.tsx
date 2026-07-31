@@ -5,6 +5,8 @@ import { ArrowUpDown, Search, Database } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { Panel, EmptyState } from "@/components/panel";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
@@ -49,7 +51,7 @@ type Column = {
   numeric?: boolean;
 };
 
-const columns: Column[] = [
+const baseColumns: Column[] = [
   { key: "brand", label: "Brand" },
   { key: "model", label: "Model" },
   { key: "year", label: "Year", numeric: true },
@@ -66,12 +68,37 @@ const columns: Column[] = [
   { key: "notes", label: "Notes" },
 ];
 
+/** Cockpit / advanced geometry — hidden until the user opts in. */
+const advancedColumns: Column[] = [
+  { key: "headTubeAngle", label: "Head Tube Angle", numeric: true },
+  { key: "seatTubeAngle", label: "Seat Tube Angle", numeric: true },
+  { key: "forkOffset", label: "Fork Offset", numeric: true },
+  { key: "stockStemLength", label: "Stock Stem Length", numeric: true },
+  { key: "stockStemAngle", label: "Stock Stem Angle", numeric: true },
+  { key: "stockHandlebarReach", label: "Bar Reach", numeric: true },
+  { key: "stockHandlebarStack", label: "Bar Stack", numeric: true },
+  { key: "stockSpacerHeight", label: "Stock Spacers", numeric: true },
+  { key: "headsetTopCapHeight", label: "Top Cap Height", numeric: true },
+  { key: "stockCrankLength", label: "Stock Crank", numeric: true },
+  { key: "maxSpacerHeight", label: "Max Spacers", numeric: true },
+  { key: "minimumStemLength", label: "Min Stem", numeric: true },
+  { key: "maximumStemLength", label: "Max Stem", numeric: true },
+  { key: "cockpitModel", label: "Cockpit Model" },
+];
+
 function BikeDatabase() {
   const [query, setQuery] = useState("");
   const [brand, setBrand] = useState("all");
   const [size, setSize] = useState("all");
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const [sortKey, setSortKey] = useState<keyof Bike>("brand");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+
+  const columns = useMemo(
+    () => (showAdvanced ? [...baseColumns, ...advancedColumns] : baseColumns),
+    [showAdvanced],
+  );
+
 
   const brands = useMemo(
     () => Array.from(new Set(bikes.map((b) => b.brand).filter(Boolean))).sort(),
@@ -161,6 +188,27 @@ function BikeDatabase() {
             </SelectContent>
           </Select>
         </div>
+
+        <div className="mb-4 flex items-center gap-2.5">
+          <Switch
+            id="show-advanced-geometry"
+            checked={showAdvanced}
+            onCheckedChange={(checked) => {
+              setShowAdvanced(checked);
+              if (!checked && advancedColumns.some((c) => c.key === sortKey)) {
+                setSortKey("brand");
+                setSortDir("asc");
+              }
+            }}
+          />
+          <Label
+            htmlFor="show-advanced-geometry"
+            className="text-xs font-medium uppercase tracking-wider text-muted-foreground"
+          >
+            Show Advanced Geometry
+          </Label>
+        </div>
+
 
         <div className="overflow-x-auto rounded-lg border border-border">
           <Table>
