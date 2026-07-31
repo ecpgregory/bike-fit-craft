@@ -35,14 +35,18 @@ export const Route = createFileRoute("/compare")({
 });
 
 function ComparePage() {
-  const [currentId, setCurrentId] = useState("");
+  const defaultCurrentId = useMemo(
+    () => findRiderCurrentBike(riderProfile, bikes)?.id ?? "",
+    [],
+  );
+  const [currentId, setCurrentId] = useState(defaultCurrentId);
   const [comparisonId, setComparisonId] = useState("");
 
   const result = useMemo(() => {
-    const currentBike = bikes.find((b) => b.id === currentId);
-    const comparisonBike = bikes.find((b) => b.id === comparisonId);
-    if (!currentBike || !comparisonBike) return null;
-    return calculateFit({ currentBike, comparisonBike });
+    const currentBike = bikes.find((b) => b.id === currentId) ?? null;
+    const candidateBike = bikes.find((b) => b.id === comparisonId);
+    if (!candidateBike) return null;
+    return calculateFit({ rider: riderProfile, candidateBike, currentBike });
   }, [currentId, comparisonId]);
 
   return (
