@@ -98,3 +98,13 @@ export interface FitResult {
   fitConfidence: FitConfidence | null;
   notes: string;
 }
+
+// --- Optimisation framework (constraints, cockpit configurations) ---
+export type {
+  BikeFitConstraints,
+  CockpitOption,
+  CockpitConfiguration,
+  FitCandidate,
+  OptimisationResult,
+} from "./optimisation";
+
