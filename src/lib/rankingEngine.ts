@@ -1,0 +1,213 @@
+import type { AssessmentNote, FitAssessment } from "./errorCalculator";
+
+/**
+ * Ranking layer — all subjective judgement lives here.
+ *
+ * Consumes FitAssessment objects produced by the Error Calculator and turns
+ * measurements into scores. Every stage is a pluggable function so the
+ * mathematical model can change without refactoring the pipeline.
+ *
+ * Pipeline: transform → normalise → weight → combine.
+ */
+
+// --- Stage 1: transformation -------------------------------------------------
+
+/** Raw measurements reduced to the components that will be scored. */
+export interface ScoringInputs {
+  position: number;
+  cockpit: number;
+  handling: number;
+}
+
+/** Pluggable transformation from an assessment to scoring inputs. */
+export type TransformationFunction = (assessment: FitAssessment) => ScoringInputs;
+
+/**
+ * Default transformation: Euclidean distance for position, summed penalty
+ * breakdowns for cockpit and handling. Alternative metrics are supplied by
+ * passing a different TransformationFunction — never by editing this one.
+ */
+export const euclideanTransformation: TransformationFunction = (assessment) => {
+  const c = assessment.cockpitPenaltyBreakdown;
+  const h = assessment.handlingPenaltyBreakdown;
+  return {
+    position: assessment.positionMetrics.euclideanDistance,
+    cockpit: c.nonStockStem + c.nonStockCockpit + c.nonStockSpacerConfiguration,
+    handling: h.stemLengthPenalty + h.spacerPenalty,
+  };
+};
+
+// --- Stage 2: normalisation --------------------------------------------------
+
+/** Context available to a normaliser, e.g. for cohort-relative scaling. */
+export interface NormalisationContext {
+  /** Every scoring input in the current ranking run, in input order. */
+  cohort: ScoringInputs[];
+}
+
+/** Pluggable per-component normaliser. Higher output = better. */
+export type NormalisationFunction = (
+  value: number,
+  context: NormalisationContext,
+) => number;
+
+export interface NormalisationStrategy {
+  position: NormalisationFunction;
+  cockpit: NormalisationFunction;
+  handling: NormalisationFunction;
+}
+
+/**
+ * Default normaliser: a bounded reciprocal, 1 / (1 + value). Non-linear by
+ * design so no linear-scaling assumption is baked into the architecture.
+ * Returns 1 for a perfect (zero) value and approaches 0 as error grows.
+ */
+export const reciprocalNormalisation: NormalisationFunction = (value) => {
+  const magnitude = Math.abs(value);
+  if (!Number.isFinite(magnitude)) return 0;
+  return 1 / (1 + magnitude);
+};
+
+export const defaultNormalisationStrategy: NormalisationStrategy = {
+  position: reciprocalNormalisation,
+  cockpit: reciprocalNormalisation,
+  handling: reciprocalNormalisation,
+};
+
+// --- Stage 3: weighting ------------------------------------------------------
+
+export interface ScoringWeights {
+  positionWeight: number;
+  cockpitWeight: number;
+  handlingWeight: number;
+}
+
+export const defaultScoringWeights: ScoringWeights = {
+  positionWeight: 1,
+  cockpitWeight: 1,
+  handlingWeight: 1,
+};
+
+// --- Stage 4: combination ----------------------------------------------------
+
+export interface ComponentScores {
+  /** Normalised, pre-weight component scores. */
+  normalised: ScoringInputs;
+  /** Normalised scores multiplied by their weights. */
+  weighted: ScoringInputs;
+}
+
+/** Pluggable combiner producing the single overall score. */
+export type CombinationFunction = (
+  weighted: ScoringInputs,
+  weights: ScoringWeights,
+) => number;
+
+/** Default: weighted mean, so overallScore stays comparable across weightings. */
+export const weightedMeanCombination: CombinationFunction = (weighted, weights) => {
+  const totalWeight =
+    weights.positionWeight + weights.cockpitWeight + weights.handlingWeight;
+  if (totalWeight === 0) return 0;
+  return (weighted.position + weighted.cockpit + weighted.handling) / totalWeight;
+};
+
+// --- Results -----------------------------------------------------------------
+
+export interface RankedConfiguration {
+  candidateId: string;
+  assessment: FitAssessment;
+  scoringInputs: ScoringInputs;
+  componentScores: ComponentScores;
+  /** Numerical only. Rating bands are deliberately not implemented. */
+  overallScore: number;
+}
+
+export interface RejectedConfiguration {
+  candidateId: string;
+  assessment: FitAssessment;
+  /** Structured reasons; never discarded silently. */
+  rejectionReasons: AssessmentNote[];
+}
+
+export interface RankingResult {
+  /** Ranked best first by overallScore, ties broken by candidateId. */
+  rankedConfigurations: RankedConfiguration[];
+  invalidConfigurations: RejectedConfiguration[];
+  weights: ScoringWeights;
+  rankedAt: Date;
+}
+
+export interface RankingOptions {
+  weights?: Partial<ScoringWeights>;
+  transformation?: TransformationFunction;
+  normalisation?: Partial<NormalisationStrategy>;
+  combination?: CombinationFunction;
+}
+
+export interface RankingInput {
+  validConfigurations: FitAssessment[];
+  invalidConfigurations: FitAssessment[];
+  options?: RankingOptions;
+}
+
+const CONSTRAINT_REJECTION: AssessmentNote = {
+  code: "CONSTRAINT_INVALID",
+  message: "Configuration was reported INVALID by the evaluation layer.",
+};
+
+function rejectionReasons(assessment: FitAssessment): AssessmentNote[] {
+  return assessment.notes.length > 0 ? assessment.notes : [CONSTRAINT_REJECTION];
+}
+
+/** The single public entry point of the ranking layer. */
+export function rankConfigurations(input: RankingInput): RankingResult {
+  const { validConfigurations, invalidConfigurations, options } = input;
+
+  const weights: ScoringWeights = { ...defaultScoringWeights, ...options?.weights };
+  const transform = options?.transformation ?? euclideanTransformation;
+  const normalise: NormalisationStrategy = {
+    ...defaultNormalisationStrategy,
+    ...options?.normalisation,
+  };
+  const combine = options?.combination ?? weightedMeanCombination;
+
+  const scoringInputs = validConfigurations.map(transform);
+  const context: NormalisationContext = { cohort: scoringInputs };
+
+  const rankedConfigurations: RankedConfiguration[] = validConfigurations
+    .map((assessment, index) => {
+      const inputs = scoringInputs[index]!;
+      const normalised: ScoringInputs = {
+        position: normalise.position(inputs.position, context),
+        cockpit: normalise.cockpit(inputs.cockpit, context),
+        handling: normalise.handling(inputs.handling, context),
+      };
+      const weighted: ScoringInputs = {
+        position: normalised.position * weights.positionWeight,
+        cockpit: normalised.cockpit * weights.cockpitWeight,
+        handling: normalised.handling * weights.handlingWeight,
+      };
+      return {
+        candidateId: assessment.candidateId,
+        assessment,
+        scoringInputs: inputs,
+        componentScores: { normalised, weighted },
+        overallScore: combine(weighted, weights),
+      };
+    })
+    .sort(
+      (a, b) =>
+        b.overallScore - a.overallScore || a.candidateId.localeCompare(b.candidateId),
+    );
+
+  return {
+    rankedConfigurations,
+    invalidConfigurations: invalidConfigurations.map((assessment) => ({
+      candidateId: assessment.candidateId,
+      assessment,
+      rejectionReasons: rejectionReasons(assessment),
+    })),
+    weights,
+    rankedAt: new Date(),
+  };
+}
