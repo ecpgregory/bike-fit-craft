@@ -30,6 +30,7 @@ export type {
   FitAssessment,
   GeometryWarning,
   HandlingPenaltyBreakdown,
+  Point2D,
   PositionMetrics,
   PredictedPosition,
   TargetPosition,
