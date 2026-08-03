@@ -114,6 +114,7 @@ export type {
   CockpitPenaltyBreakdown,
   HandlingPenaltyBreakdown,
   ConstraintStatus,
+  Point2D,
   PredictedPosition,
   TargetPosition,
   FitAssessment as CandidateFitAssessment,

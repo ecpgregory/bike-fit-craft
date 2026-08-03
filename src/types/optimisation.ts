@@ -160,17 +160,25 @@ export interface PositionMetrics {
 
 export type ConstraintStatus = "VALID" | "INVALID";
 
-/** A predicted contact point, produced by the (future) geometry solver. */
-export interface PredictedPosition {
-  handlebarX: Millimetres;
-  handlebarY: Millimetres;
+/**
+ * The single coordinate representation of the optimisation/evaluation
+ * pipeline. Sagittal-plane millimetres: `x` horizontal, `y` vertical.
+ *
+ * Future reference points (RP0–RP5 produced by the Geometry Solver) all share
+ * this shape. UI-facing models (RiderProfile, Bike) keep their own field names
+ * and are deliberately not migrated.
+ */
+export interface Point2D {
+  x: Millimetres;
+  y: Millimetres;
 }
 
+/** A predicted contact point, produced by the (future) geometry solver. */
+export type PredictedPosition = Point2D;
+
 /** The rider's target contact point. */
-export interface TargetPosition {
-  handlebarX: Millimetres;
-  handlebarY: Millimetres;
-}
+export type TargetPosition = Point2D;
+
 
 /**
  * Objective measurement of one candidate configuration.
