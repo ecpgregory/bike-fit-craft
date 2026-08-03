@@ -3,7 +3,8 @@ import type {
   FitAssessment,
   HandlingPenaltyBreakdown,
   PositionMetrics,
-} from "./errorCalculator";
+  Severity,
+} from "@/types/optimisation";
 import type { RankedConfiguration, RankingResult } from "./rankingEngine";
 
 /**
@@ -21,7 +22,11 @@ import type { RankedConfiguration, RankingResult } from "./rankingEngine";
 
 // --- Output ------------------------------------------------------------------
 
-export type ExplanationSeverity = "info" | "caution" | "blocking";
+/**
+ * Alias of the shared domain Severity, kept for backwards compatibility.
+ * There is deliberately no parallel severity enum.
+ */
+export type ExplanationSeverity = Severity;
 
 /** A single evidence-backed statement. */
 export interface ExplanationStatement {
