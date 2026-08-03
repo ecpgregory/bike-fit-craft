@@ -50,15 +50,15 @@ export interface ErrorCalculatorInput {
 
 /** Reads the rider's stored fit coordinates as a target position. */
 export function targetFromRider(rider: RiderProfile): TargetPosition {
-  return { handlebarX: rider.handlebarX, handlebarY: rider.handlebarY };
+  return { x: rider.handlebarX, y: rider.handlebarY };
 }
 
 export function calculatePositionMetrics(
   predicted: PredictedPosition,
   target: TargetPosition,
 ): PositionMetrics {
-  const deltaX = predicted.handlebarX - target.handlebarX;
-  const deltaY = predicted.handlebarY - target.handlebarY;
+  const deltaX = predicted.x - target.x;
+  const deltaY = predicted.y - target.y;
   return {
     deltaX,
     deltaY,
