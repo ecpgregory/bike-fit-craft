@@ -152,6 +152,7 @@ export interface RankingInput {
 
 const CONSTRAINT_REJECTION: AssessmentNote = {
   code: "CONSTRAINT_INVALID",
+  severity: "error",
   message: "Configuration was reported INVALID by the evaluation layer.",
 };
 
