@@ -1,4 +1,4 @@
-import type { AssessmentNote, FitAssessment } from "./errorCalculator";
+import type { AssessmentNote, FitAssessment } from "@/types/optimisation";
 
 /**
  * Ranking layer — all subjective judgement lives here.
@@ -118,7 +118,12 @@ export interface RankedConfiguration {
   assessment: FitAssessment;
   scoringInputs: ScoringInputs;
   componentScores: ComponentScores;
-  /** Numerical only. Rating bands are deliberately not implemented. */
+  /**
+   * Numerical only. Rating bands are deliberately not implemented.
+   *
+   * Extension point: `positionRating` and `overallRating` bands will be added
+   * here once engineering thresholds are defined. No thresholds are assumed.
+   */
   overallScore: number;
 }
 
@@ -152,6 +157,7 @@ export interface RankingInput {
 
 const CONSTRAINT_REJECTION: AssessmentNote = {
   code: "CONSTRAINT_INVALID",
+  severity: "error",
   message: "Configuration was reported INVALID by the evaluation layer.",
 };
 

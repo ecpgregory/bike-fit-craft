@@ -3,7 +3,8 @@ import type {
   FitAssessment,
   HandlingPenaltyBreakdown,
   PositionMetrics,
-} from "./errorCalculator";
+  Severity,
+} from "@/types/optimisation";
 import type { RankedConfiguration, RankingResult } from "./rankingEngine";
 
 /**
@@ -21,7 +22,11 @@ import type { RankedConfiguration, RankingResult } from "./rankingEngine";
 
 // --- Output ------------------------------------------------------------------
 
-export type ExplanationSeverity = "info" | "caution" | "blocking";
+/**
+ * Alias of the shared domain Severity, kept for backwards compatibility.
+ * There is deliberately no parallel severity enum.
+ */
+export type ExplanationSeverity = Severity;
 
 /** A single evidence-backed statement. */
 export interface ExplanationStatement {
@@ -148,7 +153,7 @@ function describePositionMatch(
   return {
     code: "POSITION_MATCH_OUTSIDE_BAND",
     message: `Predicted handlebar position is ${mm(d)} from the target, beyond the ${mm(thresholds.closeDistance)} reporting band.`,
-    severity: "caution",
+    severity: "warning",
   };
 }
 
@@ -197,7 +202,7 @@ function positionRules(
           {
             code: "POSITION_DEVIATION",
             message: `Positional deviation of ${mm(m.euclideanDistance)} exceeds the ${mm(thresholds.closeDistance)} reporting band.`,
-            severity: "caution",
+            severity: "warning",
             evidence: {
               source: "positionMetrics",
               measurements: { euclideanDistance: m.euclideanDistance },
@@ -230,7 +235,7 @@ const cockpitRule: ExplanationRule = {
       statements.push({
         code: "COCKPIT_NON_STOCK_STEM",
         message: "Uses a non-stock stem.",
-        severity: "caution",
+        severity: "warning",
         evidence: {
           source: "cockpitPenaltyBreakdown",
           measurements: { nonStockStem: c.nonStockStem },
@@ -241,7 +246,7 @@ const cockpitRule: ExplanationRule = {
       statements.push({
         code: "COCKPIT_NON_STOCK_COCKPIT",
         message: "Uses a non-stock cockpit.",
-        severity: "caution",
+        severity: "warning",
         evidence: {
           source: "cockpitPenaltyBreakdown",
           measurements: { nonStockCockpit: c.nonStockCockpit },
@@ -252,7 +257,7 @@ const cockpitRule: ExplanationRule = {
       statements.push({
         code: "COCKPIT_NON_STOCK_SPACERS",
         message: "Uses a spacer stack outside the stock configuration.",
-        severity: "caution",
+        severity: "warning",
         evidence: {
           source: "cockpitPenaltyBreakdown",
           measurements: {
@@ -286,7 +291,7 @@ const handlingRule: ExplanationRule = {
       statements.push({
         code: "HANDLING_STEM_LENGTH",
         message: "Stem length contributes a handling penalty.",
-        severity: "caution",
+        severity: "warning",
         evidence: {
           source: "handlingPenaltyBreakdown",
           measurements: { stemLengthPenalty: h.stemLengthPenalty },
@@ -297,7 +302,7 @@ const handlingRule: ExplanationRule = {
       statements.push({
         code: "HANDLING_SPACER_STACK",
         message: "Spacer stack height contributes a handling penalty.",
-        severity: "caution",
+        severity: "warning",
         evidence: {
           source: "handlingPenaltyBreakdown",
           measurements: { spacerPenalty: h.spacerPenalty },
@@ -325,7 +330,7 @@ const constraintRule: ExplanationRule = {
       : {
           code: "CONSTRAINT_INVALID",
           message: "Configuration is outside the recorded manufacturer constraints.",
-          severity: "blocking" as const,
+          severity: "error" as const,
           evidence: {
             source: "constraintStatus" as const,
             measurements: { constraintStatus: assessment.constraintStatus },
@@ -342,7 +347,7 @@ const constraintWarningRule: ExplanationRule = {
     const notes = assessment.notes.map<ExplanationStatement>((note) => ({
       code: note.code,
       message: note.message,
-      severity: "blocking",
+      severity: "error",
       evidence: {
         source: "constraintStatus",
         measurements: { constraintStatus: assessment.constraintStatus },
@@ -354,7 +359,7 @@ const constraintWarningRule: ExplanationRule = {
           {
             code: "CONSTRAINT_INVALID",
             message: "Configuration was reported INVALID by the evaluation layer.",
-            severity: "blocking",
+            severity: "error",
             evidence: {
               source: "constraintStatus",
               measurements: { constraintStatus: assessment.constraintStatus },
@@ -379,7 +384,7 @@ const recommendationRule: ExplanationRule = {
         code: "RECOMMEND_ALTERNATIVE_CONFIGURATION",
         message:
           "Select an alternative configuration; this one is outside the recorded constraints.",
-        severity: "blocking",
+        severity: "error",
         evidence: {
           source: "constraintStatus",
           measurements: { constraintStatus: assessment.constraintStatus },

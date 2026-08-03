@@ -106,5 +106,16 @@ export type {
   CockpitConfiguration,
   FitCandidate,
   OptimisationResult,
+  Severity,
+  AssessmentNote,
+  GeometryWarning,
+  GeometryWarningCode,
+  PositionMetrics,
+  CockpitPenaltyBreakdown,
+  HandlingPenaltyBreakdown,
+  ConstraintStatus,
+  PredictedPosition,
+  TargetPosition,
+  FitAssessment as CandidateFitAssessment,
 } from "./optimisation";
 
