@@ -1,57 +1,38 @@
-import type { Millimetres, RiderProfile } from "@/types";
-import type { CockpitConfiguration } from "@/types/optimisation";
+import type { RiderProfile } from "@/types";
+import type {
+  AssessmentNote,
+  CockpitConfiguration,
+  CockpitPenaltyBreakdown,
+  ConstraintStatus,
+  FitAssessment,
+  GeometryWarning,
+  HandlingPenaltyBreakdown,
+  PositionMetrics,
+  PredictedPosition,
+  TargetPosition,
+} from "@/types/optimisation";
 
 /**
  * Evaluation layer — objective measurement only.
  *
  * The Error Calculator measures. It never judges, ranks or recommends.
  * Penalty functions exist for structure only and currently return zero.
+ *
+ * All shared domain interfaces live in `src/types/optimisation.ts`; they are
+ * re-exported here for backwards compatibility with existing imports.
  */
 
-export interface AssessmentNote {
-  code: string;
-  message: string;
-}
-
-export interface CockpitPenaltyBreakdown {
-  nonStockStem: number;
-  nonStockCockpit: number;
-  nonStockSpacerConfiguration: number;
-}
-
-export interface HandlingPenaltyBreakdown {
-  stemLengthPenalty: number;
-  spacerPenalty: number;
-}
-
-export interface PositionMetrics {
-  deltaX: number;
-  deltaY: number;
-  absoluteDeltaX: number;
-  absoluteDeltaY: number;
-  euclideanDistance: number;
-}
-
-export interface FitAssessment {
-  candidateId: string;
-  positionMetrics: PositionMetrics;
-  cockpitPenaltyBreakdown: CockpitPenaltyBreakdown;
-  handlingPenaltyBreakdown: HandlingPenaltyBreakdown;
-  constraintStatus: "VALID" | "INVALID";
-  notes: AssessmentNote[];
-}
-
-/** A predicted contact point, produced by the (future) geometry solver. */
-export interface PredictedPosition {
-  handlebarX: Millimetres;
-  handlebarY: Millimetres;
-}
-
-/** The rider's target contact point. */
-export interface TargetPosition {
-  handlebarX: Millimetres;
-  handlebarY: Millimetres;
-}
+export type {
+  AssessmentNote,
+  CockpitPenaltyBreakdown,
+  ConstraintStatus,
+  FitAssessment,
+  GeometryWarning,
+  HandlingPenaltyBreakdown,
+  PositionMetrics,
+  PredictedPosition,
+  TargetPosition,
+};
 
 export interface ErrorCalculatorInput {
   candidateId: string;
@@ -63,6 +44,8 @@ export interface ErrorCalculatorInput {
   isConstraintValid?: boolean;
   /** Notes carried through from earlier pipeline stages. */
   notes?: AssessmentNote[];
+  /** Structured observations carried through from earlier pipeline stages. */
+  geometryWarnings?: GeometryWarning[];
 }
 
 /** Reads the rider's stored fit coordinates as a target position. */
