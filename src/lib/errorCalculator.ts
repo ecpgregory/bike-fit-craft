@@ -100,19 +100,28 @@ export function calculateHandlingPenalties(
 /** Reports, but does not enforce, the constraint status of a candidate. */
 export function resolveConstraintStatus(
   isConstraintValid: boolean | undefined,
-): "VALID" | "INVALID" {
+): ConstraintStatus {
   return isConstraintValid === false ? "INVALID" : "VALID";
 }
 
 /** The single public entry point of the evaluation layer. */
 export function assessFitCandidate(input: ErrorCalculatorInput): FitAssessment {
-  const { candidateId, predicted, target, configuration, isConstraintValid, notes } =
-    input;
+  const {
+    candidateId,
+    predicted,
+    target,
+    configuration,
+    isConstraintValid,
+    notes,
+    geometryWarnings,
+  } = input;
   return {
     candidateId,
     positionMetrics: calculatePositionMetrics(predicted, target),
     cockpitPenaltyBreakdown: calculateCockpitPenalties(configuration),
     handlingPenaltyBreakdown: calculateHandlingPenalties(configuration),
+    // No logic populates geometry warnings yet — structure only.
+    geometryWarnings: geometryWarnings ?? [],
     constraintStatus: resolveConstraintStatus(isConstraintValid),
     notes: notes ?? [],
   };
