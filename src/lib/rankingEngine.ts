@@ -118,7 +118,12 @@ export interface RankedConfiguration {
   assessment: FitAssessment;
   scoringInputs: ScoringInputs;
   componentScores: ComponentScores;
-  /** Numerical only. Rating bands are deliberately not implemented. */
+  /**
+   * Numerical only. Rating bands are deliberately not implemented.
+   *
+   * Extension point: `positionRating` and `overallRating` bands will be added
+   * here once engineering thresholds are defined. No thresholds are assumed.
+   */
   overallScore: number;
 }
 
