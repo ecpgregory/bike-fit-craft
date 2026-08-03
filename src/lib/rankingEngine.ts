@@ -1,4 +1,4 @@
-import type { AssessmentNote, FitAssessment } from "./errorCalculator";
+import type { AssessmentNote, FitAssessment } from "@/types/optimisation";
 
 /**
  * Ranking layer — all subjective judgement lives here.
