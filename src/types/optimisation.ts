@@ -179,6 +179,50 @@ export type PredictedPosition = Point2D;
 /** The rider's target contact point. */
 export type TargetPosition = Point2D;
 
+// --- Geometry Solver (physics layer) ----------------------------------------
+
+/**
+ * Minimal frame geometry required by the Geometry Solver.
+ * Extracted from the Bike model so the physics layer never sees app data.
+ *
+ * Units: frameReach/frameStack in millimetres, headTubeAngle in degrees.
+ */
+export interface FrameGeometry {
+  frameReach: Millimetres | null;
+  frameStack: Millimetres | null;
+  /** Degrees from horizontal. */
+  headTubeAngle: number | null;
+}
+
+/** Whether the Geometry Solver produced a position for a configuration. */
+export type SolverStatus = "SOLVED" | "UNSOLVED";
+
+/** Why a configuration could not be solved. */
+export type UnsolvedReason = "MISSING_REQUIRED_INPUTS" | "NOT_IMPLEMENTED";
+
+/**
+ * Output of the Geometry Solver for one cockpit configuration.
+ * RP3/RP4/RP5 are millimetre coordinates in the sagittal plane (Point2D),
+ * null whenever `status` is "UNSOLVED".
+ */
+export interface SolvedConfiguration {
+  configuration: CockpitConfiguration;
+  frameGeometry: FrameGeometry;
+  status: SolverStatus;
+  unsolvedReason: UnsolvedReason | null;
+  /** Names of the engineering inputs that were unavailable. */
+  missingInputs: string[];
+  /** RP3 — handlebar clamp centre. */
+  rp3: Point2D | null;
+  /** RP4 — handlebar reference point. */
+  rp4: Point2D | null;
+  /** RP5 — rider contact point. */
+  rp5: Point2D | null;
+  /** True while the solver returns placeholder coordinates. */
+  isPlaceholderSolution: boolean;
+}
+
+
 
 /**
  * Objective measurement of one candidate configuration.
