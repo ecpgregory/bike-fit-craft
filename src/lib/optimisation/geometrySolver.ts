@@ -35,11 +35,11 @@ import {
  * - Handlebar Reach millimetres
  * - Handlebar Stack millimetres
  *
- * NOTE: no mathematics is implemented in this sprint. Reference points are
- * structural placeholders only.
+ * NOTE: Cockpit Model 1.0 (Stage 1) implements RP3 only. RP4 and RP5 remain
+ * structural placeholders until the next sprint.
  */
 
-/** Placeholder coordinate used until the vector maths sprint lands. */
+/** Placeholder coordinate used until RP4/RP5 mathematics lands. */
 const PLACEHOLDER_POINT: Point2D = { x: 0, y: 0 };
 
 /** Inputs the solver genuinely requires before any maths can be attempted. */
@@ -82,14 +82,28 @@ export function solveConfiguration(
     };
   }
 
-  // TODO(geometry-maths): compute RP3 (handlebar clamp centre) from frame
-  // reach/stack, head tube angle, spacer height, stem length and stem angle.
-  const rp3: Point2D = { ...PLACEHOLDER_POINT };
-  // TODO(geometry-maths): compute RP4 (handlebar reference point) from RP3 and
-  // handlebar reach/stack.
+  // Narrowed above by missingRequiredInputs; no defaults are substituted.
+  const frameReach = frameGeometry.frameReach as number; // mm
+  const frameStack = frameGeometry.frameStack as number; // mm
+  const headTubeAngle = frameGeometry.headTubeAngle as number; // degrees (θ)
+  const stemLength = configuration.stemLength as number; // mm
+  const stemAngle = configuration.stemAngle as number; // degrees (φ)
+  const spacerHeight = configuration.spacerHeight; // mm
+
+  // Frame Reference Point → Spacer Vector → Spacer Top → Stem Vector → RP3.
+  const frameReferencePoint = calculateFrameReferencePoint(frameReach, frameStack);
+  const spacerVector = calculateSpacerVector(spacerHeight, headTubeAngle);
+  const spacerTop = calculateSpacerTop(frameReferencePoint, spacerVector);
+  const stemReferenceAngle = calculateStemReferenceAngle(headTubeAngle); // β
+  const stemOrientation = calculateStemOrientation(stemReferenceAngle, stemAngle); // α
+  const stemVector = calculateStemVector(stemLength, stemOrientation);
+  const rp3 = calculateRP3(spacerTop, stemVector);
+
+  // TODO(cockpit-model-stage-2): compute RP4 (handlebar reference point) from
+  // RP3 and handlebar reach/stack.
   const rp4: Point2D = { ...PLACEHOLDER_POINT };
-  // TODO(geometry-maths): compute RP5 (rider contact point) from RP4 and the
-  // handlebar's contact-point offsets once those inputs exist.
+  // TODO(cockpit-model-stage-2): compute RP5 (rider contact point) from RP4 and
+  // the handlebar's contact-point offsets once those inputs exist.
   const rp5: Point2D = { ...PLACEHOLDER_POINT };
 
   return {
@@ -101,8 +115,9 @@ export function solveConfiguration(
     rp3,
     rp4,
     rp5,
-    // Placeholder coordinates: downstream layers must not treat these as real.
+    // RP3 is real; RP4/RP5 are still placeholders.
     isPlaceholderSolution: true,
+
   };
 }
 
