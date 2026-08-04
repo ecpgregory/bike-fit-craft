@@ -4,6 +4,16 @@ import type {
   Point2D,
   SolvedConfiguration,
 } from "@/types/optimisation";
+import {
+  calculateFrameReferencePoint,
+  calculateRP3,
+  calculateSpacerTop,
+  calculateSpacerVector,
+  calculateStemOrientation,
+  calculateStemReferenceAngle,
+  calculateStemVector,
+} from "./cockpitVectors";
+
 
 /**
  * Geometry Solver — the physics layer of the Bike Fit Engine.
