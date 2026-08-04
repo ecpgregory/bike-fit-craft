@@ -117,6 +117,11 @@ export type {
   Point2D,
   PredictedPosition,
   TargetPosition,
+  FrameGeometry,
+  SolverStatus,
+  UnsolvedReason,
+  SolvedConfiguration,
   FitAssessment as CandidateFitAssessment,
 } from "./optimisation";
+
 
