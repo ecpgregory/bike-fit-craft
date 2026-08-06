@@ -76,6 +76,37 @@ export interface CockpitConfiguration {
   exceedsRecommendedSpacerHeight: boolean;
   /** The cockpit option this configuration was built from, when applicable. */
   cockpitOptionId: string | null;
+
+  // --- Cockpit Model 1.0 Stage 2 engineering inputs -------------------------
+  // These quantities exist structurally so the Geometry Solver can express the
+  // full RP3 → RP4 → RP5 chain. The optimisation layer does not yet supply
+  // them; when absent the solver returns UNSOLVED rather than substituting a
+  // value.
+  /**
+   * Degrees. Rotation of the handlebar about its clamp axis, positive = bar
+   * rotated upwards (nose up) in the sagittal plane.
+   * TODO(cockpit-model-1.1): supplied by the Constraint Generator once
+   * handlebar rotation becomes an optimisation variable. Never default to 0.
+   */
+  handlebarRotation?: number | null;
+  /**
+   * Millimetres. Horizontal displacement from RP4 to the hood contact point,
+   * measured in the unrotated handlebar frame.
+   * TODO(cockpit-model-1.1): supplied by cockpit/hood component data.
+   */
+  hoodReach?: Millimetres | null;
+  /**
+   * Millimetres. Vertical displacement from RP4 to the hood contact point,
+   * measured in the unrotated handlebar frame. Positive = upwards.
+   * TODO(cockpit-model-1.1): supplied by cockpit/hood component data.
+   */
+  hoodStack?: Millimetres | null;
+  /**
+   * Degrees. Additional rotation of the hood relative to the handlebar
+   * (hood tilt / shims), positive = upwards.
+   * TODO(cockpit-model-1.1): supplied by cockpit/hood component data.
+   */
+  hoodRotation?: number | null;
 }
 
 /**
