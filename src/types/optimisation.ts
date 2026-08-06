@@ -229,7 +229,10 @@ export interface FrameGeometry {
 export type SolverStatus = "SOLVED" | "UNSOLVED";
 
 /** Why a configuration could not be solved. */
-export type UnsolvedReason = "MISSING_REQUIRED_INPUTS" | "NOT_IMPLEMENTED";
+export type UnsolvedReason =
+  | "MISSING_REQUIRED_INPUTS"
+  | "MISSING_COCKPIT_INPUTS"
+  | "NOT_IMPLEMENTED";
 
 /**
  * Output of the Geometry Solver for one cockpit configuration.
