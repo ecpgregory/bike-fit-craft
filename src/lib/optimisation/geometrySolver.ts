@@ -40,8 +40,8 @@ import {
  * - Handlebar Reach millimetres
  * - Handlebar Stack millimetres
  *
- * NOTE: Cockpit Model 1.0 (Stage 1) implements RP3 only. RP4 and RP5 remain
- * structural placeholders until the next sprint.
+ * NOTE: Cockpit Model 1.0 (Stage 2) implements the full RP3 → RP4 → RP5 chain.
+ * Each reference point is produced by its own vector function.
  */
 
 /** Inputs the solver genuinely requires before any maths can be attempted. */
