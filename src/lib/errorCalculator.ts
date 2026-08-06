@@ -10,11 +10,19 @@ import type {
   Point2D,
   PositionMetrics,
   PredictedPosition,
+  SolvedConfiguration,
   TargetPosition,
 } from "@/types/optimisation";
 
 /**
  * Evaluation layer — objective measurement only.
+ *
+ * Data flow into this stage:
+ *   Geometry Solver → SolvedConfiguration → **Error Calculator** → FitAssessment
+ *
+ * The positional source of truth is the solved RP5 (rider contact point). No
+ * position is ever constructed here: an UNSOLVED configuration is not
+ * evaluated at all.
  *
  * The Error Calculator measures. It never judges, ranks or recommends.
  * Penalty functions exist for structure only and currently return zero.
@@ -33,15 +41,16 @@ export type {
   Point2D,
   PositionMetrics,
   PredictedPosition,
+  SolvedConfiguration,
   TargetPosition,
 };
 
+/** Input to the evaluation layer: one solved configuration plus its target. */
 export interface ErrorCalculatorInput {
   candidateId: string;
-  predicted: PredictedPosition;
+  /** Produced by the Geometry Solver; RP5 supplies the predicted position. */
+  solved: SolvedConfiguration;
   target: TargetPosition;
-  /** Optional: the configuration the prediction came from. */
-  configuration?: CockpitConfiguration | null;
   /** Whether upstream stages consider this configuration legal. */
   isConstraintValid?: boolean;
   /** Notes carried through from earlier pipeline stages. */
@@ -68,6 +77,16 @@ export function calculatePositionMetrics(
     absoluteDeltaY: Math.abs(deltaY),
     euclideanDistance: Math.sqrt(deltaX * deltaX + deltaY * deltaY),
   };
+}
+
+/**
+ * The rider contact point of a solved configuration, or null when the
+ * configuration could not be solved. The only supported position source.
+ */
+export function predictedPositionFromSolved(
+  solved: SolvedConfiguration,
+): PredictedPosition | null {
+  return solved.status === "SOLVED" ? solved.rp5 : null;
 }
 
 /**
@@ -106,22 +125,27 @@ export function resolveConstraintStatus(
   return isConstraintValid === false ? "INVALID" : "VALID";
 }
 
-/** The single public entry point of the evaluation layer. */
-export function assessFitCandidate(input: ErrorCalculatorInput): FitAssessment {
-  const {
-    candidateId,
-    predicted,
-    target,
-    configuration,
-    isConstraintValid,
-    notes,
-    geometryWarnings,
-  } = input;
+/**
+ * The single public entry point of the evaluation layer.
+ *
+ * Returns `null` when the configuration is UNSOLVED: position metrics and
+ * penalties are not calculated for geometry that does not exist. The caller
+ * (see `src/lib/optimisation/pipeline.ts`) preserves the unsolved reason.
+ */
+export function assessSolvedConfiguration(
+  input: ErrorCalculatorInput,
+): FitAssessment | null {
+  const { candidateId, solved, target, isConstraintValid, notes, geometryWarnings } =
+    input;
+
+  const predicted = predictedPositionFromSolved(solved);
+  if (predicted === null) return null;
+
   return {
     candidateId,
     positionMetrics: calculatePositionMetrics(predicted, target),
-    cockpitPenaltyBreakdown: calculateCockpitPenalties(configuration),
-    handlingPenaltyBreakdown: calculateHandlingPenalties(configuration),
+    cockpitPenaltyBreakdown: calculateCockpitPenalties(solved.configuration),
+    handlingPenaltyBreakdown: calculateHandlingPenalties(solved.configuration),
     // No logic populates geometry warnings yet — structure only.
     geometryWarnings: geometryWarnings ?? [],
     constraintStatus: resolveConstraintStatus(isConstraintValid),
