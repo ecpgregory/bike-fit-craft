@@ -136,3 +136,127 @@ export function calculateRP3(spacerTop: Point2D, stemVector: Point2D): Point2D {
     y: spacerTop.y + stemVector.y,
   };
 }
+
+/* ---------------------------------------------------------------------------
+ * Cockpit Model 1.0 — Stage 2: RP3 → RP4 → RP5
+ *
+ * Why the reference points are separated rather than calculated in one step:
+ * each of RP3, RP4 and RP5 is a physically meaningful, independently
+ * measurable location on the bike. Separating them means each transformation
+ * can be tested, debugged and replaced on its own — a manufacturer-specific
+ * handlebar model or a hood-shim model can be swapped in without touching the
+ * frame/stem mathematics or the Geometry Solver.
+ *
+ *   RP3  Handlebar Clamp Centre — centre of the bar clamp on the stem face.
+ *   RP4  Handlebar Reference Point — the chosen engineering datum on the bar
+ *        (bar-end/drop datum), located from RP3 by handlebar reach/stack.
+ *   RP5  Rider Contact Point — where the hand rests on the hood, located from
+ *        RP4 by the hood's own reach/stack and rotation.
+ * ------------------------------------------------------------------------ */
+
+/**
+ * Handlebar Vector — displacement along the handlebar geometry.
+ * Origin: RP3 (Handlebar Clamp Centre). Destination: RP4 (Handlebar Reference
+ * Point).
+ *
+ * Sign convention for the handlebar inputs, in the unrotated bar frame:
+ *   Handlebar Reach — millimetres, positive FORWARDS (+X).
+ *   Handlebar Stack — millimetres, positive UPWARDS (+Y). This is the field
+ *     already exposed by CockpitConfiguration and is used exactly as given.
+ *     It is NOT handlebar drop: drop is conventionally a positive downwards
+ *     quantity. If a future engineering model needs drop it must be derived
+ *     explicitly (e.g. drop = -handlebarStack for datums below the clamp),
+ *     never treated as interchangeable with stack.
+ *
+ * Handlebar Rotation ρ rotates the bar about the clamp axis, positive = nose
+ * up, applied as a standard 2D rotation of the (reach, stack) offset:
+ *
+ *   ΔX = reach × cos(ρ) − stack × sin(ρ)
+ *   ΔY = reach × sin(ρ) + stack × cos(ρ)
+ *
+ * @param handlebarReach millimetres
+ * @param handlebarStack millimetres
+ * @param handlebarRotation degrees (ρ)
+ */
+export function calculateHandlebarVector(
+  handlebarReach: number,
+  handlebarStack: number,
+  handlebarRotation: number,
+): Point2D {
+  const rho = toRadians(handlebarRotation);
+  return {
+    x: handlebarReach * Math.cos(rho) - handlebarStack * Math.sin(rho),
+    y: handlebarReach * Math.sin(rho) + handlebarStack * Math.cos(rho),
+  };
+}
+
+/**
+ * RP4 — Handlebar Reference Point.
+ * RP4 = RP3 + Handlebar Vector.
+ */
+export function calculateRP4(rp3: Point2D, handlebarVector: Point2D): Point2D {
+  return {
+    x: rp3.x + handlebarVector.x,
+    y: rp3.y + handlebarVector.y,
+  };
+}
+
+/**
+ * Hood Vector — displacement along the hood geometry.
+ * Origin: RP4 (Handlebar Reference Point). Destination: RP5 (Rider Contact
+ * Point).
+ *
+ * Sign convention, in the unrotated handlebar frame:
+ *   Hood Reach — millimetres, positive FORWARDS (+X).
+ *   Hood Stack — millimetres, positive UPWARDS (+Y).
+ *
+ * The hood offset is rotated by the TOTAL rotation applied to the hood: the
+ * handlebar rotation ρ carries the hood with it, and hood rotation σ (tilt /
+ * shims) adds on top. The caller supplies the already-summed angle so this
+ * function performs exactly one transformation:
+ *
+ *   ΔX = hoodReach × cos(ψ) − hoodStack × sin(ψ)
+ *   ΔY = hoodReach × sin(ψ) + hoodStack × cos(ψ)
+ *
+ * @param hoodReach millimetres
+ * @param hoodStack millimetres
+ * @param hoodOrientation degrees (ψ), total rotation of the hood frame
+ */
+export function calculateHoodVector(
+  hoodReach: number,
+  hoodStack: number,
+  hoodOrientation: number,
+): Point2D {
+  const psi = toRadians(hoodOrientation);
+  return {
+    x: hoodReach * Math.cos(psi) - hoodStack * Math.sin(psi),
+    y: hoodReach * Math.sin(psi) + hoodStack * Math.cos(psi),
+  };
+}
+
+/**
+ * Hood Orientation ψ — total rotation of the hood in the sagittal plane.
+ *
+ *   ψ = ρ + σ
+ *
+ * @param handlebarRotation degrees (ρ)
+ * @param hoodRotation degrees (σ)
+ * @returns degrees (ψ)
+ */
+export function calculateHoodOrientation(
+  handlebarRotation: number,
+  hoodRotation: number,
+): number {
+  return handlebarRotation + hoodRotation;
+}
+
+/**
+ * RP5 — Rider Contact Point.
+ * RP5 = RP4 + Hood Vector.
+ */
+export function calculateRP5(rp4: Point2D, hoodVector: Point2D): Point2D {
+  return {
+    x: rp4.x + hoodVector.x,
+    y: rp4.y + hoodVector.y,
+  };
+}

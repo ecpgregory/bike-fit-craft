@@ -6,7 +6,12 @@ import type {
 } from "@/types/optimisation";
 import {
   calculateFrameReferencePoint,
+  calculateHandlebarVector,
+  calculateHoodOrientation,
+  calculateHoodVector,
   calculateRP3,
+  calculateRP4,
+  calculateRP5,
   calculateSpacerTop,
   calculateSpacerVector,
   calculateStemOrientation,
@@ -35,12 +40,9 @@ import {
  * - Handlebar Reach millimetres
  * - Handlebar Stack millimetres
  *
- * NOTE: Cockpit Model 1.0 (Stage 1) implements RP3 only. RP4 and RP5 remain
- * structural placeholders until the next sprint.
+ * NOTE: Cockpit Model 1.0 (Stage 2) implements the full RP3 → RP4 → RP5 chain.
+ * Each reference point is produced by its own vector function.
  */
-
-/** Placeholder coordinate used until RP4/RP5 mathematics lands. */
-const PLACEHOLDER_POINT: Point2D = { x: 0, y: 0 };
 
 /** Inputs the solver genuinely requires before any maths can be attempted. */
 function missingRequiredInputs(
@@ -53,6 +55,29 @@ function missingRequiredInputs(
   if (frame.headTubeAngle === null) missing.push("headTubeAngle");
   if (configuration.stemLength === null) missing.push("stemLength");
   if (configuration.stemAngle === null) missing.push("stemAngle");
+  return missing;
+}
+
+/**
+ * Cockpit inputs required for the RP3 → RP4 → RP5 chain.
+ *
+ * TODO(cockpit-model-1.1): handlebarRotation, hoodReach, hoodStack and
+ * hoodRotation are not yet produced by the Constraint Generator. Until they
+ * are, configurations lacking them are reported UNSOLVED — no zero rotation
+ * and no component dimensions are assumed.
+ */
+function missingCockpitInputs(configuration: CockpitConfiguration): string[] {
+  const missing: string[] = [];
+  if (configuration.handlebarReach === null) missing.push("handlebarReach");
+  if (configuration.handlebarStack === null) missing.push("handlebarStack");
+  if (configuration.handlebarRotation === null || configuration.handlebarRotation === undefined)
+    missing.push("handlebarRotation");
+  if (configuration.hoodReach === null || configuration.hoodReach === undefined)
+    missing.push("hoodReach");
+  if (configuration.hoodStack === null || configuration.hoodStack === undefined)
+    missing.push("hoodStack");
+  if (configuration.hoodRotation === null || configuration.hoodRotation === undefined)
+    missing.push("hoodRotation");
   return missing;
 }
 
@@ -78,7 +103,7 @@ export function solveConfiguration(
       rp3: null,
       rp4: null,
       rp5: null,
-      isPlaceholderSolution: true,
+      isPlaceholderSolution: false,
     };
   }
 
@@ -99,12 +124,43 @@ export function solveConfiguration(
   const stemVector = calculateStemVector(stemLength, stemOrientation);
   const rp3 = calculateRP3(spacerTop, stemVector);
 
-  // TODO(cockpit-model-stage-2): compute RP4 (handlebar reference point) from
-  // RP3 and handlebar reach/stack.
-  const rp4: Point2D = { ...PLACEHOLDER_POINT };
-  // TODO(cockpit-model-stage-2): compute RP5 (rider contact point) from RP4 and
-  // the handlebar's contact-point offsets once those inputs exist.
-  const rp5: Point2D = { ...PLACEHOLDER_POINT };
+  // The RP3 → RP4 → RP5 chain requires the cockpit component quantities. If any
+  // is unavailable the whole configuration is UNSOLVED: partial positions must
+  // never be reported as a solution.
+  const missingCockpit = missingCockpitInputs(configuration);
+  if (missingCockpit.length > 0) {
+    return {
+      configuration,
+      frameGeometry,
+      status: "UNSOLVED",
+      unsolvedReason: "MISSING_COCKPIT_INPUTS",
+      missingInputs: missingCockpit,
+      rp3: null,
+      rp4: null,
+      rp5: null,
+      isPlaceholderSolution: false,
+    };
+  }
+
+  const handlebarReach = configuration.handlebarReach as number; // mm, +forwards
+  const handlebarStack = configuration.handlebarStack as number; // mm, +upwards
+  const handlebarRotation = configuration.handlebarRotation as number; // degrees (ρ)
+  const hoodReach = configuration.hoodReach as number; // mm, +forwards
+  const hoodStack = configuration.hoodStack as number; // mm, +upwards
+  const hoodRotation = configuration.hoodRotation as number; // degrees (σ)
+
+  // RP3 → Handlebar Vector → RP4.
+  const handlebarVector = calculateHandlebarVector(
+    handlebarReach,
+    handlebarStack,
+    handlebarRotation,
+  );
+  const rp4: Point2D = calculateRP4(rp3, handlebarVector);
+
+  // RP4 → Hood Vector → RP5.
+  const hoodOrientation = calculateHoodOrientation(handlebarRotation, hoodRotation); // ψ
+  const hoodVector = calculateHoodVector(hoodReach, hoodStack, hoodOrientation);
+  const rp5: Point2D = calculateRP5(rp4, hoodVector);
 
   return {
     configuration,
@@ -115,9 +171,8 @@ export function solveConfiguration(
     rp3,
     rp4,
     rp5,
-    // RP3 is real; RP4/RP5 are still placeholders.
-    isPlaceholderSolution: true,
-
+    // Cockpit Model 1.0 is complete: RP3, RP4 and RP5 are all real geometry.
+    isPlaceholderSolution: false,
   };
 }
 
