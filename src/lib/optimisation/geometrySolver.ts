@@ -6,7 +6,12 @@ import type {
 } from "@/types/optimisation";
 import {
   calculateFrameReferencePoint,
+  calculateHandlebarVector,
+  calculateHoodOrientation,
+  calculateHoodVector,
   calculateRP3,
+  calculateRP4,
+  calculateRP5,
   calculateSpacerTop,
   calculateSpacerVector,
   calculateStemOrientation,
