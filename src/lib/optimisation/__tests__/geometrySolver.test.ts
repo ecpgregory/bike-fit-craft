@@ -174,7 +174,7 @@ describe("calculateHandlebarVector", () => {
   it("rotates by ρ = 10°", () => {
     const v = calculateHandlebarVector(80, -15, 10);
     expect(v.x).toBeCloseTo(81.3893, MM_PRECISION);
-    expect(v.y).toBeCloseTo(-0.8582, MM_PRECISION);
+    expect(v.y).toBeCloseTo(-0.8803, MM_PRECISION);
   });
 });
 
