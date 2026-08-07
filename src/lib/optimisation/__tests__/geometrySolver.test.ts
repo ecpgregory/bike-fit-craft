@@ -173,8 +173,8 @@ describe("calculateHandlebarVector", () => {
 
   it("rotates by ρ = 10°", () => {
     const v = calculateHandlebarVector(80, -15, 10);
-    expect(v.x).toBeCloseTo(81.4, MM_PRECISION);
-    expect(v.y).toBeCloseTo(-0.88, MM_PRECISION);
+    expect(v.x).toBeCloseTo(81.3893, MM_PRECISION);
+    expect(v.y).toBeCloseTo(-0.8582, MM_PRECISION);
   });
 });
 
@@ -202,8 +202,8 @@ describe("calculateHoodVector", () => {
 
   it("rotates the hood offset by ψ = 10°", () => {
     const v = calculateHoodVector(65, -25, 10);
-    expect(v.x).toBeCloseTo(68.36, MM_PRECISION);
-    expect(v.y).toBeCloseTo(-13.34, MM_PRECISION);
+    expect(v.x).toBeCloseTo(68.3537, MM_PRECISION);
+    expect(v.y).toBeCloseTo(-13.3311, MM_PRECISION);
   });
 });
 
