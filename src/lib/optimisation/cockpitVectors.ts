@@ -1,4 +1,5 @@
 import type { Point2D } from "@/types/optimisation";
+import { RADIANS_PER_DEGREE, RIGHT_ANGLE_DEGREES } from "./geometryConstants";
 
 /**
  * Cockpit Model 1.0 — Stage 1 vector mathematics.
@@ -7,8 +8,10 @@ import type { Point2D } from "@/types/optimisation";
  *
  *   Frame Reference Point → Spacer Vector → Spacer Top → Stem Vector → RP3
  *
- * Coordinate system: origin at the Bottom Bracket, +X forwards, +Y upwards.
- * All lengths in millimetres, all angles in degrees unless stated otherwise.
+ * Coordinate system and angle conventions are documented once, in
+ * ./geometryConstants.ts. Summary: origin at the Bottom Bracket, +X forwards,
+ * +Y upwards, all lengths in millimetres and all angles in degrees unless
+ * stated otherwise.
  *
  * This module is pure mathematics: no null handling, no defaults, no clamping,
  * no tolerances. Missing-input handling lives in the Geometry Solver.
@@ -16,8 +19,9 @@ import type { Point2D } from "@/types/optimisation";
 
 /** Degrees → radians. */
 function toRadians(degrees: number): number {
-  return (degrees * Math.PI) / 180;
+  return degrees * RADIANS_PER_DEGREE;
 }
+
 
 /**
  * Frame Reference Point — top of the head tube.
