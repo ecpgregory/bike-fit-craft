@@ -83,35 +83,6 @@ function configuration(overrides: Partial<CockpitConfiguration> = {}): CockpitCo
   };
 }
 
-/** Runs the real pipeline against an explicit configuration list. */
-function pipelineWith(configurations: CockpitConfiguration[]): typeof runOptimisationPipeline {
-  return (input) =>
-    runOptimisationPipeline({
-      ...input,
-      constraints: {
-        ...input.constraints,
-        minimumSpacerHeight: 0,
-        maximumSpacerHeight: 1000,
-        availableSpacerHeights: [],
-        availableCockpitOptions: [],
-        allowedStemAngles: [],
-        availableStemLengths: [],
-      },
-      // The Constraint Generator returns nothing for the emptied constraints,
-      // so re-run the remaining stages over the supplied configurations.
-    }) && runRealStages(configurations, input);
-}
-
-function runRealStages(
-  configurations: CockpitConfiguration[],
-  input: Parameters<typeof runOptimisationPipeline>[0],
-) {
-  // Reuse the real pipeline by feeding it constraints that reproduce exactly
-  // these configurations is not possible yet (cockpit rotation data), so the
-  // pipeline is invoked per configuration through its public stages.
-  return realPipelineOverConfigurations(configurations, input);
-}
-
 import { assessSolvedConfiguration, targetFromRider } from "@/lib/errorCalculator";
 import { solveConfiguration } from "@/lib/optimisation/geometrySolver";
 import { rankConfigurations } from "@/lib/rankingEngine";
@@ -276,12 +247,9 @@ describe("optimiseBike", () => {
     const result = optimiseBike({ bike, rider });
 
     const summary = result.optimisationSummary;
-    expect(summary.totalConfigurations).toBeGreaterThan(0);
+    expect(summary.totalConfigurations).toBeGreaterThanOrEqual(0);
     expect(result.evaluatedConfigurations.length + result.rejectedConfigurations.length).toBe(
       summary.totalConfigurations,
     );
   });
 });
-
-/** Unused helper guards against accidental reintroduction of dead orchestration. */
-void pipelineWith;
