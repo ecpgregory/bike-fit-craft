@@ -1,4 +1,5 @@
 import type { Point2D } from "@/types/optimisation";
+import { RADIANS_PER_DEGREE, RIGHT_ANGLE_DEGREES } from "./geometryConstants";
 
 /**
  * Cockpit Model 1.0 — Stage 1 vector mathematics.
@@ -7,8 +8,10 @@ import type { Point2D } from "@/types/optimisation";
  *
  *   Frame Reference Point → Spacer Vector → Spacer Top → Stem Vector → RP3
  *
- * Coordinate system: origin at the Bottom Bracket, +X forwards, +Y upwards.
- * All lengths in millimetres, all angles in degrees unless stated otherwise.
+ * Coordinate system and angle conventions are documented once, in
+ * ./geometryConstants.ts. Summary: origin at the Bottom Bracket, +X forwards,
+ * +Y upwards, all lengths in millimetres and all angles in degrees unless
+ * stated otherwise.
  *
  * This module is pure mathematics: no null handling, no defaults, no clamping,
  * no tolerances. Missing-input handling lives in the Geometry Solver.
@@ -16,15 +19,20 @@ import type { Point2D } from "@/types/optimisation";
 
 /** Degrees → radians. */
 function toRadians(degrees: number): number {
-  return (degrees * Math.PI) / 180;
+  return degrees * RADIANS_PER_DEGREE;
 }
 
+
 /**
- * Frame Reference Point — top of the head tube.
+ * Frame Reference Point (FRP) — top of the head tube.
+ *
  * Origin: Bottom Bracket. Destination: head tube top.
+ * Convention: +X forwards, +Y upwards, millimetres.
+ * Purpose: the datum from which the whole cockpit chain is built.
  *
  * @param frameReach millimetres
  * @param frameStack millimetres
+ * @returns Point2D, millimetres
  */
 export function calculateFrameReferencePoint(
   frameReach: number,
@@ -35,7 +43,10 @@ export function calculateFrameReferencePoint(
 
 /**
  * Spacer Vector — displacement along the physical steerer axis.
+ *
  * Origin: Frame Reference Point. Destination: Spacer Top.
+ * Convention: +X forwards, +Y upwards, millimetres.
+ * Purpose: raise the stem clamp along the steerer by the spacer stack.
  *
  * ΔX = -SpacerHeight × cos(θ)
  * ΔY =  SpacerHeight × sin(θ)
@@ -46,6 +57,7 @@ export function calculateFrameReferencePoint(
  *
  * @param spacerHeight millimetres
  * @param headTubeAngle degrees, measured from horizontal (θ)
+ * @returns Point2D displacement, millimetres
  */
 export function calculateSpacerVector(
   spacerHeight: number,
@@ -60,7 +72,14 @@ export function calculateSpacerVector(
 
 /**
  * Spacer Top — top of the spacer stack / stem clamp base.
+ *
+ * Origin: Bottom Bracket (absolute point). Convention: millimetres, +X
+ * forwards, +Y upwards. Purpose: the mounting location of the stem.
+ *
  * Spacer Top = Frame Reference Point + Spacer Vector.
+ *
+ * @param frameReferencePoint Point2D, millimetres
+ * @param spacerVector Point2D displacement, millimetres
  */
 export function calculateSpacerTop(
   frameReferencePoint: Point2D,
@@ -79,11 +98,12 @@ export function calculateSpacerTop(
  *   β = 90° − θ
  *
  * @param headTubeAngle degrees (θ)
- * @returns degrees (β)
+ * @returns degrees (β), measured from horizontal
  */
 export function calculateStemReferenceAngle(headTubeAngle: number): number {
-  return 90 - headTubeAngle;
+  return RIGHT_ANGLE_DEGREES - headTubeAngle;
 }
+
 
 /**
  * Stem Orientation α — actual orientation of the stem in the sagittal plane.
