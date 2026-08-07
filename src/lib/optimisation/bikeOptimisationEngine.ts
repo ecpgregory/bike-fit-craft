@@ -70,6 +70,11 @@ export interface BikeOptimisationInput {
   /** Optional override; defaults to constraints derived from the bike. */
   constraints?: BikeFitConstraints;
   rankingOptions?: RankingOptions;
+  /**
+   * Pipeline implementation, injectable for testing. Defaults to the real
+   * optimisation pipeline; the engine never contains engineering logic itself.
+   */
+  runPipeline?: typeof runOptimisationPipeline;
 }
 
 const SOLVER_REJECTION: AssessmentNote = {
@@ -102,7 +107,9 @@ export function optimiseBike(input: BikeOptimisationInput): BikeOptimisationResu
   const constraints = input.constraints ?? deriveConstraintsFromBike(bike);
   const frameGeometry = frameGeometryFromBike(bike);
 
-  const pipeline = runOptimisationPipeline({
+  const runPipeline = input.runPipeline ?? runOptimisationPipeline;
+
+  const pipeline = runPipeline({
     constraints,
     frameGeometry,
     rider,
