@@ -24,6 +24,13 @@ export interface CockpitOption {
   stemAngle: number | null;
   handlebarReach: Millimetres | null;
   handlebarStack: Millimetres | null;
+  /** Degrees; rotation of the handlebar about its clamp axis. Null when unknown. */
+  handlebarRotation: number | null;
+  hoodReach: Millimetres | null;
+  hoodStack: Millimetres | null;
+  /** Degrees; hood tilt relative to the handlebar. Null when unknown. */
+  hoodRotation: number | null;
+
   /** True when this option ships as standard equipment on the bike. */
   isStock: boolean;
   /** True when bar and stem cannot be separated. */

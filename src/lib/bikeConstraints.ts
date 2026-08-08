@@ -18,7 +18,24 @@ function stockCockpitOption(bike: Bike): CockpitOption | null {
   const stemLength = known(bike.stockStemLength);
   const reach = known(bike.stockHandlebarReach);
   const stack = known(bike.stockHandlebarStack);
-  if (stemLength === null && reach === null && stack === null) return null;
+  const handlebarRotation = bike.stockHandlebarRotation ?? null;
+  const hoodReach = known(bike.stockHoodReach);
+  const hoodStack = known(bike.stockHoodStack);
+  const hoodRotation = bike.stockHoodRotation ?? null;
+
+  // stemAngle is intentionally excluded: it never determines on its own whether
+  // a cockpit option exists.
+  const hasAnyCockpitData = [
+    stemLength,
+    reach,
+    stack,
+    handlebarRotation,
+    hoodReach,
+    hoodStack,
+    hoodRotation,
+  ].some((value) => value !== null);
+  if (!hasAnyCockpitData) return null;
+
   return {
     id: `${bike.id}-stock-cockpit`,
     name: bike.cockpitModel ?? "Stock cockpit",
@@ -26,11 +43,16 @@ function stockCockpitOption(bike: Bike): CockpitOption | null {
     stemAngle: bike.stockStemAngle ?? null,
     handlebarReach: reach,
     handlebarStack: stack,
+    handlebarRotation,
+    hoodReach,
+    hoodStack,
+    hoodRotation,
     isStock: true,
     isIntegrated: bike.integratedCockpit === true,
     isAftermarket: false,
   };
 }
+
 
 export function deriveConstraintsFromBike(bike: Bike): BikeFitConstraints {
   const stock = stockCockpitOption(bike);

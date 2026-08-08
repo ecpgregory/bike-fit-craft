@@ -56,6 +56,11 @@ const constraints: BikeFitConstraints = {
       stemAngle: null,
       handlebarReach: 80,
       handlebarStack: 130,
+      handlebarRotation: null,
+      hoodReach: null,
+      hoodStack: null,
+      hoodRotation: null,
+
       isStock: true,
       isIntegrated: false,
       isAftermarket: false,

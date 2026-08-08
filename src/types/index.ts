@@ -71,6 +71,13 @@ export interface Bike {
   stockStemAngle?: number | null;
   stockHandlebarReach?: Millimetres | null;
   stockHandlebarStack?: Millimetres | null;
+  /** Degrees. Rotation of the stock handlebar about its clamp axis. */
+  stockHandlebarRotation?: number | null;
+  stockHoodReach?: Millimetres | null;
+  stockHoodStack?: Millimetres | null;
+  /** Degrees. Hood tilt relative to the handlebar. */
+  stockHoodRotation?: number | null;
+
   stockSpacerHeight?: Millimetres | null;
   headsetTopCapHeight?: Millimetres | null;
   stockCrankLength?: Millimetres | null;

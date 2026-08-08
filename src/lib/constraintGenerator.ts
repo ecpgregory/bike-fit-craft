@@ -137,6 +137,10 @@ export function generateLegalConfigurations(
           spacerHeight,
           handlebarReach: option.handlebarReach,
           handlebarStack: option.handlebarStack,
+          handlebarRotation: option.handlebarRotation,
+          hoodReach: option.hoodReach,
+          hoodStack: option.hoodStack,
+          hoodRotation: option.hoodRotation,
           usesStockComponents: option.isStock,
           requiresAftermarketStem: option.isAftermarket,
           requiresAftermarketHandlebar: option.isAftermarket,
@@ -155,6 +159,10 @@ export function generateLegalConfigurations(
             spacerHeight,
             handlebarReach: option.handlebarReach,
             handlebarStack: option.handlebarStack,
+            handlebarRotation: option.handlebarRotation,
+            hoodReach: option.hoodReach,
+            hoodStack: option.hoodStack,
+            hoodRotation: option.hoodRotation,
             usesStockComponents: option.isStock,
             requiresAftermarketStem: false,
             requiresAftermarketHandlebar: option.isAftermarket,
@@ -176,6 +184,10 @@ export function generateLegalConfigurations(
             spacerHeight,
             handlebarReach: null,
             handlebarStack: null,
+            handlebarRotation: null,
+            hoodReach: null,
+            hoodStack: null,
+            hoodRotation: null,
             usesStockComponents: false,
             requiresAftermarketStem: false,
             requiresAftermarketHandlebar: false,
@@ -185,6 +197,7 @@ export function generateLegalConfigurations(
         }
       }
     }
+
   }
 
   return drafts.map((draft, index) => ({
