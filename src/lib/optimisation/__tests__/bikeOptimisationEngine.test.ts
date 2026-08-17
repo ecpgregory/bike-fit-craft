@@ -175,10 +175,33 @@ describe("optimiseBike", () => {
     expect(result.optimisationSummary.solvedConfigurations).toBe(3);
   });
 
-  it("preserves UNSOLVED configurations with their rejection reason", () => {
+  it("evaluates RP3-only configurations and rejects RP3-unsolvable ones", () => {
     const result = optimiseWith([
       configuration({ id: "cfg-ok" }),
-      configuration({ id: "cfg-unsolved", hoodReach: null }),
+      configuration({ id: "cfg-rp3-only", hoodReach: null }),
+    ]);
+
+    // Missing hood geometry no longer blocks rider-position optimisation.
+    expect(result.evaluatedConfigurations.map((c) => c.candidateId).sort()).toEqual([
+      "cfg-ok",
+      "cfg-rp3-only",
+    ]);
+    expect(result.rejectedConfigurations).toHaveLength(0);
+
+    const rp3Only = result.evaluatedConfigurations.find(
+      (c) => c.candidateId === "cfg-rp3-only",
+    )!;
+    const warning = rp3Only.assessment.geometryWarnings.find(
+      (w) => w.code === "RP4_RP5_UNAVAILABLE",
+    )!;
+    expect(warning.severity).toBe("info");
+    expect(warning.measurements!["missingInputs"]).toContain("hoodReach");
+  });
+
+  it("preserves RP3-unsolvable configurations with their rejection reason", () => {
+    const result = optimiseWith([
+      configuration({ id: "cfg-ok" }),
+      configuration({ id: "cfg-unsolved", stemLength: null }),
     ]);
 
     expect(result.evaluatedConfigurations.map((c) => c.candidateId)).toEqual(["cfg-ok"]);
@@ -187,9 +210,11 @@ describe("optimiseBike", () => {
     const rejected = result.rejectedConfigurations[0]!;
     expect(rejected.candidateId).toBe("cfg-unsolved");
     expect(rejected.stage).toBe("GEOMETRY_SOLVER");
-    expect(rejected.unsolvedReason).toBe("MISSING_COCKPIT_INPUTS");
+    expect(rejected.unsolvedReason).toBe("MISSING_REQUIRED_INPUTS");
     expect(rejected.assessment).toBeNull();
-    expect(rejected.rejectionReasons.some((r) => r.message.includes("hoodReach"))).toBe(true);
+    expect(rejected.rejectionReasons.some((r) => r.message.includes("stemLength"))).toBe(
+      true,
+    );
     expect(result.optimisationSummary).toEqual({
       totalConfigurations: 2,
       solvedConfigurations: 1,
@@ -226,7 +251,7 @@ describe("optimiseBike", () => {
   });
 
   it("returns a null bestConfiguration when nothing can be evaluated", () => {
-    const result = optimiseWith([configuration({ id: "cfg-x", hoodStack: null })]);
+    const result = optimiseWith([configuration({ id: "cfg-x", stemAngle: null })]);
 
     expect(result.bestConfiguration).toBeNull();
     expect(result.evaluatedConfigurations).toHaveLength(0);

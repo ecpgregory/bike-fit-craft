@@ -36,11 +36,16 @@ describe("verified configuration data reaches the constraint generator", () => {
       // Configurations reach the solver; missing data is reported there rather
       // than preventing enumeration.
       const solved = solveConfiguration(configurations[0]!, frameGeometryFromBike(bike));
-      expect(solved.status).toBe("UNSOLVED");
-      expect(["MISSING_COCKPIT_INPUTS", "MISSING_REQUIRED_INPUTS"]).toContain(
-        solved.unsolvedReason,
-      );
+      // Missing hood/handlebar rotation data is reported, but RP3 is retained
+      // whenever the frame and stem inputs it needs are available.
       expect(solved.missingInputs.length).toBeGreaterThan(0);
+      if (solved.status === "SOLVED") {
+        expect(solved.rp3).not.toBeNull();
+        expect(solved.rp5).toBeNull();
+      } else {
+        expect(solved.unsolvedReason).toBe("MISSING_REQUIRED_INPUTS");
+        expect(solved.rp3).toBeNull();
+      }
 
     });
   }
