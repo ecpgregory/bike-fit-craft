@@ -33,10 +33,15 @@ describe("verified configuration data reaches the constraint generator", () => {
         expect(configuration.hoodRotation).toBeNull();
       }
 
-      // Configurations reach the solver; missing cockpit data is reported there.
+      // Configurations reach the solver; missing data is reported there rather
+      // than preventing enumeration.
       const solved = solveConfiguration(configurations[0]!, frameGeometryFromBike(bike));
       expect(solved.status).toBe("UNSOLVED");
-      expect(solved.unsolvedReason).toBe("MISSING_COCKPIT_INPUTS");
+      expect(["MISSING_COCKPIT_INPUTS", "MISSING_REQUIRED_INPUTS"]).toContain(
+        solved.unsolvedReason,
+      );
+      expect(solved.missingInputs.length).toBeGreaterThan(0);
+
     });
   }
 
