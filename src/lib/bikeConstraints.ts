@@ -1,5 +1,8 @@
 import type { Bike, Millimetres } from "@/types";
 import type { BikeFitConstraints, CockpitOption } from "@/types/optimisation";
+import { getBikeConfiguration } from "@/data/bike-configurations";
+import { constraintInputsFromConfiguration } from "@/lib/configurationConstraints";
+
 
 /**
  * Translates a generic Bike record into BikeFitConstraints.
@@ -59,23 +62,38 @@ export function deriveConstraintsFromBike(bike: Bike): BikeFitConstraints {
   const stockSpacer = known(bike.stockSpacerHeight);
   const maxSpacer = known(bike.maxSpacerHeight);
 
+  // Verified, source-backed configuration data for this exact bike, when it
+  // exists. Nothing here is invented: unknown configuration values stay null.
+  const configuration = getBikeConfiguration(bike.id);
+  const fromConfig = configuration ? constraintInputsFromConfiguration(configuration) : null;
+
+  const bikeSpacerHeights = [0, stockSpacer, maxSpacer].filter(
+    (v): v is Millimetres => v !== null,
+  );
+  const availableSpacerHeights = Array.from(
+    new Set([...bikeSpacerHeights, ...(fromConfig?.availableSpacerHeights ?? [])]),
+  ).sort((a, b) => a - b);
+
+  const maximumSpacerHeight = maxSpacer ?? fromConfig?.maximumSpacerHeight ?? null;
+  const cockpitOptions = [...(fromConfig?.availableCockpitOptions ?? []), ...(stock ? [stock] : [])];
+  const integratedCockpit = bike.integratedCockpit ?? fromConfig?.integratedCockpit ?? null;
+
   return {
     bikeId: bike.id,
     minimumSpacerHeight: 0,
-    maximumSpacerHeight: maxSpacer,
+    maximumSpacerHeight,
     // Only heights that are actually recorded for this bike.
-    availableSpacerHeights: Array.from(
-      new Set([0, stockSpacer, maxSpacer].filter((v): v is Millimetres => v !== null)),
-    ).sort((a, b) => a - b),
+    availableSpacerHeights,
     minimumStemLength: known(bike.minimumStemLength),
     maximumStemLength: known(bike.maximumStemLength),
-    availableStemLengths: [],
-    allowedStemAngles: [],
-    integratedCockpit: bike.integratedCockpit ?? null,
-    availableCockpitOptions: stock ? [stock] : [],
-    allowAftermarketStem: bike.integratedCockpit !== true,
-    allowAftermarketHandlebar: bike.integratedCockpit !== true,
+    availableStemLengths: fromConfig?.availableStemLengths ?? [],
+    allowedStemAngles: fromConfig?.allowedStemAngles ?? [],
+    integratedCockpit,
+    availableCockpitOptions: cockpitOptions,
+    allowAftermarketStem: integratedCockpit !== true,
+    allowAftermarketHandlebar: integratedCockpit !== true,
     maximumRecommendedSpacerHeight: maxSpacer,
     notes: bike.notes ?? "",
   };
 }
+
