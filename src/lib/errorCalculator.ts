@@ -1,4 +1,5 @@
 import type { RiderProfile } from "@/types";
+import { missingCockpitInputs } from "@/lib/optimisation/geometrySolver";
 import type {
   AssessmentNote,
   CockpitConfiguration,
@@ -20,7 +21,8 @@ import type {
  * Data flow into this stage:
  *   Geometry Solver → SolvedConfiguration → **Error Calculator** → FitAssessment
  *
- * The positional source of truth is the solved RP5 (rider contact point). No
+ * The positional source of truth is the solved RP3 (handlebar clamp centre),
+ * matching the rider's saved handlebar X/Y measurement convention. No
  * position is ever constructed here: an UNSOLVED configuration is not
  * evaluated at all.
  *
@@ -80,13 +82,15 @@ export function calculatePositionMetrics(
 }
 
 /**
- * The rider contact point of a solved configuration, or null when the
- * configuration could not be solved. The only supported position source.
+ * The rider-position source is RP3 — the Handlebar Clamp Centre — because the
+ * rider's saved fit (handlebarX / handlebarY) is measured to that point.
+ * RP4/RP5 remain retained geometry points but are not used here.
+ * Returns null when RP3 could not be calculated.
  */
 export function predictedPositionFromSolved(
   solved: SolvedConfiguration,
 ): PredictedPosition | null {
-  return solved.status === "SOLVED" ? solved.rp5 : null;
+  return solved.rp3;
 }
 
 /**
@@ -128,7 +132,7 @@ export function resolveConstraintStatus(
 /**
  * The single public entry point of the evaluation layer.
  *
- * Returns `null` when the configuration is UNSOLVED: position metrics and
+ * Returns `null` when RP3 is unavailable: position metrics and
  * penalties are not calculated for geometry that does not exist. The caller
  * (see `src/lib/optimisation/pipeline.ts`) preserves the unsolved reason.
  */
@@ -141,13 +145,24 @@ export function assessSolvedConfiguration(
   const predicted = predictedPositionFromSolved(solved);
   if (predicted === null) return null;
 
+  const warnings: GeometryWarning[] = [...(geometryWarnings ?? [])];
+  const missingCockpit = missingCockpitInputs(solved.configuration);
+  if (missingCockpit.length > 0) {
+    warnings.push({
+      code: "RP4_RP5_UNAVAILABLE",
+      severity: "info",
+      message:
+        "Hood/handlebar geometry unavailable — position matched to handlebar clamp centre (RP3) only.",
+      measurements: { missingInputs: missingCockpit },
+    });
+  }
+
   return {
     candidateId,
     positionMetrics: calculatePositionMetrics(predicted, target),
     cockpitPenaltyBreakdown: calculateCockpitPenalties(solved.configuration),
     handlingPenaltyBreakdown: calculateHandlingPenalties(solved.configuration),
-    // No logic populates geometry warnings yet — structure only.
-    geometryWarnings: geometryWarnings ?? [],
+    geometryWarnings: warnings,
     constraintStatus: resolveConstraintStatus(isConstraintValid),
     notes: notes ?? [],
   };

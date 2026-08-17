@@ -26,7 +26,7 @@ import { solveConfiguration } from "./geometrySolver";
  *   BikeFitConstraints
  *     → Constraint Generator   → CockpitConfiguration[]
  *     → Geometry Solver        → SolvedConfiguration[]      (RP3 → RP4 → RP5)
- *     → Error Calculator       → FitAssessment[]            (RP5 vs rider target)
+ *     → Error Calculator       → FitAssessment[]            (RP3 vs rider target)
  *     → Ranking Engine         → RankingResult
  *     → Explanation Engine     → RecommendationExplanation[]
  *
@@ -86,7 +86,9 @@ export function runOptimisationPipeline(input: PipelineInput): PipelineResult {
     solveConfiguration(configuration, input.frameGeometry),
   );
 
-  // 3. Error Calculator — solved RP5 measured against the rider target.
+  // 3. Error Calculator — solved RP3 (handlebar clamp centre) measured against
+  //    the rider target. RP4/RP5 remain retained geometry points but are not
+  //    required for rider-position matching.
   const assessments: FitAssessment[] = [];
   const unsolvedConfigurations: UnsolvedCandidate[] = [];
 
