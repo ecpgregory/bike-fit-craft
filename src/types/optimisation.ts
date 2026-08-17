@@ -217,6 +217,23 @@ export type PredictedPosition = Point2D;
 /** The rider's target contact point. */
 export type TargetPosition = Point2D;
 
+// --- Optimisation outcome ----------------------------------------------------
+
+/**
+ * High-level, machine-readable state of one bike's optimisation run.
+ *
+ * Derived from existing optimisation state — never stored as duplicate,
+ * mutable state. Detailed solver/rejection diagnostics remain the source of
+ * truth for WHY an outcome occurred.
+ *
+ * - NO_CANDIDATES:   the Constraint Generator produced zero configurations, so
+ *                    the Geometry Solver never ran.
+ * - NO_VALID_RESULT: configurations existed but none survived the solver,
+ *                    constraint or evaluation stages.
+ * - SUCCESS:         at least one configuration produced a ranked result.
+ */
+export type OptimisationOutcome = "NO_CANDIDATES" | "NO_VALID_RESULT" | "SUCCESS";
+
 // --- Geometry Solver (physics layer) ----------------------------------------
 
 /**
