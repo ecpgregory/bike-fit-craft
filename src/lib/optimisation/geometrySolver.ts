@@ -68,7 +68,7 @@ function missingRequiredInputs(
  * reported UNSOLVED with MISSING_COCKPIT_INPUTS — no zero rotation and no
  * component dimensions are ever assumed.
  */
-function missingCockpitInputs(configuration: CockpitConfiguration): string[] {
+export function missingCockpitInputs(configuration: CockpitConfiguration): string[] {
   const missing: string[] = [];
   if (configuration.handlebarReach === null) missing.push("handlebarReach");
   if (configuration.handlebarStack === null) missing.push("handlebarStack");
@@ -126,18 +126,19 @@ export function solveConfiguration(
   const stemVector = calculateStemVector(stemLength, stemOrientation);
   const rp3 = calculateRP3(spacerTop, stemVector);
 
-  // The RP3 → RP4 → RP5 chain requires the cockpit component quantities. If any
-  // is unavailable the whole configuration is UNSOLVED: partial positions must
-  // never be reported as a solution.
+  // RP3 — the Handlebar Clamp Centre — is an independently meaningful
+  // mechanical position and is the rider-fit target convention. It is retained
+  // even when the downstream RP4 → RP5 cockpit chain cannot be calculated; the
+  // unavailable inputs are reported through `missingInputs` for diagnostics.
   const missingCockpit = missingCockpitInputs(configuration);
   if (missingCockpit.length > 0) {
     return {
       configuration,
       frameGeometry,
-      status: "UNSOLVED",
-      unsolvedReason: "MISSING_COCKPIT_INPUTS",
+      status: "SOLVED",
+      unsolvedReason: null,
       missingInputs: missingCockpit,
-      rp3: null,
+      rp3,
       rp4: null,
       rp5: null,
       isPlaceholderSolution: false,

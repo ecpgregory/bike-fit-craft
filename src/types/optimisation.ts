@@ -163,7 +163,8 @@ export type GeometryWarningCode =
   | "NEAR_MAXIMUM_SPACER_STACK"
   | "INTEGRATED_COCKPIT"
   | "AFTERMARKET_COCKPIT"
-  | "MANUFACTURER_LIMITATION";
+  | "MANUFACTURER_LIMITATION"
+  | "RP4_RP5_UNAVAILABLE";
 
 /**
  * An observation only — never a judgement, score or recommendation.
@@ -174,7 +175,7 @@ export interface GeometryWarning {
   severity: Severity;
   message: string;
   /** Objective values supporting the observation, when available. */
-  measurements?: Record<string, number | string>;
+  measurements?: Record<string, number | string | string[]>;
 }
 
 export interface CockpitPenaltyBreakdown {
@@ -260,8 +261,11 @@ export type UnsolvedReason =
 
 /**
  * Output of the Geometry Solver for one cockpit configuration.
- * RP3/RP4/RP5 are millimetre coordinates in the sagittal plane (Point2D),
- * null whenever `status` is "UNSOLVED".
+ * RP3/RP4/RP5 are millimetre coordinates in the sagittal plane (Point2D).
+ * RP3 is null whenever `status` is "UNSOLVED". RP4/RP5 are independently
+ * conditional: a SOLVED configuration may carry a valid RP3 with null RP4/RP5
+ * when the handlebar/hood inputs are unavailable, in which case those missing
+ * inputs are listed in `missingInputs`.
  */
 export interface SolvedConfiguration {
   configuration: CockpitConfiguration;
