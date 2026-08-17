@@ -13,16 +13,31 @@ export const bikeConfigurations: BikeConfiguration[] = [
     cockpits: [
       {
         id: "tarmac-sl8-54-rapide-cockpit",
-        name: "Roval Rapide one-piece cockpit",
+        name: "Roval Rapide integrated cockpit (100 mm x 400 mm)",
         kind: "integrated",
         isStock: true,
-        stemLengths: [],
-        stemAngles: [],
-        handlebarReach: null,
+        stemLengths: [100],
+        stemAngles: [-6],
+        handlebarReach: 75,
         handlebarDrop: null,
+        handlebarWidth: 400,
+        manufacturerReference: {
+          // Specialized published SL8 size-54 figures. These are frame-to-stem
+          // reference dimensions, NOT cockpit coordinates.
+          stackToStem: 552,
+          reachToStem: 381,
+        },
         notes:
-          "Tarmac SL8 uses the Roval Rapide one-piece cockpit interface. Per-size stem length, stem angle and bar reach/drop are not established from manufacturer documentation and are left unknown.",
+          "Stock S-Works Tarmac SL8 size 54 ships with the Roval Rapide one-piece cockpit, 100 mm stem length, -6 deg stem angle, 400 mm bar width, 75 mm bar reach. Handlebar stack, handlebar rotation and hood reach/stack/rotation are not substantiated by Specialized documentation and remain unknown. Roval steer-clamp height (40 mm) and Specialized stack-to-stem / reach-to-stem are distinct measurements and are not conflated with bar reach/stack.",
         sources: [
+          {
+            label: "Roval Rapide Cockpit",
+            url: "https://www.specialized.com/au/en/roval-rapide-cockpit/p/218323",
+          },
+          {
+            label: "S-Works Tarmac SL8 Shimano Dura-Ace Di2 (spec & geometry)",
+            url: "https://www.specialized.com/au/en/s-works-tarmac-sl8-shimano-dura-ace-di2/p/4221536",
+          },
           {
             label: "Specialized Tarmac SL8 frameset (FACT 10r carbon)",
             url: "https://www.specialized.com/au/en/tarmac-sl8-frameset-fact-10r-carbon/p/4221541",
@@ -45,7 +60,7 @@ export const bikeConfigurations: BikeConfiguration[] = [
       documentedMaximumBelowStem: null,
       isManufacturerStatedMaximum: false,
       notes:
-        "Contents of the Specialized headset spacer + transition kit for the Rapide cockpit. Manufacturer documents the kit contents, not a maximum permitted spacer height.",
+        "Contents of the Specialized headset spacer + transition kit for the Rapide cockpit (6.6 mm lower transition, 3 x 10 mm, 1 x 5 mm, upper transition of undocumented height). Specialized also documents a 7.8 mm combined lower/upper transition for the slammed Rapide configuration. Manufacturer documents the kit contents, not a maximum permitted spacer height. Specialized additionally requires 40 mm of steerer to remain above the last headset spacer for the Rapide cockpit; that requirement is recorded here only and is not converted into a spacer-height limit.",
       sources: [
         {
           label: "Tarmac SL8 headset spacer + transition kit for Rapide cockpit",
