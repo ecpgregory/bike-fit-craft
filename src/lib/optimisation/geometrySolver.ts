@@ -61,10 +61,12 @@ function missingRequiredInputs(
 /**
  * Cockpit inputs required for the RP3 → RP4 → RP5 chain.
  *
- * TODO(cockpit-model-1.1): handlebarRotation, hoodReach, hoodStack and
- * hoodRotation are not yet produced by the Constraint Generator. Until they
- * are, configurations lacking them are reported UNSOLVED — no zero rotation
- * and no component dimensions are assumed.
+ * Since Sprint 8A the Constraint Generator threads handlebarRotation,
+ * hoodReach, hoodStack and hoodRotation through every configuration it builds,
+ * sourced from the bike's stock cockpit data. When a bike record does not carry
+ * those verified values the fields arrive as null and the configuration is
+ * reported UNSOLVED with MISSING_COCKPIT_INPUTS — no zero rotation and no
+ * component dimensions are ever assumed.
  */
 function missingCockpitInputs(configuration: CockpitConfiguration): string[] {
   const missing: string[] = [];
