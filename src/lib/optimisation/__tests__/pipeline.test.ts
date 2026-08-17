@@ -81,10 +81,10 @@ describe("Geometry Solver integration", () => {
     expect(solved.rp5).not.toBeNull();
   });
 
-  it("flows the solved RP5 into the Error Calculator position metrics", () => {
+  it("flows the solved RP3 into the Error Calculator position metrics", () => {
     const solved = solveConfiguration(configuration(), frame);
-    const rp5 = solved.rp5!;
-    const target = { x: rp5.x - 3, y: rp5.y + 4 };
+    const rp3 = solved.rp3!;
+    const target = { x: rp3.x - 3, y: rp3.y + 4 };
 
     const assessment = assessSolvedConfiguration({
       candidateId: "cfg-1",
@@ -97,10 +97,31 @@ describe("Geometry Solver integration", () => {
     expect(assessment.positionMetrics.euclideanDistance).toBeCloseTo(5, 6);
   });
 
-  it("does not evaluate UNSOLVED configurations", () => {
+  it("retains RP3 when hood inputs are missing and still evaluates it", () => {
     const solved = solveConfiguration(configuration({ hoodReach: null }), frame);
+    expect(solved.status).toBe("SOLVED");
+    expect(solved.rp3).not.toBeNull();
+    expect(solved.rp4).toBeNull();
+    expect(solved.rp5).toBeNull();
+
+    const rp3Assessment = assessSolvedConfiguration({
+      candidateId: "cfg-1",
+      solved,
+      target: { x: solved.rp3!.x - 2, y: solved.rp3!.y },
+    })!;
+    expect(rp3Assessment.positionMetrics.deltaX).toBeCloseTo(2, 6);
+    const warning = rp3Assessment.geometryWarnings.find(
+      (w) => w.code === "RP4_RP5_UNAVAILABLE",
+    )!;
+    expect(warning.severity).toBe("info");
+    expect(warning.measurements!["missingInputs"]).toContain("hoodReach");
+  });
+
+  it("does not evaluate configurations without a valid RP3", () => {
+    const solved = solveConfiguration(configuration({ stemLength: null }), frame);
     expect(solved.status).toBe("UNSOLVED");
-    expect(solved.unsolvedReason).toBe("MISSING_COCKPIT_INPUTS");
+    expect(solved.unsolvedReason).toBe("MISSING_REQUIRED_INPUTS");
+    expect(solved.rp3).toBeNull();
 
     const assessment = assessSolvedConfiguration({
       candidateId: "cfg-1",
@@ -114,7 +135,7 @@ describe("Geometry Solver integration", () => {
 describe("Ranking Engine behaviour", () => {
   it("ranks valid assessments best-first and rejects invalid ones", () => {
     const solved = solveConfiguration(configuration(), frame);
-    const rp5 = solved.rp5!;
+    const rp5 = solved.rp3!;
 
     const near = assessSolvedConfiguration({
       candidateId: "near",
@@ -150,7 +171,7 @@ describe("Ranking Engine behaviour", () => {
 describe("Explanation Engine", () => {
   it("explains assessments produced from solved geometry", () => {
     const solved = solveConfiguration(configuration(), frame);
-    const rp5 = solved.rp5!;
+    const rp5 = solved.rp3!;
     const assessment = assessSolvedConfiguration({
       candidateId: "cfg-1",
       solved,
@@ -169,7 +190,7 @@ describe("Explanation Engine", () => {
 });
 
 describe("runOptimisationPipeline", () => {
-  it("preserves unsolved configurations instead of dropping them", () => {
+  it("evaluates configurations whose RP3 is solvable despite missing hood data", () => {
     const result = runOptimisationPipeline({
       constraints,
       frameGeometry: frame,
@@ -177,28 +198,33 @@ describe("runOptimisationPipeline", () => {
     });
 
     expect(result.configurations.length).toBeGreaterThan(0);
-    // Cockpit rotation/hood data is not supplied by the constraint layer yet.
-    expect(result.unsolvedConfigurations.length).toBe(result.configurations.length);
-    expect(result.assessments).toHaveLength(0);
-    expect(result.ranking.rankedConfigurations).toHaveLength(0);
-    expect(result.unsolvedConfigurations[0]!.reason).toBe("MISSING_COCKPIT_INPUTS");
-    expect(result.unsolvedConfigurations[0]!.missingInputs.length).toBeGreaterThan(0);
+    // Cockpit rotation/hood data is not supplied by the constraint layer yet,
+    // but RP3 is still solvable, so nothing is dropped from ranking.
+    expect(result.unsolvedConfigurations).toHaveLength(0);
+    expect(result.assessments).toHaveLength(result.configurations.length);
+    expect(result.ranking.rankedConfigurations.length).toBe(result.configurations.length);
+    expect(
+      result.assessments.every((a) =>
+        a.geometryWarnings.some((w) => w.code === "RP4_RP5_UNAVAILABLE"),
+      ),
+    ).toBe(true);
+    expect(result.explanations.length).toBeGreaterThan(0);
   });
 
-  it("ranks and explains solvable configurations end to end", () => {
+  it("keeps configurations without RP3 out of ranking", () => {
     const result = runOptimisationPipeline({
       constraints: {
         ...constraints,
-        availableCockpitOptions: [],
+        availableStemLengths: [],
+        minimumStemLength: null as unknown as number,
+        maximumStemLength: null as unknown as number,
       },
-      frameGeometry: frame,
+      frameGeometry: { ...frame, headTubeAngle: null },
       target: { x: 470, y: 631 },
     });
-    // Stem-only configurations still lack handlebar data → unsolved, retained.
-    expect(result.solvedConfigurations.length).toBe(result.configurations.length);
-    expect(
-      result.solvedConfigurations.every((s) => s.status === "UNSOLVED"),
-    ).toBe(true);
-    expect(result.explanations).toHaveLength(0);
+
+    expect(result.solvedConfigurations.every((s) => s.rp3 === null)).toBe(true);
+    expect(result.ranking.rankedConfigurations).toHaveLength(0);
+    expect(result.unsolvedConfigurations.length).toBe(result.configurations.length);
   });
 });
