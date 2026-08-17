@@ -110,14 +110,15 @@ describe("classifyOptimisationOutcome", () => {
           ranking: {
             ...real.ranking,
             rankedConfigurations: [],
-            invalidConfigurations: real.ranking.rankedConfigurations.map((ranked: {
-              candidateId: string;
-              assessment: unknown;
-            }) => ({
+            invalidConfigurations: real.ranking.rankedConfigurations.map((ranked) => ({
               candidateId: ranked.candidateId,
               assessment: ranked.assessment,
               rejectionReasons: [
-                { code: "TEST_DOWNSTREAM_REJECTION", severity: "error", message: "rejected" },
+                {
+                  code: "TEST_DOWNSTREAM_REJECTION",
+                  severity: "error" as const,
+                  message: "rejected",
+                },
               ],
             })),
           },
