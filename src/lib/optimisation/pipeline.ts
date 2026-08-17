@@ -25,7 +25,9 @@ import { solveConfiguration } from "./geometrySolver";
  *
  *   BikeFitConstraints
  *     → Constraint Generator   → CockpitConfiguration[]
- *     → Geometry Solver        → SolvedConfiguration[]      (RP3 → RP4 → RP5)
+ *     → Geometry Solver        → SolvedConfiguration[]      (RP3 → RP4 → RP5;
+ *                                RP4/RP5 may be unavailable without
+ *                                invalidating a solved RP3)
  *     → Error Calculator       → FitAssessment[]            (RP3 vs rider target)
  *     → Ranking Engine         → RankingResult
  *     → Explanation Engine     → RecommendationExplanation[]
