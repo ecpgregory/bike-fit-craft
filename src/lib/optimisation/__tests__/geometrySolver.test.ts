@@ -302,3 +302,4 @@ describe("Solver status handling — no engineering defaults are substituted", (
       expect(solved.rp5).toBeNull();
     },
   );
+});
