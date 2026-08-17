@@ -158,7 +158,7 @@ describe("incomplete cockpit data is preserved, not filtered", () => {
   ];
 
   for (const [name, overrides, missingInput] of cases) {
-    it(`${name}: configuration is generated and reported UNSOLVED`, () => {
+    it(`${name}: configuration is generated and solved to RP3 only`, () => {
       const bike = completeBike(overrides);
       const constraints = deriveConstraintsFromBike(bike);
       const configurations = generateLegalConfigurations(constraints);
@@ -167,20 +167,18 @@ describe("incomplete cockpit data is preserved, not filtered", () => {
       expect(configurations.length).toBeGreaterThan(0);
 
       const solved = solveConfiguration(configurations[0]!, frameGeometryFromBike(bike));
-      expect(solved.status).toBe("UNSOLVED");
-      expect(solved.unsolvedReason).toBe("MISSING_COCKPIT_INPUTS");
+      expect(solved.status).toBe("SOLVED");
+      expect(solved.rp3).not.toBeNull();
+      expect(solved.rp4).toBeNull();
+      expect(solved.rp5).toBeNull();
       expect(solved.missingInputs).toContain(missingInput);
 
       const result = optimiseBike({ bike, rider });
-      expect(result.bestConfiguration).toBeNull();
-      expect(result.rejectedConfigurations.length).toBe(
-        result.optimisationSummary.totalConfigurations,
-      );
-      expect(
-        result.rejectedConfigurations[0]!.rejectionReasons.some((r) =>
-          r.message.includes(missingInput),
-        ),
-      ).toBe(true);
+      expect(result.bestConfiguration).not.toBeNull();
+      const warning = result.bestConfiguration!.assessment.geometryWarnings.find(
+        (w) => w.code === "RP4_RP5_UNAVAILABLE",
+      )!;
+      expect(warning.measurements!["missingInputs"]).toContain(missingInput);
     });
   }
 

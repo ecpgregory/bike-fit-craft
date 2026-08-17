@@ -283,28 +283,23 @@ describe("Solver status handling — no engineering defaults are substituted", (
     ["handlebarReach"],
     ["handlebarStack"],
     ["handlebarRotation"],
-  ] as const)("is UNSOLVED when %s is missing", (field) => {
-    const solved = solveConfiguration(
-      goldenConfiguration({ [field]: null } as Partial<CockpitConfiguration>),
-      goldenFrame,
-    );
-    expect(solved.status).toBe("UNSOLVED");
-    expect(solved.unsolvedReason).toBe("MISSING_COCKPIT_INPUTS");
-    expect(solved.missingInputs).toContain(field);
-    expect(solved.rp3).toBeNull();
-    expect(solved.rp5).toBeNull();
-  });
-
-  it.each([["hoodReach"], ["hoodStack"], ["hoodRotation"]] as const)(
-    "is UNSOLVED when %s is missing",
+    ["hoodReach"],
+    ["hoodStack"],
+    ["hoodRotation"],
+  ] as const)(
+    "retains RP3 and reports %s as missing (RP4/RP5 unavailable)",
     (field) => {
       const solved = solveConfiguration(
         goldenConfiguration({ [field]: null } as Partial<CockpitConfiguration>),
         goldenFrame,
       );
-      expect(solved.status).toBe("UNSOLVED");
-      expect(solved.unsolvedReason).toBe("MISSING_COCKPIT_INPUTS");
+      expect(solved.status).toBe("SOLVED");
       expect(solved.missingInputs).toContain(field);
+      expect(solved.rp3).not.toBeNull();
+      expect(solved.rp3!.x).toBeCloseTo(GOLDEN_EXPECTED.rp3.x, MM_PRECISION);
+      expect(solved.rp3!.y).toBeCloseTo(GOLDEN_EXPECTED.rp3.y, MM_PRECISION);
+      expect(solved.rp4).toBeNull();
+      expect(solved.rp5).toBeNull();
     },
   );
 });
