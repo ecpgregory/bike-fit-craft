@@ -4,6 +4,7 @@ import { generateLegalConfigurations } from "@/lib/constraintGenerator";
 import { deriveConstraintsFromBike } from "@/lib/bikeConstraints";
 import { optimiseBike } from "@/lib/optimisation/bikeOptimisationEngine";
 import { classifyOptimisationOutcome } from "@/lib/optimisation/optimisationOutcome";
+import { runOptimisationPipeline } from "@/lib/optimisation/pipeline";
 
 /**
  * Sprint 8A.1 — the three optimisation outcomes must stay distinguishable.
@@ -103,8 +104,6 @@ describe("classifyOptimisationOutcome", () => {
       bike: solved,
       rider,
       runPipeline: (input) => {
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        const { runOptimisationPipeline } = require("@/lib/optimisation/pipeline");
         const real = runOptimisationPipeline(input);
         return {
           ...real,
