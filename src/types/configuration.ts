@@ -32,6 +32,19 @@ export interface CockpitConfigurationSpec {
   stemAngles: number[];
   handlebarReach: Millimetres | null;
   handlebarDrop: Millimetres | null;
+  /** Documented handlebar width (centre-to-centre at the hoods), mm. */
+  handlebarWidth?: Millimetres | null;
+  /**
+   * Manufacturer-published reference figures for this frame + cockpit pairing.
+   * Recorded verbatim for provenance; NOT cockpit coordinates and never used
+   * as handlebarStack / handlebarReach substitutes.
+   */
+  manufacturerReference?: {
+    /** Published "stack to stem" figure, mm. */
+    stackToStem: Millimetres | null;
+    /** Published "reach to stem" figure, mm. */
+    reachToStem: Millimetres | null;
+  };
   notes: string;
   sources: SourceReference[];
 }
