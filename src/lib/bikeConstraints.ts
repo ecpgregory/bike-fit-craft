@@ -1,5 +1,8 @@
 import type { Bike, Millimetres } from "@/types";
 import type { BikeFitConstraints, CockpitOption } from "@/types/optimisation";
+import { getBikeConfiguration } from "@/data/bike-configurations";
+import { constraintInputsFromConfiguration } from "@/lib/configurationConstraints";
+
 
 /**
  * Translates a generic Bike record into BikeFitConstraints.
