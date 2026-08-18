@@ -37,7 +37,8 @@ export const bikes: Bike[] = [
     bbDrop: null,
     tyreClearance: null,
     integratedCockpit: null,
-    notes: "",
+    headTubeAngle: 72.5,
+    notes: "Source: Specialized official geometry data for the Tarmac SL8 (size 52 head tube angle).",
   },
   {
     id: "specialized-tarmac-sl8-2025-54",
