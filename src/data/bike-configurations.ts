@@ -9,6 +9,58 @@ import type { BikeConfiguration } from "@/types/configuration";
  */
 export const bikeConfigurations: BikeConfiguration[] = [
   {
+    bikeId: "specialized-tarmac-sl8-2025-52",
+    cockpits: [
+      {
+        id: "tarmac-sl8-52-rapide-cockpit",
+        name: "Roval Rapide integrated cockpit (90 mm x 400 mm)",
+        kind: "integrated",
+        isStock: true,
+        stemLengths: [90],
+        stemAngles: [-6],
+        handlebarReach: 75,
+        handlebarDrop: null,
+        handlebarWidth: 400,
+        notes:
+          "Stock Tarmac SL8 size 52 ships with the Roval Rapide one-piece cockpit, 90 mm stem length, -6 deg stem angle, 400 mm bar width, 75 mm bar reach. Handlebar stack, handlebar rotation and hood reach/stack/rotation are not substantiated by Specialized documentation and remain unknown. Specialized stack-to-stem / reach-to-stem figures for size 52 were not established and are omitted rather than copied from another size.",
+        sources: [
+          {
+            label: "Roval Rapide Cockpit",
+            url: "https://www.specialized.com/au/en/roval-rapide-cockpit/p/218323",
+          },
+          {
+            label: "S-Works Tarmac SL8 Shimano Dura-Ace Di2 (spec & geometry)",
+            url: "https://www.specialized.com/au/en/s-works-tarmac-sl8-shimano-dura-ace-di2/p/4221536",
+          },
+        ],
+      },
+    ],
+    headset: {
+      spacerIncrement: 5,
+      suppliedParts: [
+        { description: "Lower transition spacer", height: 6.6, quantity: 1 },
+        { description: "Spacer", height: 10, quantity: 3 },
+        { description: "Spacer", height: 5, quantity: 1 },
+        { description: "Upper transition spacer", height: null, quantity: 1 },
+      ],
+      suppliedSpacerCapacity: null,
+      documentedMaximumBelowStem: null,
+      isManufacturerStatedMaximum: false,
+      notes:
+        "Specialized documents a single Tarmac SL8 headset spacer + transition kit for the Rapide cockpit across the model, not per size; the same documented kit contents are recorded here. Manufacturer documents kit contents, not a maximum permitted spacer height.",
+      sources: [
+        {
+          label: "Tarmac SL8 headset spacer + transition kit for Rapide cockpit",
+          url: "https://www.specialized.com/us/en/tarmac-sl8-headset-spacer--transition-kit-for-rapide-cockpit/p/4242711",
+        },
+      ],
+    },
+    seatpost: null,
+    notes:
+      "Size 52 seatpost offset not established from manufacturer documentation; left unknown.",
+  },
+  {
+
     bikeId: "specialized-tarmac-sl8-2025-54",
     cockpits: [
       {
