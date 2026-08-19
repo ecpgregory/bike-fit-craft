@@ -125,27 +125,96 @@ export const bikeConfigurations: BikeConfiguration[] = [
       "Size 54 seatpost offset not established from manufacturer documentation; left unknown.",
   },
   {
-    bikeId: "colnago-v5rs-2025-510",
+    bikeId: "colnago-v5rs-2025-485",
     cockpits: [
       {
-        id: "colnago-v5rs-510-cc01",
-        name: "Colnago CC.01 integrated cockpit",
+        id: "colnago-v5rs-485-cc01-regular",
+        name: "Colnago CC.01 Regular integrated cockpit",
         kind: "integrated",
         isStock: true,
-        stemLengths: [80, 90, 100, 110, 120],
-        stemAngles: [],
+        stemLengths: [80, 90, 100, 110, 120, 130],
+        stemAngles: [-8],
         handlebarReach: null,
         handlebarDrop: null,
         notes:
-          "CC.01 is offered in 80–120 mm stem lengths in 10 mm steps. Stem angle and bar reach/drop are not established from Colnago documentation and are left unknown.",
+          "Colnago's official V5Rs technical specification identifies the stock cockpit as the CC.01 integrated cockpit, regular geometry, with configurations documented from 80 mm through 130 mm stem length and an 82 deg stem angle (recorded here as -8 deg under this application's 90 deg-perpendicular convention). The CC.01 Wide is not standard on the V5Rs and is not represented. Handlebar reach/drop/stack, handlebar rotation and hood geometry are not established by Colnago documentation and remain unknown.",
         sources: [
           {
-            label: "Colnago CC.01 handlebar",
-            url: "https://www.colnago.com/en-us/products/handlebar-cc01-wide",
+            label: "Colnago V5Rs (official product page, stock cockpit)",
+            url: "https://www.colnago.com/en-us/products/v5rs",
+          },
+          {
+            label: "Colnago V5Rs technical specifications",
+            url: "https://www.colnago.com/en-us/products/v5rs#technical-specifications",
           },
         ],
       },
     ],
+    headset: {
+      spacerIncrement: 5,
+      suppliedParts: [
+        { description: "Open spacer", height: 5, quantity: 5 },
+        {
+          description: "V5Rs-specific shaped/top spacer and headset components",
+          height: null,
+          quantity: 1,
+        },
+      ],
+      suppliedSpacerCapacity: 25,
+      documentedMaximumBelowStem: null,
+      isManufacturerStatedMaximum: false,
+      notes:
+        "V5Rs headset system (1 1/8 and 1 1/4, SLT treated bearings) and the V5Rs headset parts kit are documented by Colnago at model level, not per size, so the same documented kit contents are recorded here. 25 mm is the capacity of the supplied spacer kit (5 x 5 mm), not a stated maximum permitted spacer height.",
+      sources: [
+        {
+          label: "Colnago V5Rs headset parts kit",
+          url: "https://www.colnago.com/en-ph/products/v5rs-headset-parts-kit",
+        },
+        {
+          label: "Colnago V5Rs technical specifications (headset system)",
+          url: "https://www.colnago.com/en-us/products/v5rs#technical-specifications",
+        },
+        { label: "Colnago manuals", url: "https://www.colnago.com/en/manuals" },
+      ],
+    },
+    seatpost: {
+      offsets: [0, 15],
+      notes:
+        "V5Rs seatpost is documented at model level in 0 mm and 15 mm setback options.",
+      sources: [
+        { label: "Colnago manuals", url: "https://www.colnago.com/en/manuals" },
+      ],
+    },
+    notes:
+      "Size 485 configuration uses model-level V5Rs headset and seatpost documentation. No size-specific cockpit geometry copied from size 510.",
+  },
+  {
+    bikeId: "colnago-v5rs-2025-510",
+    cockpits: [
+      {
+        id: "colnago-v5rs-510-cc01-regular",
+        name: "Colnago CC.01 Regular integrated cockpit",
+        kind: "integrated",
+        isStock: true,
+        stemLengths: [80, 90, 100, 110, 120, 130],
+        stemAngles: [-8],
+        handlebarReach: null,
+        handlebarDrop: null,
+        notes:
+          "Colnago's official V5Rs technical specification identifies the stock cockpit as the CC.01 integrated cockpit, regular geometry, documented from 80 mm through 130 mm stem length with an 82 deg stem angle (recorded here as -8 deg under this application's 90 deg-perpendicular convention). 140 mm is not established by the V5Rs-specific specification and is not listed. The CC.01 Wide is a separately orderable option, not stock, and is not cited for Regular values. Handlebar reach/drop/stack, handlebar rotation and hood geometry remain unknown.",
+        sources: [
+          {
+            label: "Colnago V5Rs (official product page, stock cockpit)",
+            url: "https://www.colnago.com/en-us/products/v5rs",
+          },
+          {
+            label: "Colnago V5Rs technical specifications",
+            url: "https://www.colnago.com/en-us/products/v5rs#technical-specifications",
+          },
+        ],
+      },
+    ],
+
     headset: {
       spacerIncrement: 5,
       suppliedParts: [

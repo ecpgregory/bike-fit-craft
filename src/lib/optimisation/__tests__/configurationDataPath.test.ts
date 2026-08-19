@@ -55,7 +55,7 @@ describe("verified configuration data reaches the constraint generator", () => {
     const lengths = deriveConstraintsFromBike(bike)
       .availableCockpitOptions.map((o) => o.stemLength)
       .sort((a, b) => (a ?? 0) - (b ?? 0));
-    expect(lengths).toEqual([80, 90, 100, 110, 120]);
+    expect(lengths).toEqual([80, 90, 100, 110, 120, 130]);
   });
 });
 
