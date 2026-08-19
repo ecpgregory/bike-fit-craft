@@ -75,8 +75,10 @@ export const bikes: Bike[] = [
     bbDrop: null,
     tyreClearance: null,
     integratedCockpit: null,
-    notes: "",
+    headTubeAngle: 72.3,
+    notes: "Source: Colnago official V5Rs technical specifications (size 485 head tube angle).",
   },
+
   {
     id: "colnago-v5rs-2025-510",
     brand: "Colnago",
