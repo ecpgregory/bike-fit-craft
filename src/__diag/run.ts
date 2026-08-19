@@ -6,7 +6,7 @@ const ids = ["specialized-tarmac-sl8-2025-52","specialized-tarmac-sl8-2025-54","
 const rider = { ...riderProfile, handlebarX: 470, handlebarY: 631 } as any;
 for (const id of ids) {
   const bike = bikes.find(b => b.id === id); if(!bike){console.log("MISSING",id);continue;}
-  const r: any = optimiseBike(bike, rider);
+  const r: any = optimiseBike({ bike, rider });
   console.log("\n===", id);
   console.log(JSON.stringify(r.optimisationSummary ?? {}, null, 1));
   console.log("outcome", r.outcome ?? r.optimisationSummary?.outcome);
