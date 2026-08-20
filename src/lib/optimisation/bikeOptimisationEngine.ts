@@ -4,6 +4,7 @@ import type {
   BikeFitConstraints,
   CockpitConfiguration,
   SolvedConfiguration,
+  TargetPosition,
   UnsolvedReason,
 } from "@/types/optimisation";
 import type { RecommendationExplanation } from "@/lib/explanationEngine";
@@ -66,7 +67,9 @@ export interface BikeOptimisationResult {
 
 export interface BikeOptimisationInput {
   bike: Bike;
-  rider: RiderProfile;
+  /** Supply either `rider` or `target`; resolution is the pipeline's rule. */
+  rider?: RiderProfile;
+  target?: TargetPosition;
   /** Optional override; defaults to constraints derived from the bike. */
   constraints?: BikeFitConstraints;
   rankingOptions?: RankingOptions;
@@ -113,6 +116,7 @@ export function optimiseBike(input: BikeOptimisationInput): BikeOptimisationResu
     constraints,
     frameGeometry,
     rider,
+    target: input.target,
     rankingOptions: input.rankingOptions,
   });
 
