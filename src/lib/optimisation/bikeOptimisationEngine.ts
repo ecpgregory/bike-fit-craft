@@ -2,6 +2,7 @@ import type { Bike, RiderProfile } from "@/types";
 import type {
   AssessmentNote,
   BikeFitConstraints,
+  ConstraintDiagnostic,
   CockpitConfiguration,
   SolvedConfiguration,
   TargetPosition,
@@ -14,6 +15,7 @@ import type {
   RejectedConfiguration,
 } from "@/lib/rankingEngine";
 import { deriveConstraintsFromBike } from "@/lib/bikeConstraints";
+import { diagnoseConfigurationSpace } from "@/lib/constraintGenerator";
 import { frameGeometryFromBike } from "./frameGeometry";
 import { runOptimisationPipeline } from "./pipeline";
 
@@ -61,6 +63,11 @@ export interface BikeOptimisationResult {
     solvedConfigurations: number;
     rejectedConfigurations: number;
   };
+  /**
+   * Populated only when the Constraint Generator produced zero configurations
+   * (NO_CANDIDATES), naming the undocumented configuration dimension(s).
+   */
+  constraintDiagnostic?: ConstraintDiagnostic | null;
   /** Explanations keyed by candidateId, produced by the Explanation Engine. */
   explanations: Record<string, RecommendationExplanation>;
   /**
@@ -172,6 +179,8 @@ export function optimiseBike(input: BikeOptimisationInput): BikeOptimisationResu
       ).length,
       rejectedConfigurations: rejectedConfigurations.length,
     },
+    constraintDiagnostic:
+      pipeline.configurations.length === 0 ? diagnoseConfigurationSpace(constraints) : null,
     explanations,
     solvedConfigurations: pipeline.solvedConfigurations,
   };
