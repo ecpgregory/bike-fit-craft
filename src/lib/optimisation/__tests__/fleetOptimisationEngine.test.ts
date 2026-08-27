@@ -121,6 +121,8 @@ describe("optimiseFleet", () => {
     expect(result.rankedBikes.length + result.unrankedBikes.length).toBe(result.totalBikes);
 
     expect(result.rankedBikes.map((r) => r.bikeId)).toEqual([
+      "cannondale-supersix-evo-lab71-54",
+      "cannondale-supersix-evo-lab71-56",
       "bmc-teammachine-slr01-56",
       "bmc-teammachine-slr01-54",
       "canyon-ultimate-cfr-l",
@@ -145,13 +147,27 @@ describe("optimiseFleet", () => {
       result.unrankedBikes.find((u) => u.bikeId === "giant-defy-advanced-1-2014-ml")!.outcome,
     ).toBe("NO_CANDIDATES");
 
-    // New Sprint 9.4A records.
+    // Sprint 9.4A records.
     expect(score("bmc-teammachine-slr01-56")).toBeCloseTo(0.6899, 4);
     expect(score("bmc-teammachine-slr01-54")).toBeCloseTo(0.6886, 4);
     expect(score("canyon-ultimate-cfr-l")).toBeCloseTo(0.6809, 4);
     expect(score("canyon-ultimate-cfr-m")).toBeCloseTo(0.6747, 4);
     expect(score("giant-tcr-advanced-sl-0-2025-ml")).toBeCloseTo(0.6736, 4);
     expect(score("giant-tcr-advanced-sl-0-2025-m")).toBeCloseTo(0.6723, 4);
+
+    // Sprint 9.4B: the corrected Cannondale records now rank (SUCCESS).
+    expect(score("cannondale-supersix-evo-lab71-54")).toBeCloseTo(0.7038, 4);
+    expect(score("cannondale-supersix-evo-lab71-56")).toBeCloseTo(0.6940, 4);
+
+    // Sprint 9.4B: the Cervélo stem angle remains unknown, so both S5
+    // records still produce NO_CANDIDATES (no legal configuration can be
+    // enumerated without a stem angle).
+    expect(result.unrankedBikes.find((u) => u.bikeId === "cervelo-s5-54")!.outcome).toBe(
+      "NO_CANDIDATES",
+    );
+    expect(result.unrankedBikes.find((u) => u.bikeId === "cervelo-s5-56")!.outcome).toBe(
+      "NO_CANDIDATES",
+    );
   });
 
 });
