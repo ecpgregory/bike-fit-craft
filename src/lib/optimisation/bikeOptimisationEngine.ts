@@ -173,5 +173,6 @@ export function optimiseBike(input: BikeOptimisationInput): BikeOptimisationResu
       rejectedConfigurations: rejectedConfigurations.length,
     },
     explanations,
+    solvedConfigurations: pipeline.solvedConfigurations,
   };
 }
