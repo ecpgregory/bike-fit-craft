@@ -1,5 +1,7 @@
 import type {
   BikeFitConstraints,
+  ConstraintDiagnostic,
+  ConstraintDimension,
   CockpitConfiguration,
   CockpitOption,
 } from "@/types/optimisation";
@@ -57,6 +59,13 @@ function legalCockpitOptions(constraints: BikeFitConstraints): CockpitOption[] {
         return constraints.allowAftermarketStem && constraints.allowAftermarketHandlebar;
       }
       return constraints.allowAftermarketHandlebar;
+    })
+    .filter((option) => {
+      // An integrated unit dictates its own stem angle. An unknown angle is an
+      // unavailable configuration value, not a value to guess, so the unit
+      // cannot be enumerated as a real configuration.
+      if (option.isIntegrated && option.stemAngle === null) return false;
+      return true;
     })
     .filter((option) => {
       // An integrated unit's built-in stem must still respect stem limits.
@@ -205,4 +214,51 @@ export function generateLegalConfigurations(
     id: makeId(index, draft),
     configurationDescription: describe(draft),
   }));
+}
+
+/**
+ * Explains why zero legal configurations could be enumerated.
+ *
+ * Purely a data-availability statement derived from the same legality helpers
+ * used by `generateLegalConfigurations`. Returns null whenever at least one
+ * configuration exists. Nothing here is inferred and no value is invented.
+ */
+export function diagnoseConfigurationSpace(
+  constraints: BikeFitConstraints,
+): ConstraintDiagnostic | null {
+  if (generateLegalConfigurations(constraints).length > 0) return null;
+
+  const spacerHeights = legalSpacerHeights(constraints);
+  const stemLengths = legalStemLengths(constraints);
+  const stemAngles = sortedUnique(constraints.allowedStemAngles);
+  const cockpitOptions = legalCockpitOptions(constraints);
+  // Integrated units carry their own stem length and angle.
+  const hasIntegratedOption = cockpitOptions.some((option) => option.isIntegrated);
+
+  const missing: ConstraintDimension[] = [];
+  const documented: ConstraintDimension[] = [];
+
+  (spacerHeights.length > 0 ? documented : missing).push("spacerHeight");
+  (cockpitOptions.length > 0 ? documented : missing).push("cockpitOption");
+  if (!hasIntegratedOption) {
+    (stemLengths.length > 0 ? documented : missing).push("stemLength");
+    (stemAngles.length > 0 ? documented : missing).push("stemAngle");
+  }
+
+  const message =
+    missing.length === 0
+      ? "No legal cockpit configuration could be enumerated from the documented constraints."
+      : `No legal cockpit configuration could be enumerated: ${missing.join(", ")} ${
+          missing.length === 1 ? "is" : "are"
+        } not documented for this bike${
+          documented.length > 0 ? ` (documented: ${documented.join(", ")})` : ""
+        }.`;
+
+  return {
+    code: "CONSTRAINT_DIMENSION_UNAVAILABLE",
+    severity: "error",
+    message,
+    missing,
+    documented,
+  };
 }
