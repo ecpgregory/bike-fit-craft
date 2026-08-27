@@ -47,17 +47,24 @@ describe("recommendation flow", () => {
 
   it("resolves brand, model and size by bikeId lookup for the verified SUCCESS bikes", () => {
     expect(view.recommendations.map((r) => r.bikeId)).toEqual([
+      "bmc-teammachine-slr01-56",
+      "bmc-teammachine-slr01-54",
+      "canyon-ultimate-cfr-l",
       "specialized-tarmac-sl8-2025-54",
       "colnago-v5rs-2025-510",
+      "canyon-ultimate-cfr-m",
+      "giant-tcr-advanced-sl-0-2025-ml",
       "specialized-tarmac-sl8-2025-52",
       "colnago-v5rs-2025-485",
+      "giant-tcr-advanced-sl-0-2025-m",
     ]);
     const top = view.recommendations[0]!;
-    expect(top.bike?.brand).toBe("Specialized");
-    expect(top.bike?.model).toBe("Tarmac SL8");
-    expect(top.bike?.size).toBe("54");
-    expect(top.overallScore).toBeCloseTo(0.6781, 4);
+    expect(top.bike?.brand).toBe("BMC");
+    expect(top.bike?.model).toBe("Teammachine SLR01");
+    expect(top.bike?.size).toBe("56");
+    expect(top.overallScore).toBeCloseTo(0.6899, 4);
   });
+
 
   it("keeps the Giant Defy NO_CANDIDATES result visible as unranked", () => {
     const defy = view.unavailable.find((u) => u.bikeId === "giant-defy-advanced-1-2014-ml");
@@ -84,7 +91,8 @@ describe("recommendation flow", () => {
 
   it("exposes the solved RP3 and configuration for the recommended candidate", () => {
     const top = view.recommendations[0]!;
-    expect(top.predictedPosition?.x).toBeCloseTo(470, 1);
-    expect(top.configuration?.stemLength).toBe(100);
+    expect(top.predictedPosition?.x).toBeCloseTo(483.2, 1);
+    expect(top.configuration?.stemLength).toBe(110);
   });
 });
+
