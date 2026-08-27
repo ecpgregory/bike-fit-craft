@@ -39,27 +39,59 @@ export const Route = createFileRoute("/")({
 });
 
 type CalculationState =
+  | { status: "idle" }
   | { status: "loading" }
   | { status: "ready"; view: FleetRecommendationsView }
   | { status: "error"; message: string };
 
 function Dashboard() {
-  const [state, setState] = useState<CalculationState>({ status: "loading" });
+  const [input, setInput] = useState<FitTargetInput>(DEFAULT_FIT_TARGET_INPUT);
+  const [errors, setErrors] = useState<FitTargetErrors>({});
+  const [state, setState] = useState<CalculationState>({ status: "idle" });
+  const [pendingTarget, setPendingTarget] = useState<TargetPosition | null>(null);
 
-  const calculation = useMemo<CalculationState>(() => {
-    try {
-      // Single authoritative recommendation path: the production fleet engine.
-      const result = optimiseFleet({ rider: riderProfile });
-      return { status: "ready", view: buildFleetRecommendations(result, bikes) };
-    } catch (error) {
-      return {
-        status: "error",
-        message: error instanceof Error ? error.message : "Unknown calculation error.",
-      };
+  const runSearch = useCallback(() => {
+    const parsed = parseFitTargetInput(input);
+    if (!parsed.ok) {
+      setErrors(parsed.errors);
+      // Validation failed: no optimisation is run and stale results are cleared.
+      setState({ status: "idle" });
+      setPendingTarget(null);
+      return;
     }
-  }, []);
+    setErrors({});
+    setState({ status: "loading" });
+    setPendingTarget(parsed.target);
+  }, [input]);
 
-  useEffect(() => setState(calculation), [calculation]);
+  // The optimisation runs off the render path so the loading state is visible.
+  useEffect(() => {
+    if (!pendingTarget) return;
+    let cancelled = false;
+    const id = setTimeout(() => {
+      if (cancelled) return;
+      try {
+        // Single authoritative recommendation path: the production fleet engine.
+        const result = optimiseFleet({ target: pendingTarget, rider: riderProfile });
+        setState({ status: "ready", view: buildFleetRecommendations(result, bikes) });
+      } catch (error) {
+        setState({
+          status: "error",
+          message: error instanceof Error ? error.message : "Unknown calculation error.",
+        });
+      }
+    }, 0);
+    return () => {
+      cancelled = true;
+      clearTimeout(id);
+    };
+  }, [pendingTarget]);
+
+  // Run once with the demonstration defaults so the page is not empty.
+  useEffect(() => {
+    runSearch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="mx-auto w-full max-w-6xl space-y-6">
@@ -74,28 +106,13 @@ function Dashboard() {
       />
 
       <div className="grid gap-5 md:grid-cols-2">
-        <Panel
-          title="Your Fit"
-          subtitle="Professional fit coordinates"
-          action={<Ruler className="size-4 shrink-0 text-muted-foreground" />}
-        >
-          <div className="grid gap-x-8 sm:grid-cols-2">
-            <div>
-              <p className="label-caps mb-1">Handlebar position</p>
-              <SpecRow label="Handlebar X" value={riderProfile.handlebarX} unit="mm" emphasis />
-              <SpecRow label="Handlebar Y" value={riderProfile.handlebarY} unit="mm" emphasis />
-              <SpecRow label="Stem" value={riderProfile.stemLength} unit="mm" />
-              <SpecRow label="Spacer Height" value={riderProfile.spacerHeight} unit="mm" />
-            </div>
-            <div className="mt-4 sm:mt-0">
-              <p className="label-caps mb-1">Frame &amp; Saddle</p>
-              <SpecRow label="Frame Reach" value={riderProfile.frameReach} unit="mm" />
-              <SpecRow label="Frame Stack" value={riderProfile.frameStack} unit="mm" />
-              <SpecRow label="Saddle Height" value={riderProfile.saddleHeight} unit="mm" />
-              <SpecRow label="Saddle Setback" value={riderProfile.saddleSetback} unit="mm" />
-            </div>
-          </div>
-        </Panel>
+        <FitTargetForm
+          value={input}
+          errors={errors}
+          isRunning={state.status === "loading"}
+          onChange={setInput}
+          onSubmit={runSearch}
+        />
 
         <Panel
           title="Current Bike"
@@ -112,6 +129,7 @@ function Dashboard() {
           <SpecRow label="Frame Stack" value={riderProfile.frameStack} unit="mm" />
         </Panel>
       </div>
+
 
       {state.status === "loading" ? (
         <Panel title="Best Matches" subtitle="Calculating">
