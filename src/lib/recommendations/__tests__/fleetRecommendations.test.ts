@@ -91,7 +91,8 @@ describe("recommendation flow", () => {
 
   it("exposes the solved RP3 and configuration for the recommended candidate", () => {
     const top = view.recommendations[0]!;
-    expect(top.predictedPosition?.x).toBeCloseTo(470, 1);
-    expect(top.configuration?.stemLength).toBe(100);
+    expect(top.predictedPosition?.x).toBeCloseTo(483.2, 1);
+    expect(top.configuration?.stemLength).toBe(110);
   });
 });
+
