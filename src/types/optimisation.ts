@@ -235,6 +235,26 @@ export type TargetPosition = Point2D;
  */
 export type OptimisationOutcome = "NO_CANDIDATES" | "NO_VALID_RESULT" | "SUCCESS";
 
+/** A configuration dimension the Constraint Generator requires. */
+export type ConstraintDimension =
+  | "spacerHeight"
+  | "stemLength"
+  | "stemAngle"
+  | "cockpitOption";
+
+/**
+ * Machine-readable explanation of why the Constraint Generator could not
+ * enumerate any legal configuration. This is a *data availability* statement,
+ * never a geometry failure: nothing is inferred and no value is invented.
+ */
+export interface ConstraintDiagnostic extends AssessmentNote {
+  code: "CONSTRAINT_DIMENSION_UNAVAILABLE";
+  /** Dimensions that are undocumented for this bike. */
+  missing: ConstraintDimension[];
+  /** Dimensions that are documented, for contrast. */
+  documented: ConstraintDimension[];
+}
+
 // --- Geometry Solver (physics layer) ----------------------------------------
 
 /**
