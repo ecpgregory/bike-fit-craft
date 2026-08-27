@@ -92,9 +92,11 @@ describe("recommendation flow", () => {
   });
 
   it("exposes the solved RP3 and configuration for the recommended candidate", () => {
+    // Sprint 9.4B: the corrected Cannondale SuperSix EVO LAB71 54 now tops
+    // the ranking with the verified 100 mm SystemBar cockpit.
     const top = view.recommendations[0]!;
-    expect(top.predictedPosition?.x).toBeCloseTo(483.2, 1);
-    expect(top.configuration?.stemLength).toBe(110);
+    expect(top.predictedPosition?.x).toBeCloseTo(465.4, 1);
+    expect(top.configuration?.stemLength).toBe(100);
   });
 });
 
