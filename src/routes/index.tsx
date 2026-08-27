@@ -1,6 +1,16 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Ruler, Bike as BikeIcon, Trophy, TriangleAlert } from "lucide-react";
+import { Bike as BikeIcon, Trophy, TriangleAlert } from "lucide-react";
+
+import type { TargetPosition } from "@/types/optimisation";
+import { FitTargetForm } from "@/components/dashboard/fit-target-form";
+import {
+  DEFAULT_FIT_TARGET_INPUT,
+  parseFitTargetInput,
+  type FitTargetErrors,
+  type FitTargetInput,
+} from "@/lib/recommendations/fitTargetInput";
+
 
 import { PageHeader } from "@/components/page-header";
 import { Panel, SpecRow, EmptyState } from "@/components/panel";
