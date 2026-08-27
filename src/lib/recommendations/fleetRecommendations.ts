@@ -27,6 +27,8 @@ export interface RecommendedBikeView {
   rank: number;
   bikeId: string;
   bike: Bike | null;
+  /** Engine classification: SUCCESS or OUTSIDE_FIT_ENVELOPE. Read, not derived. */
+  outcome: RankedBikeSummary["outcome"];
   /** Mirror of bestConfiguration.overallScore; never recalculated. */
   overallScore: number;
   candidateId: string;
@@ -77,6 +79,7 @@ function toRecommendation(
     rank: index + 1,
     bikeId: summary.bikeId,
     bike: findBike(bikes, summary.bikeId),
+    outcome: summary.outcome,
     overallScore: best.overallScore,
     candidateId: best.candidateId,
     positionMetrics: best.assessment.positionMetrics,
