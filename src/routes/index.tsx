@@ -140,8 +140,17 @@ function Dashboard() {
         </Panel>
       </div>
 
+      {state.status === "idle" ? (
+        <Panel title="Best Matches" subtitle="Waiting for your measurements">
+          <EmptyState
+            title="Enter your handlebar X and Y, then choose Find My Bikes"
+            description="Both measurements must be numbers in millimetres, greater than zero."
+          />
+        </Panel>
+      ) : null}
 
       {state.status === "loading" ? (
+
         <Panel title="Best Matches" subtitle="Calculating">
           <div className="space-y-3">
             <Skeleton className="h-24 w-full" />
