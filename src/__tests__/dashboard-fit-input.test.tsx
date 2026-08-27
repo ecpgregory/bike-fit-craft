@@ -12,6 +12,19 @@ import type { TargetPosition } from "@/types/optimisation";
  * test can assert which TargetPosition the UI hands it.
  */
 
+vi.mock("@tanstack/react-router", async () => {
+  const actual = await vi.importActual<typeof import("@tanstack/react-router")>(
+    "@tanstack/react-router",
+  );
+  return {
+    ...actual,
+    // Rendering outside a RouterProvider: links are inert in this test.
+    Link: ({ children, ...rest }: { children?: React.ReactNode; to?: string }) => (
+      <a href={rest.to ?? "#"}>{children}</a>
+    ),
+  };
+});
+
 const optimiseFleetSpy = vi.fn();
 
 vi.mock("@/lib/optimisation/fleetOptimisationEngine", async () => {
