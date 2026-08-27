@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
+import type React from "react";
 import { render, screen, waitFor, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { TargetPosition } from "@/types/optimisation";
@@ -37,7 +38,7 @@ const { bikes } = await import("@/data/bikes");
 // The route module renders the dashboard component; import it lazily so the
 // mock above is applied first.
 const routeModule = await import("@/routes/index");
-const Dashboard = routeModule.Route.options.component as () => JSX.Element;
+const Dashboard = routeModule.Route.options.component as React.ComponentType;
 
 function lastTarget(): TargetPosition {
   const calls = optimiseFleetSpy.mock.calls;
@@ -51,7 +52,6 @@ describe("Dashboard rider fit input", () => {
   it("initialises with the established 470 / 631 target and runs the production engine", async () => {
     render(<Dashboard />);
 
-    expect(screen.getByLabelText(/handlebar x/i)).toHaveValue?.("470");
     expect((screen.getByLabelText(/handlebar x/i) as HTMLInputElement).value).toBe("470");
     expect((screen.getByLabelText(/handlebar y/i) as HTMLInputElement).value).toBe("631");
 
@@ -101,7 +101,7 @@ describe("Dashboard rider fit input", () => {
     await user.type(x, "abc");
     await user.click(screen.getByRole("button", { name: /find my bikes/i }));
 
-    expect(await screen.findByRole("alert")).toHaveTextContent?.(/number/i);
+    expect((await screen.findByRole("alert")).textContent).toMatch(/number/i);
     expect(optimiseFleetSpy).not.toHaveBeenCalled();
     expect(screen.queryByText(/unable to evaluate/i)).toBeNull();
   });
