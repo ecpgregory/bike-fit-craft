@@ -138,26 +138,29 @@ describe("optimiseFleet", () => {
     const score = (id: string) =>
       result.rankedBikes.find((r) => r.bikeId === id)!.overallScore;
 
+    // Sprint 9.7: scores are restated for the recalibrated positional
+    // normaliser exp(-distance / 10 mm). RP3 geometry, distances, ranking
+    // order and selected configurations are unchanged.
     // Sprint 9.4A regression: the original five records are unchanged.
-    expect(score("specialized-tarmac-sl8-2025-54")).toBeCloseTo(0.6781, 4);
-    expect(score("colnago-v5rs-2025-510")).toBeCloseTo(0.6758, 4);
-    expect(score("specialized-tarmac-sl8-2025-52")).toBeCloseTo(0.6734, 4);
-    expect(score("colnago-v5rs-2025-485")).toBeCloseTo(0.6730, 4);
+    expect(score("specialized-tarmac-sl8-2025-54")).toBeCloseTo(0.6867, 4);
+    expect(score("colnago-v5rs-2025-510")).toBeCloseTo(0.6764, 4);
+    expect(score("specialized-tarmac-sl8-2025-52")).toBeCloseTo(0.6693, 4);
+    expect(score("colnago-v5rs-2025-485")).toBeCloseTo(0.6686, 4);
     expect(
       result.unrankedBikes.find((u) => u.bikeId === "giant-defy-advanced-1-2014-ml")!.outcome,
     ).toBe("NO_CANDIDATES");
 
     // Sprint 9.4A records.
-    expect(score("bmc-teammachine-slr01-56")).toBeCloseTo(0.6899, 4);
-    expect(score("bmc-teammachine-slr01-54")).toBeCloseTo(0.6886, 4);
-    expect(score("canyon-ultimate-cfr-l")).toBeCloseTo(0.6809, 4);
-    expect(score("canyon-ultimate-cfr-m")).toBeCloseTo(0.6747, 4);
-    expect(score("giant-tcr-advanced-sl-0-2025-ml")).toBeCloseTo(0.6736, 4);
-    expect(score("giant-tcr-advanced-sl-0-2025-m")).toBeCloseTo(0.6723, 4);
+    expect(score("bmc-teammachine-slr01-56")).toBeCloseTo(0.7541, 4);
+    expect(score("bmc-teammachine-slr01-54")).toBeCloseTo(0.7474, 4);
+    expect(score("canyon-ultimate-cfr-l")).toBeCloseTo(0.7021, 4);
+    expect(score("canyon-ultimate-cfr-m")).toBeCloseTo(0.6725, 4);
+    expect(score("giant-tcr-advanced-sl-0-2025-ml")).toBeCloseTo(0.6696, 4);
+    expect(score("giant-tcr-advanced-sl-0-2025-m")).toBeCloseTo(0.6676, 4);
 
     // Sprint 9.4B: the corrected Cannondale records now rank (SUCCESS).
-    expect(score("cannondale-supersix-evo-lab71-54")).toBeCloseTo(0.7038, 4);
-    expect(score("cannondale-supersix-evo-lab71-56")).toBeCloseTo(0.6940, 4);
+    expect(score("cannondale-supersix-evo-lab71-54")).toBeCloseTo(0.8169, 4);
+    expect(score("cannondale-supersix-evo-lab71-56")).toBeCloseTo(0.7755, 4);
 
     // Sprint 9.4B: the Cervélo stem angle remains unknown, so both S5
     // records still produce NO_CANDIDATES (no legal configuration can be

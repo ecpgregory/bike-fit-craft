@@ -20,7 +20,13 @@ import { classifyOptimisationOutcome } from "./optimisationOutcome";
 
 export interface RankedBikeSummary {
   bikeId: string;
-  outcome: "SUCCESS";
+  /**
+   * SUCCESS when the best configuration's RP3 error is inside the acceptable
+   * fit envelope, OUTSIDE_FIT_ENVELOPE when a valid configuration exists but
+   * cannot reach the rider's target closely enough. Both are ranked: the
+   * distinction is classification, not filtering.
+   */
+  outcome: "SUCCESS" | "OUTSIDE_FIT_ENVELOPE";
   /** Convenience mirror of `bestConfiguration.overallScore`; never recomputed. */
   overallScore: number;
   bestConfiguration: RankedConfiguration;
@@ -78,10 +84,13 @@ export function optimiseFleet(input: FleetOptimisationInput): FleetOptimisationR
 
     const outcome: OptimisationOutcome = classifyOptimisationOutcome(result);
 
-    if (outcome === "SUCCESS" && result.bestConfiguration !== null) {
+    if (
+      (outcome === "SUCCESS" || outcome === "OUTSIDE_FIT_ENVELOPE") &&
+      result.bestConfiguration !== null
+    ) {
       rankedBikes.push({
         bikeId: result.bikeId,
-        outcome: "SUCCESS",
+        outcome,
         overallScore: result.bestConfiguration.overallScore,
         bestConfiguration: result.bestConfiguration,
         result,

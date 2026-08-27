@@ -227,13 +227,23 @@ export type TargetPosition = Point2D;
  * mutable state. Detailed solver/rejection diagnostics remain the source of
  * truth for WHY an outcome occurred.
  *
- * - NO_CANDIDATES:   the Constraint Generator produced zero configurations, so
- *                    the Geometry Solver never ran.
- * - NO_VALID_RESULT: configurations existed but none survived the solver,
- *                    constraint or evaluation stages.
- * - SUCCESS:         at least one configuration produced a ranked result.
+ * - NO_CANDIDATES:          the Constraint Generator produced zero
+ *                           configurations, so the Geometry Solver never ran.
+ * - NO_VALID_RESULT:        configurations existed but none survived the
+ *                           solver, constraint or evaluation stages.
+ * - OUTSIDE_FIT_ENVELOPE:   a valid, ranked configuration exists, but its best
+ *                           achievable RP3 positional error lies outside the
+ *                           application's acceptable fit envelope. A valid
+ *                           mathematical configuration is not the same thing
+ *                           as a useful bike-fit match.
+ * - SUCCESS:                a valid configuration exists AND its positional
+ *                           error is within the acceptable fit envelope.
  */
-export type OptimisationOutcome = "NO_CANDIDATES" | "NO_VALID_RESULT" | "SUCCESS";
+export type OptimisationOutcome =
+  | "NO_CANDIDATES"
+  | "NO_VALID_RESULT"
+  | "OUTSIDE_FIT_ENVELOPE"
+  | "SUCCESS";
 
 /** A configuration dimension the Constraint Generator requires. */
 export type ConstraintDimension =
