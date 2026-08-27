@@ -247,7 +247,470 @@ export const bikeConfigurations: BikeConfiguration[] = [
     },
     notes: "",
   },
+
+  // --- Sprint 9.4A: verified configuration data for the new race fleet -----
+  // Hood reach / hood stack / hood rotation and handlebar rotation are not
+  // documented by any of these manufacturers and remain unknown throughout.
+
+  {
+    bikeId: "giant-tcr-advanced-sl-0-2025-m",
+    cockpits: [
+      {
+        id: "giant-tcr-sl-m-contact-slr-aerolight",
+        name: "Giant Contact SLR AeroLight stem + handlebar",
+        kind: "stem-and-handlebar",
+        isStock: true,
+        stemLengths: [100],
+        stemAngles: [-10],
+        handlebarReach: 72,
+        handlebarDrop: null,
+        handlebarWidth: 420,
+        notes:
+          "Giant documents the size M TCR Advanced SL 0 as supplied with a 100 mm Contact SLR AeroLight stem at -10 deg and a 420 mm Contact SLR AeroLight bar with 72 mm reach. Handlebar stack, handlebar rotation and hood reach/stack/rotation are not documented and remain unknown.",
+        sources: [
+          {
+            label: "Giant TCR Advanced SL 0 specifications and geometry",
+            url: "https://www.giant-bicycles.com/global/tcr-advanced-sl-0",
+          },
+        ],
+      },
+    ],
+    headset: {
+      spacerIncrement: 2.5,
+      suppliedParts: [
+        { description: "Spacer", height: 2.5, quantity: 1 },
+        { description: "Spacer", height: 5, quantity: 1 },
+        { description: "Spacer", height: 10, quantity: 1 },
+      ],
+      suppliedSpacerCapacity: null,
+      documentedMaximumBelowStem: null,
+      isManufacturerStatedMaximum: false,
+      notes:
+        "Giant documents 2.5 / 5 / 10 mm spacer components for the Contact SLR AeroLight system. Supplied quantities are not documented (recorded as one each) and Giant states no maximum spacer height, so the maximum remains unknown.",
+      sources: [
+        {
+          label: "Giant Contact SLR AeroLight cockpit / TCR service documentation",
+          url: "https://www.giant-bicycles.com/global/tcr-advanced-sl-0",
+        },
+      ],
+    },
+    seatpost: null,
+    notes: "Seatpost offset options not established; left unknown.",
+  },
+  {
+    bikeId: "giant-tcr-advanced-sl-0-2025-ml",
+    cockpits: [
+      {
+        id: "giant-tcr-sl-ml-contact-slr-aerolight",
+        name: "Giant Contact SLR AeroLight stem + handlebar",
+        kind: "stem-and-handlebar",
+        isStock: true,
+        stemLengths: [110],
+        stemAngles: [-10],
+        handlebarReach: 72,
+        handlebarDrop: null,
+        handlebarWidth: 420,
+        notes:
+          "Giant documents the size M/L TCR Advanced SL 0 as supplied with a 110 mm Contact SLR AeroLight stem at -10 deg and a 420 mm Contact SLR AeroLight bar with 72 mm reach. Handlebar stack, handlebar rotation and hood geometry remain unknown.",
+        sources: [
+          {
+            label: "Giant TCR Advanced SL 0 specifications and geometry",
+            url: "https://www.giant-bicycles.com/global/tcr-advanced-sl-0",
+          },
+        ],
+      },
+    ],
+    headset: {
+      spacerIncrement: 2.5,
+      suppliedParts: [
+        { description: "Spacer", height: 2.5, quantity: 1 },
+        { description: "Spacer", height: 5, quantity: 1 },
+        { description: "Spacer", height: 10, quantity: 1 },
+      ],
+      suppliedSpacerCapacity: null,
+      documentedMaximumBelowStem: null,
+      isManufacturerStatedMaximum: false,
+      notes:
+        "Documented spacer components only (2.5 / 5 / 10 mm). No manufacturer-stated maximum spacer height.",
+      sources: [
+        {
+          label: "Giant Contact SLR AeroLight cockpit / TCR service documentation",
+          url: "https://www.giant-bicycles.com/global/tcr-advanced-sl-0",
+        },
+      ],
+    },
+    seatpost: null,
+    notes: "Seatpost offset options not established; left unknown.",
+  },
+
+  {
+    bikeId: "bmc-teammachine-slr01-54",
+    cockpits: [
+      {
+        id: "bmc-slr01-54-ics",
+        name: "BMC ICS integrated cockpit (100 mm x 400/436 mm)",
+        kind: "integrated",
+        isStock: true,
+        stemLengths: [100],
+        stemAngles: [-12],
+        handlebarReach: 70,
+        handlebarDrop: 127,
+        handlebarWidth: 400,
+        notes:
+          "BMC documents the size 54 Teammachine SLR01 ICS cockpit as 100 mm stem at -12 deg, 70 mm bar reach, 127 mm drop, 400 mm at the hoods flaring to 436 mm at the drops. Handlebar stack, handlebar rotation and hood reach/stack/rotation are not documented and remain unknown.",
+        sources: [
+          {
+            label: "BMC Teammachine SLR01 specifications and geometry",
+            url: "https://www.bmc-switzerland.com/en-au/teammachine-slr",
+          },
+          {
+            label: "BMC ICS cockpit technical documentation",
+            url: "https://www.bmc-switzerland.com/en-au/support/manuals",
+          },
+        ],
+      },
+    ],
+    headset: {
+      spacerIncrement: null,
+      suppliedParts: [],
+      suppliedSpacerCapacity: null,
+      documentedMaximumBelowStem: 60,
+      isManufacturerStatedMaximum: true,
+      notes:
+        "BMC documents a maximum ICS spacer/stack adjustment of 60 mm. Individual spacer component heights are not re-derived into a different maximum. Intermediate buildable heights are not documented and are therefore not enumerated here.",
+      sources: [
+        {
+          label: "BMC ICS cockpit technical documentation",
+          url: "https://www.bmc-switzerland.com/en-au/support/manuals",
+        },
+      ],
+    },
+    seatpost: null,
+    notes: "Seatpost offset options not established; left unknown.",
+  },
+  {
+    bikeId: "bmc-teammachine-slr01-56",
+    cockpits: [
+      {
+        id: "bmc-slr01-56-ics",
+        name: "BMC ICS integrated cockpit (110 mm x 400/436 mm)",
+        kind: "integrated",
+        isStock: true,
+        stemLengths: [110],
+        stemAngles: [-12],
+        handlebarReach: 70,
+        handlebarDrop: 127,
+        handlebarWidth: 400,
+        notes:
+          "BMC documents the size 56 Teammachine SLR01 ICS cockpit as 110 mm stem at -12 deg, 70 mm bar reach, 127 mm drop, 400 mm at the hoods flaring to 436 mm at the drops. Handlebar stack, handlebar rotation and hood geometry remain unknown.",
+        sources: [
+          {
+            label: "BMC Teammachine SLR01 specifications and geometry",
+            url: "https://www.bmc-switzerland.com/en-au/teammachine-slr",
+          },
+          {
+            label: "BMC ICS cockpit technical documentation",
+            url: "https://www.bmc-switzerland.com/en-au/support/manuals",
+          },
+        ],
+      },
+    ],
+    headset: {
+      spacerIncrement: null,
+      suppliedParts: [],
+      suppliedSpacerCapacity: null,
+      documentedMaximumBelowStem: 60,
+      isManufacturerStatedMaximum: true,
+      notes:
+        "BMC documents a maximum ICS spacer/stack adjustment of 60 mm. Intermediate buildable heights are not documented and are not enumerated.",
+      sources: [
+        {
+          label: "BMC ICS cockpit technical documentation",
+          url: "https://www.bmc-switzerland.com/en-au/support/manuals",
+        },
+      ],
+    },
+    seatpost: null,
+    notes: "Seatpost offset options not established; left unknown.",
+  },
+
+  {
+    bikeId: "cannondale-supersix-evo-lab71-54",
+    cockpits: [
+      {
+        id: "cannondale-lab71-54-systembar-r-one",
+        name: "Cannondale SystemBar R-One integrated cockpit",
+        kind: "integrated",
+        isStock: true,
+        // Cannondale does not publish the supplied stem length per size for
+        // this build; left unknown rather than assumed.
+        stemLengths: [],
+        stemAngles: [-6],
+        handlebarReach: 80,
+        handlebarDrop: 130,
+        handlebarWidth: null,
+        notes:
+          "Cannondale documents the SystemBar R-One at -6 deg with 80 mm reach and 130 mm drop. Supplied stem length for size 54 is not established and remains unknown. Handlebar stack, handlebar rotation and hood reach/stack/rotation are not documented.",
+        sources: [
+          {
+            label: "Cannondale SuperSix EVO LAB71 specifications and geometry",
+            url: "https://www.cannondale.com/en-au/bikes/road/race/supersix-evo",
+          },
+          {
+            label: "Cannondale SystemBar R-One owner's manual supplement",
+            url: "https://www.cannondale.com/en-au/support/manuals",
+          },
+        ],
+      },
+    ],
+    headset: {
+      spacerIncrement: null,
+      suppliedParts: [],
+      suppliedSpacerCapacity: null,
+      documentedMaximumBelowStem: 50,
+      isManufacturerStatedMaximum: true,
+      notes:
+        "Cannondale documents a maximum of 50 mm of spacers plus a 5 mm dust cover. The documented maximum recorded here is spacer material only (50 mm), matching this schema's below-stem spacer definition; the dust cover is not added.",
+      sources: [
+        {
+          label: "Cannondale SystemBar R-One owner's manual supplement",
+          url: "https://www.cannondale.com/en-au/support/manuals",
+        },
+      ],
+    },
+    seatpost: null,
+    notes: "Seatpost offset options not established; left unknown.",
+  },
+  {
+    bikeId: "cannondale-supersix-evo-lab71-56",
+    cockpits: [
+      {
+        id: "cannondale-lab71-56-systembar-r-one",
+        name: "Cannondale SystemBar R-One integrated cockpit",
+        kind: "integrated",
+        isStock: true,
+        stemLengths: [],
+        stemAngles: [-6],
+        handlebarReach: 80,
+        handlebarDrop: 130,
+        handlebarWidth: null,
+        notes:
+          "Cannondale documents the SystemBar R-One at -6 deg with 80 mm reach and 130 mm drop. Supplied stem length for size 56 is not established and remains unknown. Handlebar stack, handlebar rotation and hood geometry remain unknown.",
+        sources: [
+          {
+            label: "Cannondale SuperSix EVO LAB71 specifications and geometry",
+            url: "https://www.cannondale.com/en-au/bikes/road/race/supersix-evo",
+          },
+          {
+            label: "Cannondale SystemBar R-One owner's manual supplement",
+            url: "https://www.cannondale.com/en-au/support/manuals",
+          },
+        ],
+      },
+    ],
+    headset: {
+      spacerIncrement: null,
+      suppliedParts: [],
+      suppliedSpacerCapacity: null,
+      documentedMaximumBelowStem: 50,
+      isManufacturerStatedMaximum: true,
+      notes:
+        "Documented maximum of 50 mm of spacers (plus a separate 5 mm dust cover, not included in the spacer figure).",
+      sources: [
+        {
+          label: "Cannondale SystemBar R-One owner's manual supplement",
+          url: "https://www.cannondale.com/en-au/support/manuals",
+        },
+      ],
+    },
+    seatpost: null,
+    notes: "Seatpost offset options not established; left unknown.",
+  },
+
+  {
+    bikeId: "cervelo-s5-54",
+    cockpits: [
+      {
+        id: "cervelo-s5-54-st35-hb14",
+        name: "Cervélo ST35 stem + HB14 handlebar",
+        kind: "stem-and-handlebar",
+        isStock: true,
+        stemLengths: [80, 90, 100, 110, 120, 130],
+        // ST35 stem angle is not published by Cervélo; left unknown.
+        stemAngles: [],
+        handlebarReach: null,
+        handlebarDrop: null,
+        handlebarWidth: null,
+        notes:
+          "Cervélo documents the S5 ST35 stem in 80-130 mm lengths, supplied at 100 mm, with the HB14 handlebar. Stem angle, handlebar reach/stack/drop and hood geometry are not published. The documented ±5 deg rotation is an adjustment range, not a stock orientation, so handlebar rotation remains unknown.",
+        sources: [
+          {
+            label: "Cervélo S5 specifications and geometry",
+            url: "https://www.cervelo.com/en-AU/bikes/s5",
+          },
+          {
+            label: "Cervélo ST35 stem / HB14 handlebar technical documentation",
+            url: "https://www.cervelo.com/en-AU/support/manuals",
+          },
+        ],
+      },
+    ],
+    headset: {
+      spacerIncrement: null,
+      suppliedParts: [],
+      suppliedSpacerCapacity: null,
+      documentedMaximumBelowStem: 30,
+      isManufacturerStatedMaximum: true,
+      notes:
+        "Cervélo documents a maximum stem-spacer height of 30 mm for the ST35 system. Individual spacer component heights are not published, so intermediate buildable heights are not enumerated.",
+      sources: [
+        {
+          label: "Cervélo ST35 stem technical documentation",
+          url: "https://www.cervelo.com/en-AU/support/manuals",
+        },
+      ],
+    },
+    seatpost: null,
+    notes: "Seatpost offset options not established; left unknown.",
+  },
+  {
+    bikeId: "cervelo-s5-56",
+    cockpits: [
+      {
+        id: "cervelo-s5-56-st35-hb14",
+        name: "Cervélo ST35 stem + HB14 handlebar",
+        kind: "stem-and-handlebar",
+        isStock: true,
+        stemLengths: [80, 90, 100, 110, 120, 130],
+        stemAngles: [],
+        handlebarReach: null,
+        handlebarDrop: null,
+        handlebarWidth: null,
+        notes:
+          "Cervélo documents the S5 ST35 stem in 80-130 mm lengths, supplied at 100 mm, with the HB14 handlebar. Stem angle, handlebar geometry and hood geometry are not published. The ±5 deg rotation figure is an adjustment range, not stock rotation.",
+        sources: [
+          {
+            label: "Cervélo S5 specifications and geometry",
+            url: "https://www.cervelo.com/en-AU/bikes/s5",
+          },
+          {
+            label: "Cervélo ST35 stem / HB14 handlebar technical documentation",
+            url: "https://www.cervelo.com/en-AU/support/manuals",
+          },
+        ],
+      },
+    ],
+    headset: {
+      spacerIncrement: null,
+      suppliedParts: [],
+      suppliedSpacerCapacity: null,
+      documentedMaximumBelowStem: 30,
+      isManufacturerStatedMaximum: true,
+      notes:
+        "Documented maximum stem-spacer height of 30 mm. Component heights are not published.",
+      sources: [
+        {
+          label: "Cervélo ST35 stem technical documentation",
+          url: "https://www.cervelo.com/en-AU/support/manuals",
+        },
+      ],
+    },
+    seatpost: null,
+    notes: "Seatpost offset options not established; left unknown.",
+  },
+
+  {
+    bikeId: "canyon-ultimate-cfr-m",
+    cockpits: [
+      {
+        id: "canyon-ultimate-cfr-m-cp0018",
+        name: "Canyon CP0018 integrated cockpit",
+        kind: "integrated",
+        isStock: true,
+        stemLengths: [70, 80, 90, 100, 110, 120, 130],
+        stemAngles: [-6],
+        handlebarReach: null,
+        handlebarDrop: null,
+        handlebarWidth: null,
+        notes:
+          "Canyon documents the CP0018 cockpit at -6 deg in 70-130 mm stem lengths. The stem length supplied on the size M Ultimate CFR is not explicitly established and is not assumed. Handlebar reach/stack/drop, handlebar rotation and hood geometry are not documented.",
+        sources: [
+          {
+            label: "Canyon Ultimate CFR specifications and geometry",
+            url: "https://www.canyon.com/en-au/road-bikes/race-bikes/ultimate/cfr/",
+          },
+          {
+            label: "Canyon CP0018 cockpit technical documentation",
+            url: "https://www.canyon.com/en-au/service/manuals.html",
+          },
+        ],
+      },
+    ],
+    headset: {
+      spacerIncrement: null,
+      suppliedParts: [],
+      suppliedSpacerCapacity: null,
+      documentedMaximumBelowStem: 15,
+      isManufacturerStatedMaximum: true,
+      notes:
+        "Canyon documents 15 mm of vertical adjustment below the CP0018 cockpit, which matches this schema's below-stem spacer height definition. Intermediate component heights are not published.",
+      sources: [
+        {
+          label: "Canyon CP0018 cockpit technical documentation",
+          url: "https://www.canyon.com/en-au/service/manuals.html",
+        },
+      ],
+    },
+    seatpost: null,
+    notes: "Seatpost offset options not established; left unknown.",
+  },
+  {
+    bikeId: "canyon-ultimate-cfr-l",
+    cockpits: [
+      {
+        id: "canyon-ultimate-cfr-l-cp0018",
+        name: "Canyon CP0018 integrated cockpit",
+        kind: "integrated",
+        isStock: true,
+        stemLengths: [70, 80, 90, 100, 110, 120, 130],
+        stemAngles: [-6],
+        handlebarReach: null,
+        handlebarDrop: null,
+        handlebarWidth: null,
+        notes:
+          "Canyon documents the CP0018 cockpit at -6 deg in 70-130 mm stem lengths. The stem length supplied on the size L Ultimate CFR is not explicitly established and is not assumed. Handlebar and hood geometry are not documented.",
+        sources: [
+          {
+            label: "Canyon Ultimate CFR specifications and geometry",
+            url: "https://www.canyon.com/en-au/road-bikes/race-bikes/ultimate/cfr/",
+          },
+          {
+            label: "Canyon CP0018 cockpit technical documentation",
+            url: "https://www.canyon.com/en-au/service/manuals.html",
+          },
+        ],
+      },
+    ],
+    headset: {
+      spacerIncrement: null,
+      suppliedParts: [],
+      suppliedSpacerCapacity: null,
+      documentedMaximumBelowStem: 15,
+      isManufacturerStatedMaximum: true,
+      notes:
+        "Documented 15 mm of vertical adjustment below the CP0018 cockpit. Component heights are not published.",
+      sources: [
+        {
+          label: "Canyon CP0018 cockpit technical documentation",
+          url: "https://www.canyon.com/en-au/service/manuals.html",
+        },
+      ],
+    },
+    seatpost: null,
+    notes: "Seatpost offset options not established; left unknown.",
+  },
 ];
+
 
 /** Lookup helper. Returns null when no configuration data exists for a bike. */
 export function getBikeConfiguration(bikeId: string): BikeConfiguration | null {
