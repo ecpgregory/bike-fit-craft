@@ -59,6 +59,13 @@ function legalCockpitOptions(constraints: BikeFitConstraints): CockpitOption[] {
       return constraints.allowAftermarketHandlebar;
     })
     .filter((option) => {
+      // An integrated unit dictates its own stem angle. An unknown angle is an
+      // unavailable configuration value, not a value to guess, so the unit
+      // cannot be enumerated as a real configuration.
+      if (option.isIntegrated && option.stemAngle === null) return false;
+      return true;
+    })
+    .filter((option) => {
       // An integrated unit's built-in stem must still respect stem limits.
       if (option.stemLength === null) return true;
       return withinBounds(
