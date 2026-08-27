@@ -121,17 +121,37 @@ describe("optimiseFleet", () => {
     expect(result.rankedBikes.length + result.unrankedBikes.length).toBe(result.totalBikes);
 
     expect(result.rankedBikes.map((r) => r.bikeId)).toEqual([
+      "bmc-teammachine-slr01-56",
+      "bmc-teammachine-slr01-54",
+      "canyon-ultimate-cfr-l",
       "specialized-tarmac-sl8-2025-54",
       "colnago-v5rs-2025-510",
+      "canyon-ultimate-cfr-m",
+      "giant-tcr-advanced-sl-0-2025-ml",
       "specialized-tarmac-sl8-2025-52",
       "colnago-v5rs-2025-485",
+      "giant-tcr-advanced-sl-0-2025-m",
     ]);
 
     const score = (id: string) =>
       result.rankedBikes.find((r) => r.bikeId === id)!.overallScore;
+
+    // Sprint 9.4A regression: the original five records are unchanged.
     expect(score("specialized-tarmac-sl8-2025-54")).toBeCloseTo(0.6781, 4);
     expect(score("colnago-v5rs-2025-510")).toBeCloseTo(0.6758, 4);
     expect(score("specialized-tarmac-sl8-2025-52")).toBeCloseTo(0.6734, 4);
     expect(score("colnago-v5rs-2025-485")).toBeCloseTo(0.6730, 4);
+    expect(
+      result.unrankedBikes.find((u) => u.bikeId === "giant-defy-advanced-1-2014-ml")!.outcome,
+    ).toBe("NO_CANDIDATES");
+
+    // New Sprint 9.4A records.
+    expect(score("bmc-teammachine-slr01-56")).toBeCloseTo(0.6899, 4);
+    expect(score("bmc-teammachine-slr01-54")).toBeCloseTo(0.6886, 4);
+    expect(score("canyon-ultimate-cfr-l")).toBeCloseTo(0.6809, 4);
+    expect(score("canyon-ultimate-cfr-m")).toBeCloseTo(0.6747, 4);
+    expect(score("giant-tcr-advanced-sl-0-2025-ml")).toBeCloseTo(0.6736, 4);
+    expect(score("giant-tcr-advanced-sl-0-2025-m")).toBeCloseTo(0.6723, 4);
   });
+
 });
