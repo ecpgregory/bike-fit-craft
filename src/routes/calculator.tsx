@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Calculator } from "lucide-react";
 
 import { PageHeader } from "@/components/page-header";
@@ -117,7 +117,12 @@ function FitCalculator() {
             <EmptyState
               icon={<Calculator className="size-5" />}
               title="Calculations not enabled yet"
-              description="Outputs stay blank until the fit model is wired up."
+              description="This page does not produce recommendations. Your live bike matches are generated from your saved fit on the dashboard."
+              action={
+                <Button asChild variant="outline" size="sm">
+                  <Link to="/">View your bike matches</Link>
+                </Button>
+              }
             />
           </Panel>
         </div>
