@@ -1,4 +1,5 @@
 import type { AssessmentNote, FitAssessment } from "@/types/optimisation";
+import { defaultPositionReportingThresholds } from "@/lib/explanationEngine";
 
 /**
  * Ranking layer — all subjective judgement lives here.
@@ -58,9 +59,12 @@ export interface NormalisationStrategy {
 }
 
 /**
- * Default normaliser: a bounded reciprocal, 1 / (1 + value). Non-linear by
- * design so no linear-scaling assumption is baked into the architecture.
- * Returns 1 for a perfect (zero) value and approaches 0 as error grows.
+ * Bounded reciprocal, 1 / (1 + value). Non-linear by design so no
+ * linear-scaling assumption is baked into the architecture. Returns 1 for a
+ * perfect (zero) value and approaches 0 as error grows.
+ *
+ * Retained as the default for the (currently placeholder, always-zero) cockpit
+ * and handling components, which are unitless counts rather than millimetres.
  */
 export const reciprocalNormalisation: NormalisationFunction = (value) => {
   const magnitude = Math.abs(value);
@@ -68,8 +72,35 @@ export const reciprocalNormalisation: NormalisationFunction = (value) => {
   return 1 / (1 + magnitude);
 };
 
+/**
+ * Sprint 9.7 — positional normalisation.
+ *
+ * The reciprocal normaliser has an implicit length scale of 1 mm, so every
+ * physically plausible RP3 error (5–80 mm) collapses into the bottom few
+ * percent of its range: 1/(1+7.6) = 0.116 and 1/(1+76.5) = 0.013. Combined
+ * with the two constant placeholder components this produced the observed
+ * 0.671–0.705 compression.
+ *
+ * Replacement: exponential decay with an explicit millimetre length scale,
+ *
+ *   positionScore = exp(-distance / POSITION_DECAY_MM)
+ *
+ * `POSITION_DECAY_MM` reuses the existing documented outer positional
+ * reporting band (`defaultPositionReportingThresholds.closeDistance`, 10 mm)
+ * as its length scale rather than introducing a new tuning constant. The
+ * function is strictly monotonic decreasing in distance, so ranking order and
+ * configuration selection are mathematically identical to the reciprocal.
+ */
+export const POSITION_DECAY_MM = defaultPositionReportingThresholds.closeDistance;
+
+export const exponentialPositionNormalisation: NormalisationFunction = (value) => {
+  const magnitude = Math.abs(value);
+  if (!Number.isFinite(magnitude)) return 0;
+  return Math.exp(-magnitude / POSITION_DECAY_MM);
+};
+
 export const defaultNormalisationStrategy: NormalisationStrategy = {
-  position: reciprocalNormalisation,
+  position: exponentialPositionNormalisation,
   cockpit: reciprocalNormalisation,
   handling: reciprocalNormalisation,
 };
@@ -119,6 +150,15 @@ export interface RankedConfiguration {
   scoringInputs: ScoringInputs;
   componentScores: ComponentScores;
   /**
+   * Ranking metric only — NOT a human-facing measure of fit quality.
+   *
+   * It is a weighted mean of normalised position, cockpit and handling
+   * components; the cockpit and handling components are placeholders fixed at
+   * zero penalty (normalised 1.0), so overallScore currently has a hard floor
+   * of 2/3. Positional fit quality is expressed by
+   * `assessment.positionMetrics` (deltaX / deltaY / euclideanDistance) and by
+   * the OptimisationOutcome classification — never by this number alone.
+   *
    * Numerical only. Rating bands are deliberately not implemented.
    *
    * Extension point: `positionRating` and `overallRating` bands will be added
