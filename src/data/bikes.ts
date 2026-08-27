@@ -218,6 +218,10 @@ export const bikes: Bike[] = [
     headTubeAngle: 71.2,
     seatTubeAngle: 73.7,
     forkOffset: 55,
+    // Sprint 9.4B: Cannondale's official SuperSix EVO LAB71 specification
+    // identifies the SystemBar Road integrated cockpit as 100 x 360 mm for
+    // sizes 54-56.
+    stockStemLength: 100,
     // Interpretation: maxSpacerHeight is consumed by deriveConstraintsFromBike
     // as a below-stem SPACER height (it is unioned with availableSpacerHeights
     // and used as maximumRecommendedSpacerHeight). It therefore means spacer
@@ -225,7 +229,7 @@ export const bikes: Bike[] = [
     // dust cover is NOT added.
     maxSpacerHeight: 50,
     notes:
-      "Source: Cannondale SuperSix EVO LAB71 geometry table (size 54). Spacer system documented as 50 mm of spacers plus a 5 mm dust cover; maxSpacerHeight records spacer material only (50 mm) per this field's definition.",
+      "Source: Cannondale SuperSix EVO LAB71 geometry table and specifications (size 54). Stock stem length from the documented SystemBar Road cockpit at 100 x 360 mm (sizes 54-56). Spacer system documented as 50 mm of spacers plus a 5 mm dust cover; maxSpacerHeight records spacer material only (50 mm) per this field's definition.",
   },
   {
     id: "cannondale-supersix-evo-lab71-56",
@@ -245,9 +249,13 @@ export const bikes: Bike[] = [
     headTubeAngle: 73.0,
     seatTubeAngle: 73.3,
     forkOffset: 45,
+    // Sprint 9.4B: Cannondale's official SuperSix EVO LAB71 specification
+    // identifies the SystemBar Road integrated cockpit as 100 x 360 mm for
+    // sizes 54-56.
+    stockStemLength: 100,
     maxSpacerHeight: 50,
     notes:
-      "Source: Cannondale SuperSix EVO LAB71 geometry table (size 56). Spacer system documented as 50 mm of spacers plus a 5 mm dust cover; maxSpacerHeight records spacer material only (50 mm) per this field's definition.",
+      "Source: Cannondale SuperSix EVO LAB71 geometry table and specifications (size 56). Stock stem length from the documented SystemBar Road cockpit at 100 x 360 mm (sizes 54-56). Spacer system documented as 50 mm of spacers plus a 5 mm dust cover; maxSpacerHeight records spacer material only (50 mm) per this field's definition.",
   },
 
   {
@@ -268,10 +276,16 @@ export const bikes: Bike[] = [
     headTubeAngle: 73.0,
     seatTubeAngle: 73.0,
     forkOffset: 46.5,
+    // Sprint 9.4B: Cervélo documents the S5 ST35 stem supplied at 100 mm.
+    // The ST35 stem angle remains UNKNOWN: Cervélo's published description of
+    // the ST35/HB14 assembly being equivalent to a -6 deg virtual plane
+    // describes the resulting cockpit geometry, not the geometric definition
+    // required by stockStemAngle, and is not converted here.
+    stockStemLength: 100,
     // Cervélo documents a maximum stem-spacer height of 30 mm below the stem.
     maxSpacerHeight: 30,
     notes:
-      "Source: Cervélo S5 geometry table and ST35 stem documentation (size 54). ST35/HB14 rotation adjustment of ±5 deg is an adjustment range, not a stock rotation, and is therefore not recorded as stockHandlebarRotation.",
+      "Source: Cervélo S5 geometry table and ST35 stem documentation (size 54). ST35 stem documented as supplied at 100 mm. ST35/HB14 rotation adjustment of ±5 deg is an adjustment range, not a stock rotation, and is therefore not recorded as stockHandlebarRotation.",
   },
   {
     id: "cervelo-s5-56",
@@ -291,9 +305,15 @@ export const bikes: Bike[] = [
     headTubeAngle: 73.5,
     seatTubeAngle: 73.0,
     forkOffset: 43.5,
+    // Sprint 9.4B: Cervélo documents the S5 ST35 stem supplied at 100 mm.
+    // The ST35 stem angle remains UNKNOWN: Cervélo's published description of
+    // the ST35/HB14 assembly being equivalent to a -6 deg virtual plane
+    // describes the resulting cockpit geometry, not the geometric definition
+    // required by stockStemAngle, and is not converted here.
+    stockStemLength: 100,
     maxSpacerHeight: 30,
     notes:
-      "Source: Cervélo S5 geometry table and ST35 stem documentation (size 56). ST35/HB14 rotation adjustment of ±5 deg is an adjustment range, not a stock rotation, and is therefore not recorded as stockHandlebarRotation.",
+      "Source: Cervélo S5 geometry table and ST35 stem documentation (size 56). ST35 stem documented as supplied at 100 mm. ST35/HB14 rotation adjustment of ±5 deg is an adjustment range, not a stock rotation, and is therefore not recorded as stockHandlebarRotation.",
   },
 
   {
