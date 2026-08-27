@@ -63,6 +63,12 @@ export interface BikeOptimisationResult {
   };
   /** Explanations keyed by candidateId, produced by the Explanation Engine. */
   explanations: Record<string, RecommendationExplanation>;
+  /**
+   * Untouched Geometry Solver output, passed through for presentation and
+   * diagnostics (solved RP3 and the configuration behind a candidateId).
+   * Optional so existing test doubles stay valid; nothing is recalculated.
+   */
+  solvedConfigurations?: SolvedConfiguration[];
 }
 
 export interface BikeOptimisationInput {
