@@ -3,7 +3,10 @@ import type { Bike, RiderProfile } from "@/types";
 import { generateLegalConfigurations } from "@/lib/constraintGenerator";
 import { deriveConstraintsFromBike } from "@/lib/bikeConstraints";
 import { optimiseBike } from "@/lib/optimisation/bikeOptimisationEngine";
-import { classifyOptimisationOutcome } from "@/lib/optimisation/optimisationOutcome";
+import {
+  classifyOptimisationOutcome,
+  defaultAcceptableFitEnvelope,
+} from "@/lib/optimisation/optimisationOutcome";
 import { runOptimisationPipeline } from "@/lib/optimisation/pipeline";
 
 /**
@@ -139,5 +142,46 @@ describe("classifyOptimisationOutcome", () => {
 
     expect(result.bestConfiguration).not.toBeNull();
     expect(classifyOptimisationOutcome(result)).toBe("SUCCESS");
+  });
+});
+
+/**
+ * Sprint 9.7 — a valid configuration is not automatically a fit match.
+ * These use synthetic result shapes only; no geometry is recalculated.
+ */
+describe("acceptable fit envelope", () => {
+  const stub = (distance: number) =>
+    ({
+      optimisationSummary: {
+        totalConfigurations: 4,
+        solvedConfigurations: 4,
+        rejectedConfigurations: 0,
+      },
+      bestConfiguration: {
+        candidateId: "c1",
+        assessment: { positionMetrics: { euclideanDistance: distance } },
+      },
+    }) as never;
+
+  it("classifies a valid configuration inside the envelope as SUCCESS", () => {
+    expect(classifyOptimisationOutcome(stub(8))).toBe("SUCCESS");
+    expect(
+      classifyOptimisationOutcome(stub(defaultAcceptableFitEnvelope.maximumPositionalError)),
+    ).toBe("SUCCESS");
+  });
+
+  it("classifies a valid configuration outside the envelope as OUTSIDE_FIT_ENVELOPE", () => {
+    expect(
+      classifyOptimisationOutcome(
+        stub(defaultAcceptableFitEnvelope.maximumPositionalError + 0.1),
+      ),
+    ).toBe("OUTSIDE_FIT_ENVELOPE");
+    expect(classifyOptimisationOutcome(stub(76.5))).toBe("OUTSIDE_FIT_ENVELOPE");
+  });
+
+  it("honours an injected envelope rather than a hard-coded distance", () => {
+    expect(classifyOptimisationOutcome(stub(8), { maximumPositionalError: 5 })).toBe(
+      "OUTSIDE_FIT_ENVELOPE",
+    );
   });
 });
