@@ -442,15 +442,16 @@ export const bikeConfigurations: BikeConfiguration[] = [
         name: "Cannondale SystemBar R-One integrated cockpit",
         kind: "integrated",
         isStock: true,
-        // Cannondale does not publish the supplied stem length per size for
-        // this build; left unknown rather than assumed.
-        stemLengths: [],
+        // Sprint 9.4B: Cannondale's official SuperSix EVO LAB71 specification
+        // identifies the SystemBar Road integrated cockpit as 100 x 360 mm
+        // for sizes 54-56, establishing the supplied stem length.
+        stemLengths: [100],
         stemAngles: [-6],
         handlebarReach: 80,
         handlebarDrop: 130,
         handlebarWidth: null,
         notes:
-          "Cannondale documents the SystemBar R-One at -6 deg with 80 mm reach and 130 mm drop. Supplied stem length for size 54 is not established and remains unknown. Handlebar stack, handlebar rotation and hood reach/stack/rotation are not documented.",
+          "Cannondale documents the SystemBar R-One at -6 deg with 80 mm reach and 130 mm drop. The official SuperSix EVO LAB71 specification identifies the SystemBar Road cockpit as 100 x 360 mm for sizes 54-56, establishing the 100 mm supplied stem length. Handlebar stack, handlebar rotation and hood reach/stack/rotation are not documented.",
         sources: [
           {
             label: "Cannondale SuperSix EVO LAB71 specifications and geometry",
@@ -489,13 +490,16 @@ export const bikeConfigurations: BikeConfiguration[] = [
         name: "Cannondale SystemBar R-One integrated cockpit",
         kind: "integrated",
         isStock: true,
-        stemLengths: [],
+        // Sprint 9.4B: Cannondale's official SuperSix EVO LAB71 specification
+        // identifies the SystemBar Road integrated cockpit as 100 x 360 mm
+        // for sizes 54-56, establishing the supplied stem length.
+        stemLengths: [100],
         stemAngles: [-6],
         handlebarReach: 80,
         handlebarDrop: 130,
         handlebarWidth: null,
         notes:
-          "Cannondale documents the SystemBar R-One at -6 deg with 80 mm reach and 130 mm drop. Supplied stem length for size 56 is not established and remains unknown. Handlebar stack, handlebar rotation and hood geometry remain unknown.",
+          "Cannondale documents the SystemBar R-One at -6 deg with 80 mm reach and 130 mm drop. The official SuperSix EVO LAB71 specification identifies the SystemBar Road cockpit as 100 x 360 mm for sizes 54-56, establishing the 100 mm supplied stem length. Handlebar stack, handlebar rotation and hood geometry remain unknown.",
         sources: [
           {
             label: "Cannondale SuperSix EVO LAB71 specifications and geometry",

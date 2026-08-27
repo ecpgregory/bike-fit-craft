@@ -47,6 +47,8 @@ describe("recommendation flow", () => {
 
   it("resolves brand, model and size by bikeId lookup for the verified SUCCESS bikes", () => {
     expect(view.recommendations.map((r) => r.bikeId)).toEqual([
+      "cannondale-supersix-evo-lab71-54",
+      "cannondale-supersix-evo-lab71-56",
       "bmc-teammachine-slr01-56",
       "bmc-teammachine-slr01-54",
       "canyon-ultimate-cfr-l",
@@ -59,10 +61,10 @@ describe("recommendation flow", () => {
       "giant-tcr-advanced-sl-0-2025-m",
     ]);
     const top = view.recommendations[0]!;
-    expect(top.bike?.brand).toBe("BMC");
-    expect(top.bike?.model).toBe("Teammachine SLR01");
-    expect(top.bike?.size).toBe("56");
-    expect(top.overallScore).toBeCloseTo(0.6899, 4);
+    expect(top.bike?.brand).toBe("Cannondale");
+    expect(top.bike?.model).toBe("SuperSix EVO LAB71");
+    expect(top.bike?.size).toBe("54");
+    expect(top.overallScore).toBeCloseTo(0.7038, 4);
   });
 
 
@@ -90,9 +92,11 @@ describe("recommendation flow", () => {
   });
 
   it("exposes the solved RP3 and configuration for the recommended candidate", () => {
+    // Sprint 9.4B: the corrected Cannondale SuperSix EVO LAB71 54 now tops
+    // the ranking with the verified 100 mm SystemBar cockpit.
     const top = view.recommendations[0]!;
-    expect(top.predictedPosition?.x).toBeCloseTo(483.2, 1);
-    expect(top.configuration?.stemLength).toBe(110);
+    expect(top.predictedPosition?.x).toBeCloseTo(465.4, 1);
+    expect(top.configuration?.stemLength).toBe(100);
   });
 });
 
