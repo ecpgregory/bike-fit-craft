@@ -1,13 +1,18 @@
 import type { RiderProfile } from "@/types";
 import { missingCockpitInputs } from "@/lib/optimisation/geometrySolver";
+import { availableMetric, unavailableMetric } from "@/types/optimisation";
 import type {
   AssessmentNote,
   CockpitConfiguration,
   CockpitPenaltyBreakdown,
+  CockpitTargetPosition,
   ConstraintStatus,
   FitAssessment,
   GeometryWarning,
   HandlingPenaltyBreakdown,
+  HandlingTarget,
+  MetricUnavailableCode,
+  PenaltyMetric,
   Point2D,
   PositionMetrics,
   PredictedPosition,
@@ -27,7 +32,8 @@ import type {
  * evaluated at all.
  *
  * The Error Calculator measures. It never judges, ranks or recommends.
- * Penalty functions exist for structure only and currently return zero.
+ * Metrics whose inputs are unavailable are reported as explicitly unavailable
+ * (see `PenaltyMetric`) — never as a zero penalty.
  *
  * All shared domain interfaces live in `src/types/optimisation.ts`; they are
  * re-exported here for backwards compatibility with existing imports.
@@ -40,6 +46,8 @@ export type {
   FitAssessment,
   GeometryWarning,
   HandlingPenaltyBreakdown,
+  HandlingTarget,
+  PenaltyMetric,
   Point2D,
   PositionMetrics,
   PredictedPosition,
@@ -53,6 +61,13 @@ export interface ErrorCalculatorInput {
   /** Produced by the Geometry Solver; RP5 supplies the predicted position. */
   solved: SolvedConfiguration;
   target: TargetPosition;
+  /**
+   * Rider cockpit contact target (RP5 convention). Omit when unknown — the
+   * RP3 target is never reused as a cockpit target.
+   */
+  cockpitTarget?: CockpitTargetPosition | null;
+  /** Rider handling target. Omit when the rider has stated none. */
+  handlingTarget?: HandlingTarget | null;
   /** Whether upstream stages consider this configuration legal. */
   isConstraintValid?: boolean;
   /** Notes carried through from earlier pipeline stages. */
@@ -60,6 +75,7 @@ export interface ErrorCalculatorInput {
   /** Structured observations carried through from earlier pipeline stages. */
   geometryWarnings?: GeometryWarning[];
 }
+
 
 /** Reads the rider's stored fit coordinates as a target position. */
 export function targetFromRider(rider: RiderProfile): TargetPosition {
