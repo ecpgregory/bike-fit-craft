@@ -52,8 +52,16 @@ export interface PipelineInput {
   /** Rider contact-point target; supply either this or `rider`. */
   target?: TargetPosition;
   rider?: RiderProfile;
+  /**
+   * Rider cockpit contact (RP5) target. Resolved from `rider` when not given;
+   * currently always null because RiderProfile defines no such measurement.
+   */
+  cockpitTarget?: CockpitTargetPosition | null;
+  /** Rider handling target. Resolved from `rider` when not given. */
+  handlingTarget?: HandlingTarget | null;
   rankingOptions?: RankingOptions;
 }
+
 
 export interface PipelineResult {
   configurations: CockpitConfiguration[];
