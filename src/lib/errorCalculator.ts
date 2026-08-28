@@ -82,6 +82,31 @@ export function targetFromRider(rider: RiderProfile): TargetPosition {
   return { x: rider.handlebarX, y: rider.handlebarY };
 }
 
+/**
+ * The rider's cockpit contact (RP5) target, when one exists.
+ *
+ * RiderProfile carries no measured hood-contact coordinate today, so this
+ * returns null. RP3 (handlebarX / handlebarY) is deliberately NOT reused: it
+ * is a different physical point and substituting it would invent data.
+ */
+export function cockpitTargetFromRider(
+  _rider: RiderProfile,
+): CockpitTargetPosition | null {
+  return null;
+}
+
+/**
+ * The rider's handling target, when one exists.
+ *
+ * RiderProfile carries no handlebar-width preference, and the rider's current
+ * equipment must never be used as a hidden default, so this returns null.
+ */
+export function handlingTargetFromRider(_rider: RiderProfile): HandlingTarget | null {
+  return null;
+}
+
+
+
 export function calculatePositionMetrics(
   predicted: PredictedPosition,
   target: TargetPosition,
