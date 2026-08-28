@@ -13,30 +13,34 @@ import { defaultPositionReportingThresholds } from "@/lib/explanationEngine";
 
 // --- Stage 1: transformation -------------------------------------------------
 
-/** Raw measurements reduced to the components that will be scored. */
+/**
+ * Raw measurements reduced to the components that will be scored.
+ *
+ * Sprint 9.8: `cockpit` and `handling` are `null` when the underlying metric
+ * is unavailable. Null means UNKNOWN and is excluded from scoring entirely —
+ * it must never be coerced to 0 (which would score as a perfect component).
+ */
 export interface ScoringInputs {
   position: number;
-  cockpit: number;
-  handling: number;
+  cockpit: number | null;
+  handling: number | null;
 }
 
 /** Pluggable transformation from an assessment to scoring inputs. */
 export type TransformationFunction = (assessment: FitAssessment) => ScoringInputs;
 
 /**
- * Default transformation: Euclidean distance for position, summed penalty
- * breakdowns for cockpit and handling. Alternative metrics are supplied by
- * passing a different TransformationFunction — never by editing this one.
+ * Default transformation: Euclidean distance for position, and the
+ * availability-aware cockpit/handling metrics produced by the Error
+ * Calculator. Alternative metrics are supplied by passing a different
+ * TransformationFunction — never by editing this one.
  */
-export const euclideanTransformation: TransformationFunction = (assessment) => {
-  const c = assessment.cockpitPenaltyBreakdown;
-  const h = assessment.handlingPenaltyBreakdown;
-  return {
-    position: assessment.positionMetrics.euclideanDistance,
-    cockpit: c.nonStockStem + c.nonStockCockpit + c.nonStockSpacerConfiguration,
-    handling: h.stemLengthPenalty + h.spacerPenalty,
-  };
-};
+export const euclideanTransformation: TransformationFunction = (assessment) => ({
+  position: assessment.positionMetrics.euclideanDistance,
+  cockpit: assessment.cockpitMetric.available ? assessment.cockpitMetric.value : null,
+  handling: assessment.handlingMetric.available ? assessment.handlingMetric.value : null,
+});
+
 
 // --- Stage 2: normalisation --------------------------------------------------
 
