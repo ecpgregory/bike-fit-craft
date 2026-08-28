@@ -385,6 +385,18 @@ export interface FitAssessment {
   positionMetrics: PositionMetrics;
   cockpitPenaltyBreakdown: CockpitPenaltyBreakdown;
   handlingPenaltyBreakdown: HandlingPenaltyBreakdown;
+  /**
+   * Sprint 9.8 — cockpit fit metric (RP5 error against a rider cockpit
+   * target). Explicitly unavailable when RP4/RP5 could not be solved or when
+   * no rider cockpit target exists. Unknown is never scored as perfect.
+   */
+  cockpitMetric: PenaltyMetric;
+  /**
+   * Sprint 9.8 — handling metric. Explicitly unavailable while the domain
+   * model carries no rider handling target.
+   */
+  handlingMetric: PenaltyMetric;
+
   /** Structured observations; populated by a future sprint. */
   geometryWarnings: GeometryWarning[];
   constraintStatus: ConstraintStatus;
