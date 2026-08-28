@@ -1,13 +1,18 @@
 import type { RiderProfile } from "@/types";
 import { missingCockpitInputs } from "@/lib/optimisation/geometrySolver";
+import { availableMetric, unavailableMetric } from "@/types/optimisation";
 import type {
   AssessmentNote,
   CockpitConfiguration,
   CockpitPenaltyBreakdown,
+  CockpitTargetPosition,
   ConstraintStatus,
   FitAssessment,
   GeometryWarning,
   HandlingPenaltyBreakdown,
+  HandlingTarget,
+  MetricUnavailableCode,
+  PenaltyMetric,
   Point2D,
   PositionMetrics,
   PredictedPosition,
@@ -27,7 +32,8 @@ import type {
  * evaluated at all.
  *
  * The Error Calculator measures. It never judges, ranks or recommends.
- * Penalty functions exist for structure only and currently return zero.
+ * Metrics whose inputs are unavailable are reported as explicitly unavailable
+ * (see `PenaltyMetric`) — never as a zero penalty.
  *
  * All shared domain interfaces live in `src/types/optimisation.ts`; they are
  * re-exported here for backwards compatibility with existing imports.
@@ -40,6 +46,8 @@ export type {
   FitAssessment,
   GeometryWarning,
   HandlingPenaltyBreakdown,
+  HandlingTarget,
+  PenaltyMetric,
   Point2D,
   PositionMetrics,
   PredictedPosition,
@@ -53,6 +61,13 @@ export interface ErrorCalculatorInput {
   /** Produced by the Geometry Solver; RP5 supplies the predicted position. */
   solved: SolvedConfiguration;
   target: TargetPosition;
+  /**
+   * Rider cockpit contact target (RP5 convention). Omit when unknown — the
+   * RP3 target is never reused as a cockpit target.
+   */
+  cockpitTarget?: CockpitTargetPosition | null;
+  /** Rider handling target. Omit when the rider has stated none. */
+  handlingTarget?: HandlingTarget | null;
   /** Whether upstream stages consider this configuration legal. */
   isConstraintValid?: boolean;
   /** Notes carried through from earlier pipeline stages. */
@@ -61,10 +76,36 @@ export interface ErrorCalculatorInput {
   geometryWarnings?: GeometryWarning[];
 }
 
+
 /** Reads the rider's stored fit coordinates as a target position. */
 export function targetFromRider(rider: RiderProfile): TargetPosition {
   return { x: rider.handlebarX, y: rider.handlebarY };
 }
+
+/**
+ * The rider's cockpit contact (RP5) target, when one exists.
+ *
+ * RiderProfile carries no measured hood-contact coordinate today, so this
+ * returns null. RP3 (handlebarX / handlebarY) is deliberately NOT reused: it
+ * is a different physical point and substituting it would invent data.
+ */
+export function cockpitTargetFromRider(
+  _rider: RiderProfile,
+): CockpitTargetPosition | null {
+  return null;
+}
+
+/**
+ * The rider's handling target, when one exists.
+ *
+ * RiderProfile carries no handlebar-width preference, and the rider's current
+ * equipment must never be used as a hidden default, so this returns null.
+ */
+export function handlingTargetFromRider(_rider: RiderProfile): HandlingTarget | null {
+  return null;
+}
+
+
 
 export function calculatePositionMetrics(
   predicted: PredictedPosition,
@@ -97,6 +138,10 @@ export function predictedPositionFromSolved(
  * TODO: engineering thresholds for component-origin penalties (stock vs
  * aftermarket stem, cockpit and spacer stacks) will be defined in a future
  * sprint. Until then every component returns zero — no invented assumptions.
+ *
+ * NOTE (Sprint 9.8): these breakdowns are *component-origin* bookkeeping and
+ * are no longer used by the ranking model. Cockpit fit quality is expressed by
+ * `FitAssessment.cockpitMetric`, which is availability-aware.
  */
 export function calculateCockpitPenalties(
   _configuration?: CockpitConfiguration | null,
@@ -119,6 +164,73 @@ export function calculateHandlingPenalties(
   return {
     stemLengthPenalty: 0,
     spacerPenalty: 0,
+  };
+}
+
+/**
+ * Sprint 9.8 — cockpit fit metric.
+ *
+ * The cockpit metric is the Euclidean error between the solved rider contact
+ * point (RP5) and the rider's cockpit contact target, using the same error
+ * model as the positional metric. It exists only when BOTH inputs are real:
+ *
+ *  - RP5 was solved (hood geometry documented), otherwise
+ *    COCKPIT_GEOMETRY_UNAVAILABLE;
+ *  - the rider has an explicit cockpit contact target, otherwise
+ *    COCKPIT_TARGET_UNAVAILABLE. The RP3 handlebar target is NOT reused: RP3
+ *    and RP5 are different physical points.
+ *
+ * Unknown is returned as an unavailable metric — never as zero penalty.
+ */
+export function calculateCockpitMetric(
+  solved: SolvedConfiguration,
+  cockpitTarget: CockpitTargetPosition | null | undefined,
+): PenaltyMetric {
+  if (solved.rp5 === null) return unavailableMetric("COCKPIT_GEOMETRY_UNAVAILABLE");
+  if (!cockpitTarget) return unavailableMetric("COCKPIT_TARGET_UNAVAILABLE");
+  return availableMetric(
+    calculatePositionMetrics(solved.rp5, cockpitTarget).euclideanDistance,
+  );
+}
+
+/**
+ * Sprint 9.8 — handling metric.
+ *
+ * The only handling characteristic the domain model represents objectively is
+ * handlebar width. A penalty is therefore calculated ONLY when the rider has
+ * stated a handlebar-width target AND the configuration carries a verified
+ * width. The rider's current equipment is never used as a hidden default, and
+ * no preference for wider or narrower bars is assumed: the penalty is the
+ * absolute deviation from the rider's own stated target, in millimetres.
+ */
+export function calculateHandlingMetric(
+  configuration: CockpitConfiguration,
+  handlingTarget: HandlingTarget | null | undefined,
+): PenaltyMetric {
+  if (!handlingTarget) return unavailableMetric("HANDLING_TARGET_UNAVAILABLE");
+  const width = configuration.handlebarWidth;
+  if (width === null || width === undefined)
+    return unavailableMetric("HANDLING_INPUT_UNAVAILABLE");
+  return availableMetric(Math.abs(width - handlingTarget.handlebarWidth));
+}
+
+const METRIC_DIAGNOSTICS: Record<MetricUnavailableCode, string> = {
+  COCKPIT_GEOMETRY_UNAVAILABLE:
+    "Cockpit fit not scored — RP5 could not be solved from documented hood geometry.",
+  COCKPIT_TARGET_UNAVAILABLE:
+    "Cockpit fit not scored — the rider profile defines no cockpit contact target.",
+  HANDLING_TARGET_UNAVAILABLE:
+    "Handling not scored — the rider profile defines no handling target.",
+  HANDLING_INPUT_UNAVAILABLE:
+    "Handling not scored — this configuration has no documented handlebar width.",
+};
+
+function metricWarning(metric: PenaltyMetric): GeometryWarning | null {
+  if (metric.available || metric.unavailableReason === null) return null;
+  return {
+    code: metric.unavailableReason,
+    severity: "info",
+    message: METRIC_DIAGNOSTICS[metric.unavailableReason],
   };
 }
 
@@ -157,13 +269,26 @@ export function assessSolvedConfiguration(
     });
   }
 
+  const cockpitMetric = calculateCockpitMetric(solved, input.cockpitTarget);
+  const handlingMetric = calculateHandlingMetric(
+    solved.configuration,
+    input.handlingTarget,
+  );
+  for (const metric of [cockpitMetric, handlingMetric]) {
+    const warning = metricWarning(metric);
+    if (warning) warnings.push(warning);
+  }
+
   return {
     candidateId,
     positionMetrics: calculatePositionMetrics(predicted, target),
     cockpitPenaltyBreakdown: calculateCockpitPenalties(solved.configuration),
     handlingPenaltyBreakdown: calculateHandlingPenalties(solved.configuration),
+    cockpitMetric,
+    handlingMetric,
     geometryWarnings: warnings,
     constraintStatus: resolveConstraintStatus(isConstraintValid),
     notes: notes ?? [],
   };
 }
+

@@ -28,6 +28,17 @@ function assessment(candidateId: string, distance: number): FitAssessment {
       nonStockSpacerConfiguration: 0,
     },
     handlingPenaltyBreakdown: { stemLengthPenalty: 0, spacerPenalty: 0 },
+    cockpitMetric: {
+      available: false,
+      value: null,
+      unavailableReason: "COCKPIT_GEOMETRY_UNAVAILABLE",
+    },
+    handlingMetric: {
+      available: false,
+      value: null,
+      unavailableReason: "HANDLING_TARGET_UNAVAILABLE",
+    },
+
     geometryWarnings: [],
     constraintStatus: "VALID",
     notes: [],

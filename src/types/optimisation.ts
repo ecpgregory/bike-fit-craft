@@ -83,6 +83,12 @@ export interface CockpitConfiguration {
   exceedsRecommendedSpacerHeight: boolean;
   /** The cockpit option this configuration was built from, when applicable. */
   cockpitOptionId: string | null;
+  /**
+   * Millimetres, centre-to-centre at the hoods. Only populated when the
+   * cockpit data carries a verified width; never inferred.
+   */
+  handlebarWidth?: Millimetres | null;
+
 
   // --- Cockpit Model 1.0 Stage 2 engineering inputs -------------------------
   // These quantities exist structurally so the Geometry Solver can express the
@@ -164,7 +170,11 @@ export type GeometryWarningCode =
   | "INTEGRATED_COCKPIT"
   | "AFTERMARKET_COCKPIT"
   | "MANUFACTURER_LIMITATION"
-  | "RP4_RP5_UNAVAILABLE";
+  | "RP4_RP5_UNAVAILABLE"
+  | "COCKPIT_GEOMETRY_UNAVAILABLE"
+  | "COCKPIT_TARGET_UNAVAILABLE"
+  | "HANDLING_TARGET_UNAVAILABLE"
+  | "HANDLING_INPUT_UNAVAILABLE";
 
 /**
  * An observation only — never a judgement, score or recommendation.
@@ -178,6 +188,55 @@ export interface GeometryWarning {
   measurements?: Record<string, number | string | string[]>;
 }
 
+/**
+ * Sprint 9.8 — availability-aware metric.
+ *
+ * A metric is only a number when the inputs required to calculate it genuinely
+ * exist. `available: false` means UNKNOWN — it must never be read as a zero
+ * penalty or a perfect score. Consumers that cannot handle an unknown metric
+ * must exclude it, not substitute a value.
+ */
+export interface PenaltyMetric {
+  available: boolean;
+  /** Penalty magnitude. Null whenever `available` is false. */
+  value: number | null;
+  /** Machine-readable reason; null when the metric is available. */
+  unavailableReason: MetricUnavailableCode | null;
+}
+
+/** Why an availability-aware metric could not be calculated. */
+export type MetricUnavailableCode =
+  | "COCKPIT_GEOMETRY_UNAVAILABLE"
+  | "COCKPIT_TARGET_UNAVAILABLE"
+  | "HANDLING_TARGET_UNAVAILABLE"
+  | "HANDLING_INPUT_UNAVAILABLE";
+
+/** An explicitly unavailable metric. The only way to express UNKNOWN. */
+export function unavailableMetric(reason: MetricUnavailableCode): PenaltyMetric {
+  return { available: false, value: null, unavailableReason: reason };
+}
+
+/** A calculated metric. */
+export function availableMetric(value: number): PenaltyMetric {
+  return { available: true, value, unavailableReason: null };
+}
+
+/**
+ * A rider's cockpit contact target (RP5 convention). No field in RiderProfile
+ * currently defines one, so this is null in production; it is modelled so the
+ * cockpit metric can be calculated the moment a verified target exists.
+ */
+export type CockpitTargetPosition = Point2D;
+
+/**
+ * Rider handling targets. Only fields the rider has explicitly specified may
+ * appear here; nothing is defaulted from the rider's current equipment.
+ */
+export interface HandlingTarget {
+  /** Rider's target handlebar width in millimetres. */
+  handlebarWidth: Millimetres;
+}
+
 export interface CockpitPenaltyBreakdown {
   nonStockStem: number;
   nonStockCockpit: number;
@@ -188,6 +247,7 @@ export interface HandlingPenaltyBreakdown {
   stemLengthPenalty: number;
   spacerPenalty: number;
 }
+
 
 export interface PositionMetrics {
   deltaX: number;
@@ -331,6 +391,18 @@ export interface FitAssessment {
   positionMetrics: PositionMetrics;
   cockpitPenaltyBreakdown: CockpitPenaltyBreakdown;
   handlingPenaltyBreakdown: HandlingPenaltyBreakdown;
+  /**
+   * Sprint 9.8 — cockpit fit metric (RP5 error against a rider cockpit
+   * target). Explicitly unavailable when RP4/RP5 could not be solved or when
+   * no rider cockpit target exists. Unknown is never scored as perfect.
+   */
+  cockpitMetric: PenaltyMetric;
+  /**
+   * Sprint 9.8 — handling metric. Explicitly unavailable while the domain
+   * model carries no rider handling target.
+   */
+  handlingMetric: PenaltyMetric;
+
   /** Structured observations; populated by a future sprint. */
   geometryWarnings: GeometryWarning[];
   constraintStatus: ConstraintStatus;

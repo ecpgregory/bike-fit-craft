@@ -2,6 +2,8 @@ import type { RiderProfile } from "@/types";
 import type {
   BikeFitConstraints,
   CockpitConfiguration,
+  CockpitTargetPosition,
+  HandlingTarget,
   FitAssessment,
   FrameGeometry,
   SolvedConfiguration,
@@ -9,7 +11,12 @@ import type {
   UnsolvedReason,
 } from "@/types/optimisation";
 import { generateLegalConfigurations } from "@/lib/constraintGenerator";
-import { assessSolvedConfiguration, targetFromRider } from "@/lib/errorCalculator";
+import {
+  assessSolvedConfiguration,
+  cockpitTargetFromRider,
+  handlingTargetFromRider,
+  targetFromRider,
+} from "@/lib/errorCalculator";
 import { explainRanking, type RecommendationExplanation } from "@/lib/explanationEngine";
 import {
   rankConfigurations,
@@ -52,8 +59,16 @@ export interface PipelineInput {
   /** Rider contact-point target; supply either this or `rider`. */
   target?: TargetPosition;
   rider?: RiderProfile;
+  /**
+   * Rider cockpit contact (RP5) target. Resolved from `rider` when not given;
+   * currently always null because RiderProfile defines no such measurement.
+   */
+  cockpitTarget?: CockpitTargetPosition | null;
+  /** Rider handling target. Resolved from `rider` when not given. */
+  handlingTarget?: HandlingTarget | null;
   rankingOptions?: RankingOptions;
 }
+
 
 export interface PipelineResult {
   configurations: CockpitConfiguration[];
@@ -79,6 +94,11 @@ function resolveTarget(input: PipelineInput): TargetPosition {
 /** Runs the full optimisation pipeline for one bike size. */
 export function runOptimisationPipeline(input: PipelineInput): PipelineResult {
   const target = resolveTarget(input);
+  // Availability-aware targets: null when the rider has not supplied one.
+  const cockpitTarget =
+    input.cockpitTarget ?? (input.rider ? cockpitTargetFromRider(input.rider) : null);
+  const handlingTarget =
+    input.handlingTarget ?? (input.rider ? handlingTargetFromRider(input.rider) : null);
 
   // 1. Constraint Generator — legal cockpit configurations only.
   const configurations = generateLegalConfigurations(input.constraints);
@@ -100,6 +120,8 @@ export function runOptimisationPipeline(input: PipelineInput): PipelineResult {
       candidateId,
       solved,
       target,
+      cockpitTarget,
+      handlingTarget,
       isConstraintValid: true,
     });
 

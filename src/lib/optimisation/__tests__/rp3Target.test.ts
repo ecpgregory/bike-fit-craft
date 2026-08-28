@@ -82,8 +82,14 @@ describe("RP3 as the rider-position target", () => {
       solved,
       target: { x: 470, y: 631 },
     })!;
-    expect(assessment.geometryWarnings).toHaveLength(0);
+    const codes = assessment.geometryWarnings.map((w) => w.code);
+    expect(codes).not.toContain("RP4_RP5_UNAVAILABLE");
+    // Sprint 9.8: with no rider RP5 or handlebar-width target supplied, the
+    // cockpit and handling metrics are reported UNAVAILABLE rather than
+    // silently scored.
+    expect(codes).toEqual(["COCKPIT_TARGET_UNAVAILABLE", "HANDLING_TARGET_UNAVAILABLE"]);
   });
+
 
   it("reports every missing cockpit input in the RP3-only warning", () => {
     const solved = solveConfiguration(

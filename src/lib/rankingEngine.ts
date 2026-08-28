@@ -13,30 +13,34 @@ import { defaultPositionReportingThresholds } from "@/lib/explanationEngine";
 
 // --- Stage 1: transformation -------------------------------------------------
 
-/** Raw measurements reduced to the components that will be scored. */
+/**
+ * Raw measurements reduced to the components that will be scored.
+ *
+ * Sprint 9.8: `cockpit` and `handling` are `null` when the underlying metric
+ * is unavailable. Null means UNKNOWN and is excluded from scoring entirely —
+ * it must never be coerced to 0 (which would score as a perfect component).
+ */
 export interface ScoringInputs {
   position: number;
-  cockpit: number;
-  handling: number;
+  cockpit: number | null;
+  handling: number | null;
 }
 
 /** Pluggable transformation from an assessment to scoring inputs. */
 export type TransformationFunction = (assessment: FitAssessment) => ScoringInputs;
 
 /**
- * Default transformation: Euclidean distance for position, summed penalty
- * breakdowns for cockpit and handling. Alternative metrics are supplied by
- * passing a different TransformationFunction — never by editing this one.
+ * Default transformation: Euclidean distance for position, and the
+ * availability-aware cockpit/handling metrics produced by the Error
+ * Calculator. Alternative metrics are supplied by passing a different
+ * TransformationFunction — never by editing this one.
  */
-export const euclideanTransformation: TransformationFunction = (assessment) => {
-  const c = assessment.cockpitPenaltyBreakdown;
-  const h = assessment.handlingPenaltyBreakdown;
-  return {
-    position: assessment.positionMetrics.euclideanDistance,
-    cockpit: c.nonStockStem + c.nonStockCockpit + c.nonStockSpacerConfiguration,
-    handling: h.stemLengthPenalty + h.spacerPenalty,
-  };
-};
+export const euclideanTransformation: TransformationFunction = (assessment) => ({
+  position: assessment.positionMetrics.euclideanDistance,
+  cockpit: assessment.cockpitMetric.available ? assessment.cockpitMetric.value : null,
+  handling: assessment.handlingMetric.available ? assessment.handlingMetric.value : null,
+});
+
 
 // --- Stage 2: normalisation --------------------------------------------------
 
@@ -122,9 +126,9 @@ export const defaultScoringWeights: ScoringWeights = {
 // --- Stage 4: combination ----------------------------------------------------
 
 export interface ComponentScores {
-  /** Normalised, pre-weight component scores. */
+  /** Normalised, pre-weight component scores. Null = unavailable. */
   normalised: ScoringInputs;
-  /** Normalised scores multiplied by their weights. */
+  /** Normalised scores multiplied by their weights. Null = unavailable. */
   weighted: ScoringInputs;
 }
 
@@ -134,13 +138,35 @@ export type CombinationFunction = (
   weights: ScoringWeights,
 ) => number;
 
-/** Default: weighted mean, so overallScore stays comparable across weightings. */
+/**
+ * Default: availability-aware weighted mean.
+ *
+ * Sprint 9.8 — only components whose metric is actually available contribute,
+ * and only their weights enter the denominator. An unavailable component is
+ * excluded from the mean rather than scored, so UNKNOWN can never masquerade
+ * as a perfect 1.0 (the old placeholder behaviour, which created a hard 2/3
+ * floor). Product weights are unchanged; the weighting behaviour is now
+ * explicit. When only position is available the overall score equals the
+ * normalised positional score, which preserves the Sprint 9.7 positional
+ * ranking order exactly.
+ */
 export const weightedMeanCombination: CombinationFunction = (weighted, weights) => {
-  const totalWeight =
-    weights.positionWeight + weights.cockpitWeight + weights.handlingWeight;
+  const contributions: Array<[number | null, number]> = [
+    [weighted.position, weights.positionWeight],
+    [weighted.cockpit, weights.cockpitWeight],
+    [weighted.handling, weights.handlingWeight],
+  ];
+  let total = 0;
+  let totalWeight = 0;
+  for (const [value, weight] of contributions) {
+    if (value === null) continue;
+    total += value;
+    totalWeight += weight;
+  }
   if (totalWeight === 0) return 0;
-  return (weighted.position + weighted.cockpit + weighted.handling) / totalWeight;
+  return total / totalWeight;
 };
+
 
 // --- Results -----------------------------------------------------------------
 
@@ -152,12 +178,14 @@ export interface RankedConfiguration {
   /**
    * Ranking metric only — NOT a human-facing measure of fit quality.
    *
-   * It is a weighted mean of normalised position, cockpit and handling
-   * components; the cockpit and handling components are placeholders fixed at
-   * zero penalty (normalised 1.0), so overallScore currently has a hard floor
-   * of 2/3. Positional fit quality is expressed by
-   * `assessment.positionMetrics` (deltaX / deltaY / euclideanDistance) and by
-   * the OptimisationOutcome classification — never by this number alone.
+   * It is an availability-aware weighted mean of the normalised position,
+   * cockpit and handling components. Components whose metric is unavailable
+   * are excluded from the mean entirely (Sprint 9.8) rather than counted as
+   * perfect, so the old 2/3 floor no longer exists. Positional fit quality is
+   * expressed by `assessment.positionMetrics` (deltaX / deltaY /
+   * euclideanDistance) and by the OptimisationOutcome classification — never
+   * by this number alone.
+
    *
    * Numerical only. Rating bands are deliberately not implemented.
    *
@@ -225,14 +253,21 @@ export function rankConfigurations(input: RankingInput): RankingResult {
       const inputs = scoringInputs[index]!;
       const normalised: ScoringInputs = {
         position: normalise.position(inputs.position, context),
-        cockpit: normalise.cockpit(inputs.cockpit, context),
-        handling: normalise.handling(inputs.handling, context),
+        cockpit:
+          inputs.cockpit === null ? null : normalise.cockpit(inputs.cockpit, context),
+        handling:
+          inputs.handling === null ? null : normalise.handling(inputs.handling, context),
       };
       const weighted: ScoringInputs = {
         position: normalised.position * weights.positionWeight,
-        cockpit: normalised.cockpit * weights.cockpitWeight,
-        handling: normalised.handling * weights.handlingWeight,
+        cockpit:
+          normalised.cockpit === null ? null : normalised.cockpit * weights.cockpitWeight,
+        handling:
+          normalised.handling === null
+            ? null
+            : normalised.handling * weights.handlingWeight,
       };
+
       return {
         candidateId: assessment.candidateId,
         assessment,
