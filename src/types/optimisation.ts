@@ -83,6 +83,12 @@ export interface CockpitConfiguration {
   exceedsRecommendedSpacerHeight: boolean;
   /** The cockpit option this configuration was built from, when applicable. */
   cockpitOptionId: string | null;
+  /**
+   * Millimetres, centre-to-centre at the hoods. Only populated when the
+   * cockpit data carries a verified width; never inferred.
+   */
+  handlebarWidth?: Millimetres | null;
+
 
   // --- Cockpit Model 1.0 Stage 2 engineering inputs -------------------------
   // These quantities exist structurally so the Geometry Solver can express the
