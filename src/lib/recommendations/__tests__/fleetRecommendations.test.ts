@@ -64,8 +64,8 @@ describe("recommendation flow", () => {
     expect(top.bike?.brand).toBe("Cannondale");
     expect(top.bike?.model).toBe("SuperSix EVO LAB71");
     expect(top.bike?.size).toBe("54");
-    // Sprint 9.7 recalibrated score; same bike, same configuration, same RP3.
-    expect(top.overallScore).toBeCloseTo(0.8169, 4);
+    // Sprint 9.8 availability-aware score; same bike, configuration and RP3.
+    expect(top.overallScore).toBeCloseTo(0.4506, 4);
     expect(top.outcome).toBe("SUCCESS");
   });
 
