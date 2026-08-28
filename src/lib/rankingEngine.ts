@@ -178,12 +178,14 @@ export interface RankedConfiguration {
   /**
    * Ranking metric only — NOT a human-facing measure of fit quality.
    *
-   * It is a weighted mean of normalised position, cockpit and handling
-   * components; the cockpit and handling components are placeholders fixed at
-   * zero penalty (normalised 1.0), so overallScore currently has a hard floor
-   * of 2/3. Positional fit quality is expressed by
-   * `assessment.positionMetrics` (deltaX / deltaY / euclideanDistance) and by
-   * the OptimisationOutcome classification — never by this number alone.
+   * It is an availability-aware weighted mean of the normalised position,
+   * cockpit and handling components. Components whose metric is unavailable
+   * are excluded from the mean entirely (Sprint 9.8) rather than counted as
+   * perfect, so the old 2/3 floor no longer exists. Positional fit quality is
+   * expressed by `assessment.positionMetrics` (deltaX / deltaY /
+   * euclideanDistance) and by the OptimisationOutcome classification — never
+   * by this number alone.
+
    *
    * Numerical only. Rating bands are deliberately not implemented.
    *
