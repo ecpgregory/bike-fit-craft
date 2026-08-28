@@ -251,14 +251,21 @@ export function rankConfigurations(input: RankingInput): RankingResult {
       const inputs = scoringInputs[index]!;
       const normalised: ScoringInputs = {
         position: normalise.position(inputs.position, context),
-        cockpit: normalise.cockpit(inputs.cockpit, context),
-        handling: normalise.handling(inputs.handling, context),
+        cockpit:
+          inputs.cockpit === null ? null : normalise.cockpit(inputs.cockpit, context),
+        handling:
+          inputs.handling === null ? null : normalise.handling(inputs.handling, context),
       };
       const weighted: ScoringInputs = {
         position: normalised.position * weights.positionWeight,
-        cockpit: normalised.cockpit * weights.cockpitWeight,
-        handling: normalised.handling * weights.handlingWeight,
+        cockpit:
+          normalised.cockpit === null ? null : normalised.cockpit * weights.cockpitWeight,
+        handling:
+          normalised.handling === null
+            ? null
+            : normalised.handling * weights.handlingWeight,
       };
+
       return {
         candidateId: assessment.candidateId,
         assessment,
