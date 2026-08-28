@@ -126,9 +126,9 @@ export const defaultScoringWeights: ScoringWeights = {
 // --- Stage 4: combination ----------------------------------------------------
 
 export interface ComponentScores {
-  /** Normalised, pre-weight component scores. */
+  /** Normalised, pre-weight component scores. Null = unavailable. */
   normalised: ScoringInputs;
-  /** Normalised scores multiplied by their weights. */
+  /** Normalised scores multiplied by their weights. Null = unavailable. */
   weighted: ScoringInputs;
 }
 
@@ -138,13 +138,35 @@ export type CombinationFunction = (
   weights: ScoringWeights,
 ) => number;
 
-/** Default: weighted mean, so overallScore stays comparable across weightings. */
+/**
+ * Default: availability-aware weighted mean.
+ *
+ * Sprint 9.8 — only components whose metric is actually available contribute,
+ * and only their weights enter the denominator. An unavailable component is
+ * excluded from the mean rather than scored, so UNKNOWN can never masquerade
+ * as a perfect 1.0 (the old placeholder behaviour, which created a hard 2/3
+ * floor). Product weights are unchanged; the weighting behaviour is now
+ * explicit. When only position is available the overall score equals the
+ * normalised positional score, which preserves the Sprint 9.7 positional
+ * ranking order exactly.
+ */
 export const weightedMeanCombination: CombinationFunction = (weighted, weights) => {
-  const totalWeight =
-    weights.positionWeight + weights.cockpitWeight + weights.handlingWeight;
+  const contributions: Array<[number | null, number]> = [
+    [weighted.position, weights.positionWeight],
+    [weighted.cockpit, weights.cockpitWeight],
+    [weighted.handling, weights.handlingWeight],
+  ];
+  let total = 0;
+  let totalWeight = 0;
+  for (const [value, weight] of contributions) {
+    if (value === null) continue;
+    total += value;
+    totalWeight += weight;
+  }
   if (totalWeight === 0) return 0;
-  return (weighted.position + weighted.cockpit + weighted.handling) / totalWeight;
+  return total / totalWeight;
 };
+
 
 // --- Results -----------------------------------------------------------------
 
