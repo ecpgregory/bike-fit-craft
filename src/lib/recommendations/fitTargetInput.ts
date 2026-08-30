@@ -17,21 +17,40 @@ import type {
 export interface FitTargetInput {
   handlebarX: string;
   handlebarY: string;
+  /** Optional rider contact point (RP5) X, mm from the bottom bracket. */
+  cockpitTargetX?: string;
+  /** Optional rider contact point (RP5) Y, mm above the bottom bracket. */
+  cockpitTargetY?: string;
+  /** Optional rider target handlebar width, mm. */
+  handlebarWidth?: string;
 }
 
 export interface FitTargetErrors {
   handlebarX?: string;
   handlebarY?: string;
+  cockpitTargetX?: string;
+  cockpitTargetY?: string;
+  handlebarWidth?: string;
 }
 
 export type FitTargetParseResult =
-  | { ok: true; target: TargetPosition }
+  | {
+      ok: true;
+      target: TargetPosition;
+      /** Null when the rider left the RP5 measurements blank. */
+      cockpitTarget: CockpitTargetPosition | null;
+      /** Null when the rider stated no handlebar-width target. */
+      handlingTarget: HandlingTarget | null;
+    }
   | { ok: false; errors: FitTargetErrors };
 
 /** Demonstration defaults only — never read by the optimisation engine. */
 export const DEFAULT_FIT_TARGET_INPUT: FitTargetInput = {
   handlebarX: "470",
   handlebarY: "631",
+  cockpitTargetX: "",
+  cockpitTargetY: "",
+  handlebarWidth: "",
 };
 
 function validateField(raw: string, label: string): { value: number } | { error: string } {
