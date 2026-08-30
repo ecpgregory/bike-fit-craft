@@ -40,6 +40,18 @@ export interface RiderProfile {
   preferredHandlebarReach?: Millimetres | null;
   preferredHandlebarStack?: Millimetres | null;
   preferredCrankLength?: Millimetres | null;
+
+  // --- Rider-side optimisation targets (Sprint 9.9; all optional) ---
+  /**
+   * Rider's cockpit contact target, X — horizontal distance from the bottom
+   * bracket to the rider contact point (RP5, hood contact), millimetres.
+   * Only meaningful together with `cockpitTargetY`. Never inferred from RP3.
+   */
+  cockpitTargetX?: Millimetres | null;
+  /** Rider's cockpit contact target, Y — height above the bottom bracket (RP5). */
+  cockpitTargetY?: Millimetres | null;
+  /** Rider's stated target handlebar width in millimetres (handling target). */
+  targetHandlebarWidth?: Millimetres | null;
 }
 
 /** One row = ONE bike size. */

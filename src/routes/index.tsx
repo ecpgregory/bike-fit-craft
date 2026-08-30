@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Bike as BikeIcon, Trophy, TriangleAlert } from "lucide-react";
 
+import type { RiderProfile } from "@/types";
 import type { TargetPosition } from "@/types/optimisation";
 import { FitTargetForm } from "@/components/dashboard/fit-target-form";
 import {
@@ -54,11 +55,17 @@ type CalculationState =
   | { status: "ready"; view: FleetRecommendationsView }
   | { status: "error"; message: string };
 
+/** One optimisation request: RP3 target plus the rider profile it came from. */
+interface PendingRequest {
+  target: TargetPosition;
+  rider: RiderProfile;
+}
+
 function Dashboard() {
   const [input, setInput] = useState<FitTargetInput>(DEFAULT_FIT_TARGET_INPUT);
   const [errors, setErrors] = useState<FitTargetErrors>({});
   const [state, setState] = useState<CalculationState>({ status: "idle" });
-  const [pendingTarget, setPendingTarget] = useState<TargetPosition | null>(null);
+  const [pendingRequest, setPendingRequest] = useState<PendingRequest | null>(null);
 
   const runSearch = useCallback(() => {
     const parsed = parseFitTargetInput(input);
@@ -66,23 +73,35 @@ function Dashboard() {
       setErrors(parsed.errors);
       // Validation failed: no optimisation is run and stale results are cleared.
       setState({ status: "idle" });
-      setPendingTarget(null);
+      setPendingRequest(null);
       return;
     }
     setErrors({});
     setState({ status: "loading" });
-    setPendingTarget(parsed.target);
+    setPendingRequest({
+      target: parsed.target,
+      // Optional rider measurements only; absent stays absent (null).
+      rider: {
+        ...riderProfile,
+        cockpitTargetX: parsed.cockpitTarget?.x ?? null,
+        cockpitTargetY: parsed.cockpitTarget?.y ?? null,
+        targetHandlebarWidth: parsed.handlingTarget?.handlebarWidth ?? null,
+      },
+    });
   }, [input]);
 
   // The optimisation runs off the render path so the loading state is visible.
   useEffect(() => {
-    if (!pendingTarget) return;
+    if (!pendingRequest) return;
     let cancelled = false;
     const id = setTimeout(() => {
       if (cancelled) return;
       try {
         // Single authoritative recommendation path: the production fleet engine.
-        const result = optimiseFleet({ target: pendingTarget, rider: riderProfile });
+        const result = optimiseFleet({
+          target: pendingRequest.target,
+          rider: pendingRequest.rider,
+        });
         setState({ status: "ready", view: buildFleetRecommendations(result, bikes) });
       } catch (error) {
         setState({
@@ -95,7 +114,7 @@ function Dashboard() {
       cancelled = true;
       clearTimeout(id);
     };
-  }, [pendingTarget]);
+  }, [pendingRequest]);
 
   // Run once with the demonstration defaults so the page is not empty.
   useEffect(() => {

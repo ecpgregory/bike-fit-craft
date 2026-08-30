@@ -85,24 +85,33 @@ export function targetFromRider(rider: RiderProfile): TargetPosition {
 /**
  * The rider's cockpit contact (RP5) target, when one exists.
  *
- * RiderProfile carries no measured hood-contact coordinate today, so this
- * returns null. RP3 (handlebarX / handlebarY) is deliberately NOT reused: it
- * is a different physical point and substituting it would invent data.
+ * Sprint 9.9: read from the optional `cockpitTargetX` / `cockpitTargetY`
+ * rider measurements, using the solver's RP5 convention (millimetres from the
+ * bottom bracket: x horizontal, y vertical). Both coordinates must be present;
+ * a partial measurement is not a target. RP3 (handlebarX / handlebarY) is
+ * deliberately NOT reused: it is a different physical point.
  */
 export function cockpitTargetFromRider(
-  _rider: RiderProfile,
+  rider: RiderProfile,
 ): CockpitTargetPosition | null {
-  return null;
+  const x = rider.cockpitTargetX;
+  const y = rider.cockpitTargetY;
+  if (typeof x !== "number" || typeof y !== "number") return null;
+  if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
+  return { x, y };
 }
 
 /**
  * The rider's handling target, when one exists.
  *
- * RiderProfile carries no handlebar-width preference, and the rider's current
- * equipment must never be used as a hidden default, so this returns null.
+ * Sprint 9.9: read from the optional `targetHandlebarWidth` measurement, in
+ * millimetres. The rider's current equipment is never used as a hidden
+ * default, so an absent measurement stays absent.
  */
-export function handlingTargetFromRider(_rider: RiderProfile): HandlingTarget | null {
-  return null;
+export function handlingTargetFromRider(rider: RiderProfile): HandlingTarget | null {
+  const width = rider.targetHandlebarWidth;
+  if (typeof width !== "number" || !Number.isFinite(width)) return null;
+  return { handlebarWidth: width };
 }
 
 
