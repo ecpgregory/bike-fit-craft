@@ -23,4 +23,9 @@ export const riderProfile: RiderProfile = {
   preferredHandlebarReach: null,
   preferredHandlebarStack: null,
   preferredCrankLength: null,
+
+  // Rider-side optimisation targets — unmeasured, therefore explicitly absent.
+  cockpitTargetX: null,
+  cockpitTargetY: null,
+  targetHandlebarWidth: null,
 };
