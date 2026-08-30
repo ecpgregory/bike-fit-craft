@@ -58,7 +58,7 @@ function Dashboard() {
   const [input, setInput] = useState<FitTargetInput>(DEFAULT_FIT_TARGET_INPUT);
   const [errors, setErrors] = useState<FitTargetErrors>({});
   const [state, setState] = useState<CalculationState>({ status: "idle" });
-  const [pendingTarget, setPendingTarget] = useState<TargetPosition | null>(null);
+  const [pendingRequest, setPendingRequest] = useState<PendingRequest | null>(null);
 
   const runSearch = useCallback(() => {
     const parsed = parseFitTargetInput(input);
@@ -66,12 +66,21 @@ function Dashboard() {
       setErrors(parsed.errors);
       // Validation failed: no optimisation is run and stale results are cleared.
       setState({ status: "idle" });
-      setPendingTarget(null);
+      setPendingRequest(null);
       return;
     }
     setErrors({});
     setState({ status: "loading" });
-    setPendingTarget(parsed.target);
+    setPendingRequest({
+      target: parsed.target,
+      // Optional rider measurements only; absent stays absent (null).
+      rider: {
+        ...riderProfile,
+        cockpitTargetX: parsed.cockpitTarget?.x ?? null,
+        cockpitTargetY: parsed.cockpitTarget?.y ?? null,
+        targetHandlebarWidth: parsed.handlingTarget?.handlebarWidth ?? null,
+      },
+    });
   }, [input]);
 
   // The optimisation runs off the render path so the loading state is visible.
