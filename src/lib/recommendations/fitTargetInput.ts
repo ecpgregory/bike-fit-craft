@@ -1,4 +1,8 @@
-import type { TargetPosition } from "@/types/optimisation";
+import type {
+  CockpitTargetPosition,
+  HandlingTarget,
+  TargetPosition,
+} from "@/types/optimisation";
 
 /**
  * Rider input → TargetPosition.
