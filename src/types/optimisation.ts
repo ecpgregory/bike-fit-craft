@@ -24,6 +24,11 @@ export interface CockpitOption {
   stemAngle: number | null;
   handlebarReach: Millimetres | null;
   handlebarStack: Millimetres | null;
+  /**
+   * Documented handlebar width, centre-to-centre at the hoods, mm.
+   * Null/absent = not established; never inferred or defaulted.
+   */
+  handlebarWidth?: Millimetres | null;
   /** Degrees; rotation of the handlebar about its clamp axis. Null when unknown. */
   handlebarRotation: number | null;
   hoodReach: Millimetres | null;

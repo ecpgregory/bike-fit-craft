@@ -98,6 +98,8 @@ export function cockpitOptionsFromSpec(spec: CockpitConfigurationSpec): CockpitO
         handlebarReach: spec.handlebarReach,
         // Unknown in the configuration model — never defaulted here.
         handlebarStack: null,
+        // Documented width only; absent stays absent (handling stays unknown).
+        handlebarWidth: spec.handlebarWidth ?? null,
         handlebarRotation: null,
         hoodReach: null,
         hoodStack: null,
