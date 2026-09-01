@@ -19,10 +19,10 @@ export const bikeConfigurations: BikeConfiguration[] = [
         stemLengths: [90],
         stemAngles: [-6],
         handlebarReach: 75,
-        handlebarDrop: null,
+        handlebarDrop: 127,
         handlebarWidth: 400,
         notes:
-          "Stock Tarmac SL8 size 52 ships with the Roval Rapide one-piece cockpit, 90 mm stem length, -6 deg stem angle, 400 mm bar width, 75 mm bar reach. Handlebar stack, handlebar rotation and hood reach/stack/rotation are not substantiated by Specialized documentation and remain unknown. Specialized stack-to-stem / reach-to-stem figures for size 52 were not established and are omitted rather than copied from another size.",
+          "Stock Tarmac SL8 size 52 ships with the Roval Rapide one-piece cockpit, 90 mm stem length, -6 deg stem angle, 400 mm bar width, 75 mm bar reach and 127 mm bar drop (Sprint 10 verified width/reach/drop; bar drop is a handlebar dimension and is NOT hood stack). Handlebar stack, handlebar rotation and hood reach/stack/rotation are not substantiated by Specialized documentation and remain unknown. Specialized stack-to-stem / reach-to-stem figures for size 52 were not established and are omitted rather than copied from another size.",
         sources: [
           {
             label: "Roval Rapide Cockpit",
@@ -71,7 +71,7 @@ export const bikeConfigurations: BikeConfiguration[] = [
         stemLengths: [100],
         stemAngles: [-6],
         handlebarReach: 75,
-        handlebarDrop: null,
+        handlebarDrop: 127,
         handlebarWidth: 400,
         manufacturerReference: {
           // Specialized published SL8 size-54 figures. These are frame-to-stem
@@ -80,7 +80,7 @@ export const bikeConfigurations: BikeConfiguration[] = [
           reachToStem: 381,
         },
         notes:
-          "Stock S-Works Tarmac SL8 size 54 ships with the Roval Rapide one-piece cockpit, 100 mm stem length, -6 deg stem angle, 400 mm bar width, 75 mm bar reach. Handlebar stack, handlebar rotation and hood reach/stack/rotation are not substantiated by Specialized documentation and remain unknown. Roval steer-clamp height (40 mm) and Specialized stack-to-stem / reach-to-stem are distinct measurements and are not conflated with bar reach/stack.",
+          "Stock S-Works Tarmac SL8 size 54 ships with the Roval Rapide one-piece cockpit, 100 mm stem length, -6 deg stem angle, 400 mm bar width, 75 mm bar reach and 127 mm bar drop (Sprint 10 verified width/reach/drop; bar drop is a handlebar dimension and is NOT hood stack). Handlebar stack, handlebar rotation and hood reach/stack/rotation are not substantiated by Specialized documentation and remain unknown. Roval steer-clamp height (40 mm) and Specialized stack-to-stem / reach-to-stem are distinct measurements and are not conflated with bar reach/stack.",
         sources: [
           {
             label: "Roval Rapide Cockpit",
@@ -136,8 +136,9 @@ export const bikeConfigurations: BikeConfiguration[] = [
         stemAngles: [-8],
         handlebarReach: null,
         handlebarDrop: null,
+        handlebarWidth: 390,
         notes:
-          "Colnago's official V5Rs technical specification identifies the stock cockpit as the CC.01 integrated cockpit, regular geometry, with configurations documented from 80 mm through 130 mm stem length and an 82 deg stem angle (recorded here as -8 deg under this application's 90 deg-perpendicular convention). The CC.01 Wide is not standard on the V5Rs and is not represented. Handlebar reach/drop/stack, handlebar rotation and hood geometry are not established by Colnago documentation and remain unknown.",
+          "Colnago's official V5Rs technical specification identifies the stock cockpit as the CC.01 integrated cockpit, regular geometry, with configurations documented from 80 mm through 130 mm stem length and an 82 deg stem angle (recorded here as -8 deg under this application's 90 deg-perpendicular convention). Sprint 10: the documented stock handlebar width for size 485 is 390 mm (centre-to-centre at the hoods). The CC.01 Wide is not standard on the V5Rs and is not represented. Handlebar reach/drop/stack, handlebar rotation and hood reach/stack/rotation (RP5 geometry) are not established by Colnago documentation and remain unknown.",
         sources: [
           {
             label: "Colnago V5Rs (official product page, stock cockpit)",
@@ -200,8 +201,9 @@ export const bikeConfigurations: BikeConfiguration[] = [
         stemAngles: [-8],
         handlebarReach: null,
         handlebarDrop: null,
+        handlebarWidth: 410,
         notes:
-          "Colnago's official V5Rs technical specification identifies the stock cockpit as the CC.01 integrated cockpit, regular geometry, documented from 80 mm through 130 mm stem length with an 82 deg stem angle (recorded here as -8 deg under this application's 90 deg-perpendicular convention). 140 mm is not established by the V5Rs-specific specification and is not listed. The CC.01 Wide is a separately orderable option, not stock, and is not cited for Regular values. Handlebar reach/drop/stack, handlebar rotation and hood geometry remain unknown.",
+          "Colnago's official V5Rs technical specification identifies the stock cockpit as the CC.01 integrated cockpit, regular geometry, documented from 80 mm through 130 mm stem length with an 82 deg stem angle (recorded here as -8 deg under this application's 90 deg-perpendicular convention). Sprint 10: the documented stock handlebar width for size 510 is 410 mm (centre-to-centre at the hoods). 140 mm is not established by the V5Rs-specific specification and is not listed. The CC.01 Wide is a separately orderable option, not stock, and is not cited for Regular values. Handlebar reach/drop/stack, handlebar rotation and hood reach/stack/rotation (RP5 geometry) remain unknown.",
         sources: [
           {
             label: "Colnago V5Rs (official product page, stock cockpit)",
@@ -263,10 +265,10 @@ export const bikeConfigurations: BikeConfiguration[] = [
         stemLengths: [100],
         stemAngles: [-10],
         handlebarReach: 72,
-        handlebarDrop: null,
+        handlebarDrop: 125,
         handlebarWidth: 420,
         notes:
-          "Giant documents the size M TCR Advanced SL 0 as supplied with a 100 mm Contact SLR AeroLight stem at -10 deg and a 420 mm Contact SLR AeroLight bar with 72 mm reach. Handlebar stack, handlebar rotation and hood reach/stack/rotation are not documented and remain unknown.",
+          "Giant documents the size M TCR Advanced SL 0 as supplied with a 100 mm Contact SLR AeroLight stem at -10 deg and a 420 mm Contact SLR AeroLight bar with 72 mm reach and 125 mm drop (Sprint 10 verified width/reach/drop; bar reach/drop are handlebar dimensions, never hood/RP5 coordinates). Handlebar stack, handlebar rotation and hood reach/stack/rotation are not documented and remain unknown.",
         sources: [
           {
             label: "Giant TCR Advanced SL 0 specifications and geometry",
@@ -308,10 +310,10 @@ export const bikeConfigurations: BikeConfiguration[] = [
         stemLengths: [110],
         stemAngles: [-10],
         handlebarReach: 72,
-        handlebarDrop: null,
+        handlebarDrop: 125,
         handlebarWidth: 420,
         notes:
-          "Giant documents the size M/L TCR Advanced SL 0 as supplied with a 110 mm Contact SLR AeroLight stem at -10 deg and a 420 mm Contact SLR AeroLight bar with 72 mm reach. Handlebar stack, handlebar rotation and hood geometry remain unknown.",
+          "Giant documents the size M/L TCR Advanced SL 0 as supplied with a 110 mm Contact SLR AeroLight stem at -10 deg and a 420 mm Contact SLR AeroLight bar with 72 mm reach and 125 mm drop (Sprint 10 verified width/reach/drop; bar reach/drop are handlebar dimensions, never hood/RP5 coordinates). Handlebar stack, handlebar rotation and hood geometry remain unknown.",
         sources: [
           {
             label: "Giant TCR Advanced SL 0 specifications and geometry",
@@ -353,11 +355,11 @@ export const bikeConfigurations: BikeConfiguration[] = [
         isStock: true,
         stemLengths: [100],
         stemAngles: [-12],
-        handlebarReach: 70,
-        handlebarDrop: 127,
+        handlebarReach: 68,
+        handlebarDrop: 128,
         handlebarWidth: 400,
         notes:
-          "BMC documents the size 54 Teammachine SLR01 ICS cockpit as 100 mm stem at -12 deg, 70 mm bar reach, 127 mm drop, 400 mm at the hoods flaring to 436 mm at the drops. Handlebar stack, handlebar rotation and hood reach/stack/rotation are not documented and remain unknown.",
+          "BMC documents the size 54 Teammachine SLR01 ICS cockpit as 100 mm stem at -12 deg, 68 mm bar reach, 128 mm drop, 400 mm at the hoods flaring to 436 mm at the drops. The handling metric uses the nominal hood width (400 mm); the 436 mm figure is the width at the drops and is not substituted. Handlebar stack, handlebar rotation and hood reach/stack/rotation are not documented and remain unknown.",
         sources: [
           {
             label: "BMC Teammachine SLR01 specifications and geometry",
@@ -398,11 +400,11 @@ export const bikeConfigurations: BikeConfiguration[] = [
         isStock: true,
         stemLengths: [110],
         stemAngles: [-12],
-        handlebarReach: 70,
-        handlebarDrop: 127,
+        handlebarReach: 68,
+        handlebarDrop: 128,
         handlebarWidth: 400,
         notes:
-          "BMC documents the size 56 Teammachine SLR01 ICS cockpit as 110 mm stem at -12 deg, 70 mm bar reach, 127 mm drop, 400 mm at the hoods flaring to 436 mm at the drops. Handlebar stack, handlebar rotation and hood geometry remain unknown.",
+          "BMC documents the size 56 Teammachine SLR01 ICS cockpit as 110 mm stem at -12 deg, 68 mm bar reach, 128 mm drop, 400 mm at the hoods flaring to 436 mm at the drops. The handling metric uses the nominal hood width (400 mm); the 436 mm figure is the width at the drops and is not substituted. Handlebar stack, handlebar rotation and hood geometry remain unknown.",
         sources: [
           {
             label: "BMC Teammachine SLR01 specifications and geometry",
@@ -449,9 +451,9 @@ export const bikeConfigurations: BikeConfiguration[] = [
         stemAngles: [-6],
         handlebarReach: 80,
         handlebarDrop: 130,
-        handlebarWidth: null,
+        handlebarWidth: 360,
         notes:
-          "Cannondale documents the SystemBar R-One at -6 deg with 80 mm reach and 130 mm drop. The official SuperSix EVO LAB71 specification identifies the SystemBar Road cockpit as 100 x 360 mm for sizes 54-56, establishing the 100 mm supplied stem length. Handlebar stack, handlebar rotation and hood reach/stack/rotation are not documented.",
+          "Cannondale documents the SystemBar R-One at -6 deg with 80 mm reach and 130 mm drop. The official SuperSix EVO LAB71 specification identifies the SystemBar Road cockpit as 100 x 360 mm for sizes 54-56, establishing the 100 mm supplied stem length and the 360 mm documented handlebar width (Sprint 10). Handlebar stack, handlebar rotation and hood reach/stack/rotation are not documented.",
         sources: [
           {
             label: "Cannondale SuperSix EVO LAB71 specifications and geometry",
@@ -497,9 +499,9 @@ export const bikeConfigurations: BikeConfiguration[] = [
         stemAngles: [-6],
         handlebarReach: 80,
         handlebarDrop: 130,
-        handlebarWidth: null,
+        handlebarWidth: 360,
         notes:
-          "Cannondale documents the SystemBar R-One at -6 deg with 80 mm reach and 130 mm drop. The official SuperSix EVO LAB71 specification identifies the SystemBar Road cockpit as 100 x 360 mm for sizes 54-56, establishing the 100 mm supplied stem length. Handlebar stack, handlebar rotation and hood geometry remain unknown.",
+          "Cannondale documents the SystemBar R-One at -6 deg with 80 mm reach and 130 mm drop. The official SuperSix EVO LAB71 specification identifies the SystemBar Road cockpit as 100 x 360 mm for sizes 54-56, establishing the 100 mm supplied stem length and the 360 mm documented handlebar width (Sprint 10). Handlebar stack, handlebar rotation and hood geometry remain unknown.",
         sources: [
           {
             label: "Cannondale SuperSix EVO LAB71 specifications and geometry",
