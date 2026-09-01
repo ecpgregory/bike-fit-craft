@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import type { RiderProfile } from "@/types";
 import { riderProfile } from "@/data/rider-profile";
 import {
+  calculateCockpitMetric,
   cockpitTargetFromRider,
   handlingTargetFromRider,
 } from "@/lib/errorCalculator";
@@ -104,17 +105,27 @@ describe("metric availability through the fleet pipeline", () => {
   });
 
   it("distinguishes a missing rider measurement from missing bike geometry", () => {
-    const withTarget = metricsFor(
-      riderWith({ cockpitTargetX: 545, cockpitTargetY: 600 }),
-    ).cockpit;
-    const withoutTarget = metricsFor(riderProfile).cockpit;
-    expect(withoutTarget.unavailableReason).toBe("COCKPIT_TARGET_UNAVAILABLE");
-    // With a rider target present, any remaining unavailability is bike-side.
-    if (!withTarget.available) {
-      expect(withTarget.unavailableReason).toBe("COCKPIT_GEOMETRY_UNAVAILABLE");
-    } else {
-      expect(withTarget.value).toBeGreaterThanOrEqual(0);
-    }
+    // Bike geometry present, rider target absent → rider-side diagnostic.
+    const solvedRp5 = {
+      rp3: { x: 470, y: 631 },
+      rp4: { x: 500, y: 620 },
+      rp5: { x: 545, y: 600 },
+      configuration: {} as never,
+    } as never;
+    expect(calculateCockpitMetric(solvedRp5, null).unavailableReason).toBe(
+      "COCKPIT_TARGET_UNAVAILABLE",
+    );
+    expect(calculateCockpitMetric(solvedRp5, { x: 545, y: 600 })).toEqual({
+      available: true,
+      value: 0,
+      unavailableReason: null,
+    });
+
+    // Rider target present, RP5 unsolved → bike-side diagnostic, not rider-side.
+    const unsolvedRp5 = { rp3: { x: 470, y: 631 }, rp4: null, rp5: null } as never;
+    expect(
+      calculateCockpitMetric(unsolvedRp5, { x: 545, y: 600 }).unavailableReason,
+    ).toBe("COCKPIT_GEOMETRY_UNAVAILABLE");
   });
 });
 
