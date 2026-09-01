@@ -201,8 +201,9 @@ export const bikeConfigurations: BikeConfiguration[] = [
         stemAngles: [-8],
         handlebarReach: null,
         handlebarDrop: null,
+        handlebarWidth: 410,
         notes:
-          "Colnago's official V5Rs technical specification identifies the stock cockpit as the CC.01 integrated cockpit, regular geometry, documented from 80 mm through 130 mm stem length with an 82 deg stem angle (recorded here as -8 deg under this application's 90 deg-perpendicular convention). 140 mm is not established by the V5Rs-specific specification and is not listed. The CC.01 Wide is a separately orderable option, not stock, and is not cited for Regular values. Handlebar reach/drop/stack, handlebar rotation and hood geometry remain unknown.",
+          "Colnago's official V5Rs technical specification identifies the stock cockpit as the CC.01 integrated cockpit, regular geometry, documented from 80 mm through 130 mm stem length with an 82 deg stem angle (recorded here as -8 deg under this application's 90 deg-perpendicular convention). Sprint 10: the documented stock handlebar width for size 510 is 410 mm (centre-to-centre at the hoods). 140 mm is not established by the V5Rs-specific specification and is not listed. The CC.01 Wide is a separately orderable option, not stock, and is not cited for Regular values. Handlebar reach/drop/stack, handlebar rotation and hood reach/stack/rotation (RP5 geometry) remain unknown.",
         sources: [
           {
             label: "Colnago V5Rs (official product page, stock cockpit)",
