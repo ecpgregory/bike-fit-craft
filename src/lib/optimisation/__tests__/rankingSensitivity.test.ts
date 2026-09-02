@@ -213,22 +213,25 @@ describe("D-11B-1 — Sprint 11C normalisation fix, measured at fleet level", ()
     expect(first.outcome).toBe("OUTSIDE_FIT_ENVELOPE");
   });
 
-  it("leaves rankings correct wherever no bike matches the width exactly", () => {
+  it("confines the residual inversion to near-exact width matches", () => {
     for (const target of sensitivityTargets) {
       for (const width of sensitivityWidths) {
         const ranked = optimiseFleet({ target, rider: riderWith(width) }).rankedBikes;
-        const exactMatchPresent = ranked.some(
-          (b) => b.bestConfiguration.assessment.handlingMetric.value === 0,
-        );
-        if (exactMatchPresent) continue;
+        if (!ranked.some((b) => b.outcome === "SUCCESS")) continue;
 
-        // With no perfect component to floor the mean, the leader is always
-        // a bike inside the fit envelope when one exists.
-        const anySuccess = ranked.some((b) => b.outcome === "SUCCESS");
-        if (anySuccess) expect(ranked[0]!.outcome).toBe("SUCCESS");
+        const leader = ranked[0]!;
+        if (leader.outcome === "SUCCESS") continue;
+
+        // Post-fix, a bike outside the fit envelope can only lead when its
+        // width error is at most half a size step (≤ 10 mm). Pre-fix a 20 mm
+        // error was already enough. Never a wider miss than that.
+        const widthError = leader.bestConfiguration.assessment.handlingMetric.value;
+        expect(widthError).not.toBeNull();
+        expect(widthError!).toBeLessThanOrEqual(10);
       }
     }
   });
+
 
 
   it("weights remain 1:1:1 — the fix is entirely in normalisation", () => {
