@@ -4,6 +4,7 @@ import type { RiderProfile } from "@/types";
 import { riderProfile } from "@/data/rider-profile";
 import { optimiseFleet } from "@/lib/optimisation/fleetOptimisationEngine";
 import type { FleetOptimisationResult } from "@/lib/optimisation/fleetOptimisationEngine";
+import { defaultScoringWeights } from "@/lib/rankingEngine";
 import { sensitivityTargets, sensitivityWidths } from "./fitTargets";
 
 /**
