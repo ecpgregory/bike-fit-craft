@@ -2,6 +2,7 @@ import type { Bike } from "@/types";
 import type {
   CockpitConfiguration,
   GeometryWarning,
+  PenaltyMetric,
   Point2D,
   PositionMetrics,
   TargetPosition,
@@ -38,6 +39,12 @@ export interface RecommendedBikeView {
   configuration: CockpitConfiguration | null;
   explanation: RecommendationExplanation | null;
   geometryWarnings: GeometryWarning[];
+  /** Mirror of the assessment's availability-aware cockpit (RP5) metric. */
+  cockpitMetric: PenaltyMetric;
+  /** Mirror of the assessment's availability-aware handling metric. */
+  handlingMetric: PenaltyMetric;
+  /** Verified handlebar width of the recommended configuration; never inferred. */
+  handlebarWidth: number | null;
 }
 
 export interface UnavailableBikeView {
@@ -87,6 +94,9 @@ function toRecommendation(
     configuration: solved?.configuration ?? null,
     explanation: summary.result.explanations[best.candidateId] ?? null,
     geometryWarnings: best.assessment.geometryWarnings,
+    cockpitMetric: best.assessment.cockpitMetric,
+    handlingMetric: best.assessment.handlingMetric,
+    handlebarWidth: solved?.configuration.handlebarWidth ?? null,
   };
 }
 
