@@ -123,3 +123,68 @@ normaliser an explicit millimetre length scale, e.g.
 documented bar-width sizing step (commonly 20 mm), so a one-size width
 difference costs about as much as one positional decay length. No weight
 changes, no data changes, no architectural changes.
+
+---
+
+# Sprint 11C — handling normalisation fix (D-11B-1)
+
+## Change
+
+`rankingEngine.defaultNormalisationStrategy.handling` moved from
+`reciprocalNormalisation` (implicit 1 mm scale) to:
+
+```
+handlingScore = exp(-|widthError| / HANDLING_DECAY_MM)      HANDLING_DECAY_MM = 20
+```
+
+**Rationale for 20 mm.** Road handlebars are manufactured and specified in
+20 mm width steps (360/380/400/420/440), so one decay length is exactly one
+size the rider could actually buy — the smallest actionable difference. Being
+one size out costs the same 1/e factor as being one positional reporting band
+(10 mm) out, so both components are measured on their own physically
+meaningful millimetre scales. Weights remain 1:1:1; position normalisation,
+the 35 mm envelope, RP5 handling, production data and the rider UI are
+unchanged.
+
+Curve: 0 mm → 1.000, 5 → 0.779, 10 → 0.607, 20 → 0.368, 30 → 0.223,
+40 → 0.135, 60 → 0.050. Exactly 1 at 0, strictly decreasing, bounded in (0,1],
+deterministic, sign-independent, underflows to 0 (never NaN or negative).
+
+## Effect on D-11B-1
+
+At 490/650 with a 420 mm target: BMC SLR01 56 (18.2 mm RP3 error, SUCCESS)
+rose from **0.1046 → 0.2647** against Giant TCR M's unchanged 0.5002. The
+score ratio fell from 4.8x to 1.9x, and a 20 mm width difference now costs
+2.7x rather than 21x.
+
+**The inversion is not fully removed** — this is reported, not worked around.
+
+### Residual defect D-11C-1 — the arithmetic mean floors a perfect component
+
+`weightedMeanCombination` averages available components, so an available
+handling component contributes up to 0.5 of the overall score however bad the
+position is. An exact width match normalises to 1.0 at *any* decay scale, so
+**no value of HANDLING_DECAY_MM can fix this**: the scale needed to let BMC
+overtake TCR is ≈114 mm, at which point a 60 mm width error still scores 0.59
+and handling barely discriminates at all — clearly inconsistent with the
+scoring intent. The evidence is pinned in
+`handlingNormalisation.test.ts > D-11C-1`.
+
+Post-fix the residual is confined to near-exact matches: a bike outside the
+fit envelope can only lead when its width error is ≤ 10 mm (half a size step).
+Pre-fix a 20 mm error already sufficed.
+
+**Proposed Sprint 11D (single change):** replace the arithmetic mean with a
+weighted geometric mean, `exp(Σ wᵢ ln sᵢ / Σ wᵢ)` over available components.
+It keeps availability-awareness, weights and normalisers untouched, and makes
+a near-zero component drag the overall score toward zero instead of being
+floored at 0.5.
+
+## Re-run of the 35-run matrix (5 targets × 7 widths × 15 bikes)
+
+Unchanged from Sprint 11B and re-confirmed: RP5 unavailable everywhere;
+unavailable handling excluded from numerator and denominator; positional
+scores bit-identical to the pre-fix run; outcome classification unchanged;
+12 ranked / 3 `NO_CANDIDATES` in every run; no NaN, Infinity, undefined or
+negative values; all scores in (0,1]; repeated runs bit-identical; width
+changes still move rankings where handling data exists.
