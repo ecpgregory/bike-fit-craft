@@ -129,11 +129,11 @@ describe("Sprint 10 — handling metric activation", () => {
 
     for (const ranked of base.rankedBikes) {
       const other = withWidth.rankedBikes.find((r) => r.bikeId === ranked.bikeId)!;
-      expect(other.bestConfiguration.solved.rp3).toEqual(
-        ranked.bestConfiguration.solved.rp3,
+      expect(other.bestConfiguration.candidateId).toBe(
+        ranked.bestConfiguration.candidateId,
       );
-      expect(other.bestConfiguration.configurationId).toBe(
-        ranked.bestConfiguration.configurationId,
+      expect(other.bestConfiguration.assessment.positionMetrics).toEqual(
+        ranked.bestConfiguration.assessment.positionMetrics,
       );
       expect(other.outcome).toBe(ranked.outcome);
     }
