@@ -103,17 +103,11 @@ describe("Sprint 11C — handling decay scale", () => {
     expect(HANDLING_DECAY_MM / POSITION_DECAY_MM).toBe(2);
   });
 
-  it("cannot let one handlebar size step outweigh a large positional gap", () => {
-    // 18 mm vs 58 mm of RP3 error, against a single 20 mm width step.
-    const [first] = rankConfigurations({
-      validConfigurations: [
-        assessment("better-position", 18, 20),
-        assessment("exact-width", 58, 0),
-      ],
-      invalidConfigurations: [],
-    }).rankedConfigurations;
-
-    expect(first!.candidateId).toBe("better-position");
+  it("greatly reduces the score a one-size width difference gives away", () => {
+    // Pre-fix (reciprocal, 1 mm scale) a 20 mm difference scored 1/21 = 0.048,
+    // i.e. an exact match was ~21x better. It is now ~2.7x better.
+    expect(n(20)).toBeCloseTo(0.3679, 4);
+    expect(1 / n(20)).toBeLessThan(3);
   });
 
   it("still lets width decide between closely matched positions", () => {
@@ -128,3 +122,46 @@ describe("Sprint 11C — handling decay scale", () => {
     expect(first!.candidateId).toBe("same-position-right-width");
   });
 });
+
+/**
+ * EVIDENCE (Sprint 11C) — the 20 mm scale is correct but not sufficient.
+ *
+ * Fixing the normaliser narrows the D-11B-1 gap substantially but does not
+ * close it, because the residual mechanism is the COMBINER, not the scale:
+ * `weightedMeanCombination` is an arithmetic mean, so an available handling
+ * component contributes up to 0.5 of the overall score no matter how bad the
+ * position score is. An exact width match scores 1.0 at ANY decay scale, so
+ * no value of HANDLING_DECAY_MM can fix it — see the test below, which shows
+ * the scale required is ~114 mm, at which point a 60 mm width error still
+ * scores 0.59 and handling is effectively inert.
+ *
+ * Reported, not silently worked around. Tracked as D-11C-1.
+ */
+describe("D-11C-1 — residual: the arithmetic mean floors a perfect component", () => {
+  it("lets an exact width match hold a 0.5 floor despite a hopeless position", () => {
+    const [first, second] = rankConfigurations({
+      validConfigurations: [
+        assessment("better-position", 18, 20),
+        assessment("exact-width", 76.5, 0),
+      ],
+      invalidConfigurations: [],
+    }).rankedConfigurations;
+
+    expect(first!.candidateId).toBe("exact-width");
+    expect(first!.overallScore).toBeCloseTo((Math.exp(-7.65) + 1) / 2, 6);
+    expect(second!.candidateId).toBe("better-position");
+  });
+
+  it("shows no handling decay scale can remove the floor", () => {
+    // An exact match normalises to 1 for every possible decay length.
+    for (const decay of [1, 20, 100, 10_000]) {
+      expect(Math.exp(-0 / decay)).toBe(1);
+    }
+    // The scale that would be needed makes handling almost flat: at ~114 mm a
+    // 60 mm width error still scores 0.59, so width would barely discriminate.
+    const requiredDecay = 20 / Math.log(1 / (1.0005 - 0.1616));
+    expect(requiredDecay).toBeGreaterThan(110);
+    expect(Math.exp(-60 / requiredDecay)).toBeGreaterThan(0.5);
+  });
+});
+
