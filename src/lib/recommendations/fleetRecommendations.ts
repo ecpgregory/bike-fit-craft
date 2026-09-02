@@ -38,6 +38,12 @@ export interface RecommendedBikeView {
   configuration: CockpitConfiguration | null;
   explanation: RecommendationExplanation | null;
   geometryWarnings: GeometryWarning[];
+  /** Mirror of the assessment's availability-aware cockpit (RP5) metric. */
+  cockpitMetric: PenaltyMetric;
+  /** Mirror of the assessment's availability-aware handling metric. */
+  handlingMetric: PenaltyMetric;
+  /** Verified handlebar width of the recommended configuration; never inferred. */
+  handlebarWidth: number | null;
 }
 
 export interface UnavailableBikeView {
