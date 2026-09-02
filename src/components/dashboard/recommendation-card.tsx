@@ -1,5 +1,6 @@
 import { AlertTriangle } from "lucide-react";
 
+import type { Point2D } from "@/types/optimisation";
 import { Panel, SpecRow } from "@/components/panel";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -11,66 +12,96 @@ import {
   type RecommendedBikeView,
 } from "@/lib/recommendations/fleetRecommendations";
 
-/** Pure presentation of one production-engine recommendation. */
-export function RecommendationCard({ item }: { item: RecommendedBikeView }) {
+/** Positional feasibility envelope used by the engine; displayed, never applied here. */
+const FIT_ENVELOPE_MM = 35;
+
+function PositionBlock({
+  label,
+  value,
+  emphasis,
+}: {
+  label: string;
+  value: string;
+  emphasis?: boolean;
+}) {
+  return (
+    <div className="rounded-lg border border-border bg-muted/30 px-3 py-2">
+      <p className="label-caps">{label}</p>
+      <p
+        className={
+          emphasis
+            ? "tabular mt-0.5 font-mono text-sm font-medium text-primary"
+            : "tabular mt-0.5 font-mono text-sm"
+        }
+      >
+        {value}
+      </p>
+    </div>
+  );
+}
+
+function formatPoint(point: Point2D | null): string {
+  if (!point) return "—";
+  return `X ${round(point.x)} × Y ${round(point.y)} mm`;
+}
+
+/**
+ * Rider-facing presentation of one production-engine recommendation.
+ * Every value is read from the optimisation result; nothing is recalculated.
+ */
+export function RecommendationCard({
+  item,
+  target,
+  targetHandlebarWidth,
+}: {
+  item: RecommendedBikeView;
+  target: Point2D;
+  targetHandlebarWidth?: number | null;
+}) {
   const name = bikeDisplayName(item.bike, item.bikeId);
   const size = bikeSizeLabel(item.bike);
   const configuration = configurationSummary(item.configuration);
   const metrics = item.positionMetrics;
   const viable = item.outcome === "SUCCESS";
+  const distance = round(metrics.euclideanDistance, 1);
+  const verticalWord = metrics.deltaY < 0 ? "below" : "above";
 
   return (
     <Panel
       title={`${item.rank}. ${name}`}
       subtitle={size ?? undefined}
       action={
-        <div className="text-right">
-          <p className="label-caps">Fit score</p>
-          <p className="tabular font-mono text-sm font-medium text-primary">
-            {round(item.overallScore, 4).toFixed(4)}
-          </p>
-        </div>
-      }
-    >
-      <div className="mb-3 flex flex-wrap items-center gap-2">
         <Badge variant={viable ? "default" : "destructive"}>
           {viable ? "Viable fit" : "Outside fit envelope"}
         </Badge>
-        <p className="text-xs text-muted-foreground">
-          {viable
-            ? "Within the 35 mm handlebar-position tolerance."
-            : "Your fitted handlebar position cannot be reproduced within the 35 mm tolerance on this frame."}
-        </p>
+      }
+    >
+      <div className="grid gap-2 sm:grid-cols-3">
+        <PositionBlock label="Your target" value={formatPoint(target)} />
+        <PositionBlock
+          label="Best achievable position"
+          value={formatPoint(item.predictedPosition)}
+          emphasis
+        />
+        <PositionBlock
+          label="Difference"
+          value={`${formatSignedMm(metrics.deltaX)} X / ${formatSignedMm(metrics.deltaY)} Y`}
+        />
       </div>
 
+      <p className="mt-3 text-sm">
+        {viable
+          ? `This bike can be set up within ${distance} mm of your target handlebar position, inside the ${FIT_ENVELOPE_MM} mm fit envelope.`
+          : `This bike cannot currently be set up close enough to your target position. The closest achievable position is ${distance} mm away (${round(
+              Math.abs(metrics.deltaY),
+            )} mm ${verticalWord} your target), outside the ${FIT_ENVELOPE_MM} mm fit envelope.`}
+      </p>
 
-      {item.explanation ? (
-        <div className="mb-4">
-          <p className="text-sm font-medium">{item.explanation.headline}</p>
-          <p className="mt-1 text-xs text-muted-foreground">{item.explanation.summary}</p>
-        </div>
-      ) : null}
-
-      <div className="grid gap-x-8 sm:grid-cols-2">
+      <div className="mt-4 grid gap-x-8 sm:grid-cols-2">
         <div>
-          <p className="label-caps mb-1">Handlebar position</p>
-          <SpecRow
-            label="Predicted"
-            value={
-              item.predictedPosition
-                ? `${round(item.predictedPosition.x)} × ${round(item.predictedPosition.y)}`
-                : null
-            }
-            unit="mm"
-            emphasis
-          />
-          <SpecRow label="Horizontal difference" value={formatSignedMm(metrics.deltaX)} />
-          <SpecRow label="Vertical difference" value={formatSignedMm(metrics.deltaY)} />
-          <SpecRow
-            label="Total difference"
-            value={`${round(metrics.euclideanDistance, 2)}`}
-            unit="mm"
-          />
+          <p className="label-caps mb-1">Frame geometry</p>
+          <SpecRow label="Stack" value={item.bike?.frameStack ?? null} unit="mm" />
+          <SpecRow label="Reach" value={item.bike?.frameReach ?? null} unit="mm" />
         </div>
         <div className="mt-4 sm:mt-0">
           <p className="label-caps mb-1">Recommended setup</p>
@@ -78,15 +109,26 @@ export function RecommendationCard({ item }: { item: RecommendedBikeView }) {
         </div>
       </div>
 
-      {item.explanation && item.explanation.reasons.length > 0 ? (
-        <ul className="mt-4 space-y-1.5">
-          {item.explanation.reasons.map((reason) => (
-            <li key={reason.code} className="text-xs text-muted-foreground">
-              {reason.message}
-            </li>
-          ))}
-        </ul>
-      ) : null}
+      <div className="mt-4 space-y-1">
+        <p className="text-xs text-muted-foreground">
+          <span className="font-medium text-foreground">Handlebar width: </span>
+          {item.handlebarWidth === null || item.handlebarWidth === undefined
+            ? "Not evaluated — no verified width data available for this cockpit."
+            : targetHandlebarWidth
+              ? `${targetHandlebarWidth} mm target → ${item.handlebarWidth} mm available${
+                  targetHandlebarWidth === item.handlebarWidth
+                    ? " (exact match)"
+                    : ` (${formatSignedMm(item.handlebarWidth - targetHandlebarWidth)})`
+                }`
+              : `${item.handlebarWidth} mm available — not evaluated, you have not set a width target.`}
+        </p>
+        <p className="text-xs text-muted-foreground">
+          <span className="font-medium text-foreground">Hood position: </span>
+          {item.cockpitMetric.available
+            ? "Evaluated against your rider contact target."
+            : "Not evaluated — verified hood-contact data is not currently available."}
+        </p>
+      </div>
 
       {item.geometryWarnings.length > 0 ? (
         <div className="mt-4 space-y-2">
@@ -96,16 +138,44 @@ export function RecommendationCard({ item }: { item: RecommendedBikeView }) {
               className="flex items-start gap-2 rounded-lg border border-border bg-muted/40 px-3 py-2"
             >
               <AlertTriangle className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
-              <div className="min-w-0">
-                <Badge variant="secondary" className="mb-1">
-                  {warning.code}
-                </Badge>
-                <p className="text-xs text-muted-foreground">{warning.message}</p>
-              </div>
+              <p className="min-w-0 text-xs text-muted-foreground">{warning.message}</p>
             </div>
           ))}
         </div>
       ) : null}
+
+      <details className="mt-4 rounded-lg border border-border px-3 py-2">
+        <summary className="cursor-pointer text-xs font-medium">Technical details</summary>
+        <div className="mt-2">
+          <SpecRow
+            label="Overall fit score (ranking)"
+            value={round(item.overallScore, 4).toFixed(4)}
+          />
+          <SpecRow label="Engine outcome" value={item.outcome} />
+          <SpecRow label="Horizontal difference" value={formatSignedMm(metrics.deltaX)} />
+          <SpecRow label="Vertical difference" value={formatSignedMm(metrics.deltaY)} />
+          <SpecRow label="Total difference" value={`${round(metrics.euclideanDistance, 2)}`} unit="mm" />
+          <SpecRow label="Stem length" value={item.configuration?.stemLength ?? null} unit="mm" />
+          <SpecRow label="Stem angle" value={item.configuration?.stemAngle ?? null} unit="°" />
+          <SpecRow
+            label="Spacer height"
+            value={item.configuration ? round(item.configuration.spacerHeight) : null}
+            unit="mm"
+          />
+          <SpecRow label="Handlebar width" value={item.handlebarWidth ?? null} unit="mm" />
+          <SpecRow label="Configuration id" value={item.candidateId} />
+          {item.explanation ? (
+            <ul className="mt-3 space-y-1.5">
+              <li className="text-xs font-medium">{item.explanation.headline}</li>
+              {item.explanation.reasons.map((reason) => (
+                <li key={reason.code} className="text-xs text-muted-foreground">
+                  {reason.message}
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
+      </details>
     </Panel>
   );
 }
