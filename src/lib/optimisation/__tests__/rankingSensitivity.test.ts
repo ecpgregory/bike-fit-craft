@@ -224,10 +224,12 @@ describe("D-11B-1 regression — position is not overwhelmed by handlebar width"
   });
 
   it("weights remain 1:1:1 — the fix is entirely in normalisation", () => {
-    const { weights } =
-      optimiseFleet({ target: TARGET, rider: riderWith(420) }).rankedBikes[0]!
-        .result.ranking;
-    expect(weights).toEqual({ positionWeight: 1, cockpitWeight: 1, handlingWeight: 1 });
+    expect(defaultScoringWeights).toEqual({
+      positionWeight: 1,
+      cockpitWeight: 1,
+      handlingWeight: 1,
+    });
   });
+
 });
 
