@@ -237,9 +237,12 @@ describe("Sprint 11B — RP5 as an optional future metric", () => {
     );
 
     // Available: participates, with no architectural change required.
+    // Sprint 11D baseline re-derivation — cockpit normalisation is unchanged
+    // (reciprocal, 1/(1+4) = 0.2); only the combiner changed, from
+    // (position + 0.2)/2 = 0.403265 to sqrt(position × 0.2) = 0.348290.
     expect(withRp5.componentScores.normalised.cockpit).toBeCloseTo(1 / 5, 12);
     expect(withRp5.overallScore).toBeCloseTo(
-      (withRp5.componentScores.normalised.position + 1 / 5) / 2,
+      Math.sqrt(withRp5.componentScores.normalised.position * (1 / 5)),
       12,
     );
   });

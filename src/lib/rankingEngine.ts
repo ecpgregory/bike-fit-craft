@@ -67,8 +67,12 @@ export interface NormalisationStrategy {
  * linear-scaling assumption is baked into the architecture. Returns 1 for a
  * perfect (zero) value and approaches 0 as error grows.
  *
- * Retained as the default for the (currently placeholder, always-zero) cockpit
- * and handling components, which are unitless counts rather than millimetres.
+ * Sprint 11D docstring correction: this is now the default for the COCKPIT
+ * component only. The cockpit metric is gated on RP5/hood geometry, which no
+ * production bike currently documents, so it is unavailable fleet-wide and
+ * never contributes to a score today. Handling has used
+ * `exponentialHandlingNormalisation` since Sprint 11C and is a real,
+ * production-populated millimetre metric — it is not a placeholder.
  */
 export const reciprocalNormalisation: NormalisationFunction = (value) => {
   const magnitude = Math.abs(value);
@@ -172,16 +176,17 @@ export type CombinationFunction = (
 ) => number;
 
 /**
- * Default: availability-aware weighted mean.
+ * Availability-aware weighted ARITHMETIC mean.
  *
  * Sprint 9.8 — only components whose metric is actually available contribute,
- * and only their weights enter the denominator. An unavailable component is
- * excluded from the mean rather than scored, so UNKNOWN can never masquerade
- * as a perfect 1.0 (the old placeholder behaviour, which created a hard 2/3
- * floor). Product weights are unchanged; the weighting behaviour is now
- * explicit. When only position is available the overall score equals the
- * normalised positional score, which preserves the Sprint 9.7 positional
- * ranking order exactly.
+ * and only their weights enter the denominator.
+ *
+ * Sprint 11D — NO LONGER THE DEFAULT. Retained as a pluggable alternative and
+ * as the reference implementation for the D-11C-1 defect: with equal weights,
+ * a single perfect component floors the overall score at 1/n regardless of how
+ * bad every other component is (n = number of available components). At n = 2
+ * that is a hard 0.5 floor, which let an exact handlebar-width match mask a
+ * 76 mm positional error. See `weightedGeometricMeanCombination`.
  */
 export const weightedMeanCombination: CombinationFunction = (weighted, weights) => {
   const contributions: Array<[number | null, number]> = [
@@ -198,6 +203,65 @@ export const weightedMeanCombination: CombinationFunction = (weighted, weights) 
   }
   if (totalWeight === 0) return 0;
   return total / totalWeight;
+};
+
+/**
+ * Sprint 11D default — availability-aware WEIGHTED GEOMETRIC MEAN.
+ *
+ *   overallScore = exp( Σ wᵢ·ln(sᵢ) / Σ wᵢ )   over available components only
+ *
+ * `sᵢ` is the NORMALISED component score. The combiner receives weighted
+ * values (`sᵢ·wᵢ`) for signature compatibility with the existing pipeline, so
+ * it divides the weight back out to recover `sᵢ`; with the production 1:1:1
+ * weights the two are numerically identical.
+ *
+ * Why: the arithmetic mean is a *compensatory* aggregation — a perfect
+ * component pays for an arbitrarily bad one, producing the 1/n floor that
+ * defect D-11C-1 records. The geometric mean is *conjunctive*: a component
+ * near zero drags the whole score toward zero, so a secondary dimension
+ * (handlebar width) can no longer mask a materially poor RP3 position.
+ *
+ * Properties, all covered by tests:
+ * - one available component  → overallScore === that component score
+ * - all components equal to s → overallScore === s
+ * - all components = 1        → overallScore === 1
+ * - monotonic increasing in every component
+ * - unavailable components are excluded from numerator and denominator
+ * - equal weights reduce to the ordinary geometric mean
+ *
+ * No epsilon clamp. A component score of exactly 0 legitimately yields 0, and
+ * the production normalisers (exp(-mm/scale), 1/(1+mm)) are strictly positive
+ * for every finite input, so the production score domain never reaches it.
+ * A clamp would be a theoretical precaution masking a real signal.
+ */
+export const weightedGeometricMeanCombination: CombinationFunction = (
+  weighted,
+  weights,
+) => {
+  const contributions: Array<[number | null, number]> = [
+    [weighted.position, weights.positionWeight],
+    [weighted.cockpit, weights.cockpitWeight],
+    [weighted.handling, weights.handlingWeight],
+  ];
+  const scores: Array<[number, number]> = [];
+  for (const [value, weight] of contributions) {
+    if (value === null || weight === 0) continue;
+    scores.push([value / weight, weight]);
+  }
+  if (scores.length === 0) return 0;
+  // Single available component: exp(ln s) is s only up to floating-point
+  // round-trip error, so return it directly. Mathematically identical, and it
+  // keeps the position-only score bit-exact with Sprint 9.7 behaviour.
+  if (scores.length === 1) return Math.max(scores[0]![0], 0);
+
+  let logTotal = 0;
+  let totalWeight = 0;
+  for (const [score, weight] of scores) {
+    if (score <= 0) return 0;
+    logTotal += weight * Math.log(score);
+    totalWeight += weight;
+  }
+  return Math.exp(logTotal / totalWeight);
 };
 
 
@@ -276,7 +340,7 @@ export function rankConfigurations(input: RankingInput): RankingResult {
     ...defaultNormalisationStrategy,
     ...options?.normalisation,
   };
-  const combine = options?.combination ?? weightedMeanCombination;
+  const combine = options?.combination ?? weightedGeometricMeanCombination;
 
   const scoringInputs = validConfigurations.map(transform);
   const context: NormalisationContext = { cohort: scoringInputs };

@@ -124,21 +124,29 @@ describe("Sprint 11C — handling decay scale", () => {
 });
 
 /**
- * EVIDENCE (Sprint 11C) — the 20 mm scale is correct but not sufficient.
+ * D-11C-1 — RESOLVED in Sprint 11D by the combiner, not by the scale.
  *
- * Fixing the normaliser narrows the D-11B-1 gap substantially but does not
- * close it, because the residual mechanism is the COMBINER, not the scale:
- * `weightedMeanCombination` is an arithmetic mean, so an available handling
- * component contributes up to 0.5 of the overall score no matter how bad the
- * position score is. An exact width match scores 1.0 at ANY decay scale, so
- * no value of HANDLING_DECAY_MM can fix it — see the test below, which shows
- * the scale required is ~114 mm, at which point a 60 mm width error still
- * scores 0.59 and handling is effectively inert.
+ * Sprint 11C established that the 20 mm decay scale is correct but not
+ * sufficient: under the arithmetic mean an available handling component
+ * contributed up to 1/n of the overall score no matter how bad the position
+ * score was, and an exact width match scores 1.0 at ANY decay scale, so no
+ * value of HANDLING_DECAY_MM could remove the floor (second test below).
  *
- * Reported, not silently worked around. Tracked as D-11C-1.
+ * Sprint 11D replaced the combiner with a weighted geometric mean, which is
+ * conjunctive rather than compensatory. The synthetic case below is the
+ * original defect case, now asserting the fixed behaviour:
+ *
+ *   better-position: exp(-18/10)=0.165299, exp(-20/20)=0.367879
+ *                    → sqrt(0.165299 × 0.367879) = 0.246642
+ *   exact-width:     exp(-76.5/10)=0.000476, exp(-0/20)=1
+ *                    → sqrt(0.000476 × 1) = 0.021818
+ *
+ * The perfect secondary component no longer creates a floor: it can at best
+ * lift the score to sqrt(position), which for a hopeless position is still
+ * hopeless.
  */
-describe("D-11C-1 — residual: the arithmetic mean floors a perfect component", () => {
-  it("lets an exact width match hold a 0.5 floor despite a hopeless position", () => {
+describe("D-11C-1 — resolved: the geometric mean removes the perfect-component floor", () => {
+  it("no longer lets an exact width match outrank a far better position", () => {
     const [first, second] = rankConfigurations({
       validConfigurations: [
         assessment("better-position", 18, 20),
@@ -147,12 +155,18 @@ describe("D-11C-1 — residual: the arithmetic mean floors a perfect component",
       invalidConfigurations: [],
     }).rankedConfigurations;
 
-    expect(first!.candidateId).toBe("exact-width");
-    expect(first!.overallScore).toBeCloseTo((Math.exp(-7.65) + 1) / 2, 6);
-    expect(second!.candidateId).toBe("better-position");
+    expect(first!.candidateId).toBe("better-position");
+    expect(first!.overallScore).toBeCloseTo(
+      Math.sqrt(Math.exp(-1.8) * Math.exp(-1)),
+      12,
+    );
+    expect(second!.candidateId).toBe("exact-width");
+    // Ceiling of a perfect secondary component is sqrt(position), not 0.5.
+    expect(second!.overallScore).toBeCloseTo(Math.sqrt(Math.exp(-7.65)), 12);
+    expect(second!.overallScore).toBeLessThan(0.5);
   });
 
-  it("shows no handling decay scale can remove the floor", () => {
+  it("shows no handling decay scale could have removed the arithmetic floor", () => {
     // An exact match normalises to 1 for every possible decay length.
     for (const decay of [1, 20, 100, 10_000]) {
       expect(Math.exp(-0 / decay)).toBe(1);

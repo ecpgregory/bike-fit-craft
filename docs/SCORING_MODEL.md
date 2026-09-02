@@ -188,3 +188,103 @@ scores bit-identical to the pre-fix run; outcome classification unchanged;
 12 ranked / 3 `NO_CANDIDATES` in every run; no NaN, Infinity, undefined or
 negative values; all scores in (0,1]; repeated runs bit-identical; width
 changes still move rankings where handling data exists.
+
+---
+
+# Sprint 11D — Geometric Score Combiner
+
+## The change
+
+`rankConfigurations` now defaults to `weightedGeometricMeanCombination`:
+
+```
+overallScore = exp( Σ wᵢ·ln(sᵢ) / Σ wᵢ )   over AVAILABLE components only
+```
+
+`weightedMeanCombination` is retained as a pluggable alternative and as the
+reference implementation of the D-11C-1 defect.
+
+Unchanged: component weights (1:1:1), position normalisation
+(`exp(-mm/10)`), `HANDLING_DECAY_MM = 20`, cockpit reciprocal normalisation,
+availability rules, the 35 mm positional fit envelope, outcome classification,
+and all production bike/configuration data. The only runtime change is the
+combiner. The stale `reciprocalNormalisation` docstring — which still called
+cockpit *and* handling always-zero placeholders — was corrected to describe
+cockpit only (documentation-only).
+
+No epsilon clamp was added. Both production normalisers are strictly positive
+for every finite input (verified in `geometricCombiner.test.ts`), so the
+production score domain never reaches zero; a clamp would mask real signal.
+
+Single available component returns that component's score directly rather than
+`exp(ln s)`, so position-only scores stay bit-identical to Sprint 9.7.
+
+## Why D-11C-1 is resolved
+
+The arithmetic mean is *compensatory*: with equal weights a perfect component
+floors the score at 1/n regardless of the others. The geometric mean is
+*conjunctive*: a perfect secondary component can lift the score only to
+`sqrt(position)`.
+
+D-11C-1 case, 490/650 @ 420 mm — no component score changed, only the combine:
+
+| Bike | position err | pos score | width err | handling score | 11C (arith) | 11D (geom) |
+|---|---|---|---|---|---|---|
+| BMC SLR01 56 (SUCCESS) | 18.23 mm | 0.161613 | 20 mm | 0.367879 | 0.264746 | **0.243832** |
+| Giant TCR M | 76.5 mm | ~0.000476 | 0 mm | 1.0 | 0.500238 | **0.021837** |
+| Giant TCR M/L (former leader) | 58.29 mm | 0.002941 | 0 mm | 1.0 | 0.501470 | 0.054235 |
+
+BMC now leads the fleet; the exact-width bike 58 mm out of position is demoted.
+
+## Baseline revalidation
+
+Four pinned assertions changed. Each was re-derived from its own component
+scores before the value was updated — never tuned until green:
+
+1. `rankingSensitivity` BMC 56 @ 490/650 @ 420 mm: 0.2647 → 0.2438
+   = sqrt(0.161613 × 0.367879).
+2. `rankingSensitivity` fleet leader @ 490/650 @ 420 mm: TCR M/L
+   (OUTSIDE_FIT_ENVELOPE) → BMC 56 (SUCCESS). Intentional: the defect fix.
+3. `handlingNormalisation` synthetic case: `exact-width` 0.500238 →
+   sqrt(exp(-7.65)) = 0.021818; `better-position` wins at
+   sqrt(exp(-1.8)·exp(-1)) = 0.246642.
+4. `rp5Optionality` synthetic RP5 case: (position + 0.2)/2 = 0.403265 →
+   sqrt(position × 0.2) = 0.348290. Cockpit normalisation itself unchanged.
+
+Every other pinned baseline (including the Sprint 8B / 9.x position-only
+scores, e.g. `fleetRecommendations` 0.4506) is untouched, because position-only
+scoring is pass-through under both combiners.
+
+## 35-run matrix (5 targets × 7 widths × 15 bikes = 525 results)
+
+- RP5/cockpit available: **0** of 525 — unchanged.
+- Handling available 300, excluded 120 — matches the 11B/11C split exactly.
+- Positional metrics and handling metrics bit-identical to the arithmetic run.
+- Outcomes identical: 210 SUCCESS, 210 OUTSIDE_FIT_ENVELOPE, 105 NO_CANDIDATES.
+- No NaN / Infinity / undefined; every score in (0, 1].
+- Repeated runs bit-identical.
+- Width still moves rankings where handling data exists (at 470/631 the leader
+  moves from Cannondale LAB71 54 at 360–380 mm to BMC SLR01 56 at 390–420 mm).
+
+**Ranking changes vs outcome changes, reported separately:** 30 of 35 runs
+changed ranked ORDER; **0** runs changed any OUTCOME. The 35 mm envelope is
+computed in the evaluation layer and is provably independent of the combiner.
+
+## Findings
+
+| Item | Result |
+|---|---|
+| Geometric combiner | PASS |
+| D-11C-1 resolved | PASS |
+| Position dominance | PASS |
+| Handling discrimination | PASS |
+| Availability-aware scoring | PASS |
+| RP5 optionality | PASS |
+| Outcome classification unchanged | PASS |
+| Baseline revalidation | PASS |
+| Documentation consistency | PASS |
+| MVP readiness | PASS |
+
+The scoring model is ready for MVP without RP5 data: position drives the
+ranking, handbar width discriminates without masking, and the cockpit
+component activates cleanly if RP5 data is ever populated.
