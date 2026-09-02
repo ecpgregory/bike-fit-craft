@@ -164,23 +164,25 @@ describe("Sprint 11B — ranking sensitivity matrix", () => {
 });
 
 /**
- * D-11B-1 (raised Sprint 11B) — Sprint 11C PARTIAL fix.
+ * D-11B-1 (Sprint 11B) → D-11C-1 (Sprint 11C residual) → RESOLVED Sprint 11D.
  *
- * Position is normalised on a 10 mm exponential scale; handling now uses
- * `exp(-widthError / HANDLING_DECAY_MM)` with an explicit 20 mm scale (one
- * manufactured handlebar size step) instead of the reciprocal's implicit
- * 1 mm scale. That removes the scale mismatch and roughly halves the
- * advantage a width match confers.
+ * Sprint 11C fixed the normalisation SCALE (handling now decays on an explicit
+ * 20 mm scale, one manufactured handlebar size step) but the ranking inversion
+ * survived because the arithmetic-mean combiner floored a perfect component at
+ * 1/n. Sprint 11D replaced the combiner with a weighted geometric mean.
  *
- * It does NOT fully resolve the ranking inversion, because the residual
- * mechanism is the arithmetic-mean combiner rather than the scale — see
- * D-11C-1 in handlingNormalisation.test.ts and docs/SCORING_MODEL.md. These
- * tests measure the improvement and lock the residual honestly.
+ * Baseline re-derivation for the BMC 56 assertion below (490/650 @ 420 mm):
+ *   position 18.23 mm → exp(-18.23/10) = 0.161613
+ *   width error 20 mm → exp(-20/20)    = 0.367879
+ *   arithmetic (11C):  (0.161613 + 0.367879)/2 = 0.264746
+ *   geometric  (11D):  sqrt(0.161613 × 0.367879) = 0.243832
+ * The drop is the expected conjunctive penalty, not a regression: neither
+ * component score changed, only how they combine.
  */
-describe("D-11B-1 — Sprint 11C normalisation fix, measured at fleet level", () => {
+describe("D-11C-1 — Sprint 11D geometric combiner, measured at fleet level", () => {
   const TARGET = { x: 490, y: 650 };
 
-  it("materially closes the gap between better position and exact width", () => {
+  it("closes the gap between better position and exact width", () => {
     const fleet = optimiseFleet({ target: TARGET, rider: riderWith(420) });
 
     const tcr = fleet.rankedBikes.find(
@@ -196,38 +198,42 @@ describe("D-11B-1 — Sprint 11C normalisation fix, measured at fleet level", ()
         bmc.bestConfiguration.assessment.positionMetrics.euclideanDistance,
     ).toBeGreaterThan(50);
 
-    // Sprint 11B: BMC scored 0.1046 against TCR-M's 0.5002 (4.8x).
-    // Sprint 11C: BMC scores 0.2647 against an unchanged 0.5002 (1.9x).
-    expect(bmc.overallScore).toBeCloseTo(0.2647, 4);
-    expect(tcr.overallScore / bmc.overallScore).toBeLessThan(2);
+    // Sprint 11B: BMC 0.1046 vs TCR-M 0.5002 (TCR 4.8x ahead).
+    // Sprint 11C: BMC 0.2647 vs TCR-M 0.5002 (TCR 1.9x ahead).
+    // Sprint 11D: BMC 0.2438 vs TCR-M 0.0218 — BMC now correctly ahead.
+    const n = bmc.bestConfiguration.componentScores.normalised;
+    expect(bmc.overallScore).toBeCloseTo(Math.sqrt(n.position * n.handling!), 12);
+    expect(bmc.overallScore).toBeCloseTo(0.2438, 4);
+    expect(bmc.overallScore).toBeGreaterThan(tcr.overallScore);
   });
 
-  it("RESIDUAL D-11C-1 — the mean still floors an exact width match at 0.5", () => {
+  it("the fleet leader is now the best-fitting bike, not the exact-width one", () => {
     const fleet = optimiseFleet({ target: TARGET, rider: riderWith(420) });
     const first = fleet.rankedBikes[0]!;
 
-    // Locked, not endorsed: an exact-width bike 58 mm out still leads.
-    expect(first.bikeId).toBe("giant-tcr-advanced-sl-0-2025-ml");
-    expect(first.overallScore).toBeGreaterThan(0.5);
-    expect(first.bestConfiguration.componentScores.normalised.handling).toBe(1);
-    expect(first.outcome).toBe("OUTSIDE_FIT_ENVELOPE");
+    expect(first.bikeId).toBe("bmc-teammachine-slr01-56");
+    expect(first.outcome).toBe("SUCCESS");
+
+    // The former leader — exact width, 58 mm out of position — is demoted.
+    const tcrMl = fleet.rankedBikes.find(
+      (b) => b.bikeId === "giant-tcr-advanced-sl-0-2025-ml",
+    )!;
+    expect(tcrMl.bestConfiguration.componentScores.normalised.handling).toBe(1);
+    expect(tcrMl.outcome).toBe("OUTSIDE_FIT_ENVELOPE");
+    expect(tcrMl.overallScore).toBeLessThan(first.overallScore);
+    // A perfect secondary component can lift a score only to sqrt(position).
+    expect(tcrMl.overallScore).toBeCloseTo(
+      Math.sqrt(tcrMl.bestConfiguration.componentScores.normalised.position),
+      12,
+    );
   });
 
-  it("confines the residual inversion to near-exact width matches", () => {
+  it("never lets a bike outside the fit envelope lead when a SUCCESS exists", () => {
     for (const target of sensitivityTargets) {
       for (const width of sensitivityWidths) {
         const ranked = optimiseFleet({ target, rider: riderWith(width) }).rankedBikes;
         if (!ranked.some((b) => b.outcome === "SUCCESS")) continue;
-
-        const leader = ranked[0]!;
-        if (leader.outcome === "SUCCESS") continue;
-
-        // Post-fix, a bike outside the fit envelope can only lead when its
-        // width error is at most half a size step (≤ 10 mm). Pre-fix a 20 mm
-        // error was already enough. Never a wider miss than that.
-        const widthError = leader.bestConfiguration.assessment.handlingMetric.value;
-        expect(widthError).not.toBeNull();
-        expect(widthError!).toBeLessThanOrEqual(10);
+        expect(ranked[0]!.outcome).toBe("SUCCESS");
       }
     }
   });
