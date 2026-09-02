@@ -201,10 +201,21 @@ function Dashboard() {
                 description="None of the frames in the database currently have the geometry and cockpit data required to reproduce your fit."
               />
             ) : (
-              <p className="text-xs text-muted-foreground">
-                Ranked by the fit engine against your handlebar position of{" "}
-                {state.view.target.x} × {state.view.target.y} mm.
-              </p>
+              <>
+                <p className="text-xs text-muted-foreground">
+                  Ranked by the fit engine against your handlebar position of{" "}
+                  {state.view.target.x} × {state.view.target.y} mm.
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {
+                    state.view.recommendations.filter((item) => item.outcome === "SUCCESS")
+                      .length
+                  }{" "}
+                  of {state.view.recommendations.length} ranked frames reproduce that position
+                  within the 35 mm fit envelope. Hood/rider-contact (RP5) data is not available
+                  for this fleet, so matching is to the handlebar clamp centre only.
+                </p>
+              </>
             )}
           </Panel>
 

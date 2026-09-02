@@ -17,6 +17,7 @@ export function RecommendationCard({ item }: { item: RecommendedBikeView }) {
   const size = bikeSizeLabel(item.bike);
   const configuration = configurationSummary(item.configuration);
   const metrics = item.positionMetrics;
+  const viable = item.outcome === "SUCCESS";
 
   return (
     <Panel
@@ -31,6 +32,18 @@ export function RecommendationCard({ item }: { item: RecommendedBikeView }) {
         </div>
       }
     >
+      <div className="mb-3 flex flex-wrap items-center gap-2">
+        <Badge variant={viable ? "default" : "destructive"}>
+          {viable ? "Viable fit" : "Outside fit envelope"}
+        </Badge>
+        <p className="text-xs text-muted-foreground">
+          {viable
+            ? "Within the 35 mm handlebar-position tolerance."
+            : "Your fitted handlebar position cannot be reproduced within the 35 mm tolerance on this frame."}
+        </p>
+      </div>
+
+
       {item.explanation ? (
         <div className="mb-4">
           <p className="text-sm font-medium">{item.explanation.headline}</p>
