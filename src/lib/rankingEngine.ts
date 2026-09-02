@@ -243,17 +243,24 @@ export const weightedGeometricMeanCombination: CombinationFunction = (
     [weighted.cockpit, weights.cockpitWeight],
     [weighted.handling, weights.handlingWeight],
   ];
+  const scores: Array<[number, number]> = [];
+  for (const [value, weight] of contributions) {
+    if (value === null || weight === 0) continue;
+    scores.push([value / weight, weight]);
+  }
+  if (scores.length === 0) return 0;
+  // Single available component: exp(ln s) is s only up to floating-point
+  // round-trip error, so return it directly. Mathematically identical, and it
+  // keeps the position-only score bit-exact with Sprint 9.7 behaviour.
+  if (scores.length === 1) return Math.max(scores[0]![0], 0);
+
   let logTotal = 0;
   let totalWeight = 0;
-  for (const [value, weight] of contributions) {
-    if (value === null) continue;
-    if (weight === 0) continue;
-    const score = value / weight;
+  for (const [score, weight] of scores) {
     if (score <= 0) return 0;
     logTotal += weight * Math.log(score);
     totalWeight += weight;
   }
-  if (totalWeight === 0) return 0;
   return Math.exp(logTotal / totalWeight);
 };
 
