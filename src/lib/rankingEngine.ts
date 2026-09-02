@@ -67,8 +67,12 @@ export interface NormalisationStrategy {
  * linear-scaling assumption is baked into the architecture. Returns 1 for a
  * perfect (zero) value and approaches 0 as error grows.
  *
- * Retained as the default for the (currently placeholder, always-zero) cockpit
- * and handling components, which are unitless counts rather than millimetres.
+ * Sprint 11D docstring correction: this is now the default for the COCKPIT
+ * component only. The cockpit metric is gated on RP5/hood geometry, which no
+ * production bike currently documents, so it is unavailable fleet-wide and
+ * never contributes to a score today. Handling has used
+ * `exponentialHandlingNormalisation` since Sprint 11C and is a real,
+ * production-populated millimetre metric — it is not a placeholder.
  */
 export const reciprocalNormalisation: NormalisationFunction = (value) => {
   const magnitude = Math.abs(value);
