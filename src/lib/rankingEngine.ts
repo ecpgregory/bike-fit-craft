@@ -333,7 +333,7 @@ export function rankConfigurations(input: RankingInput): RankingResult {
     ...defaultNormalisationStrategy,
     ...options?.normalisation,
   };
-  const combine = options?.combination ?? weightedMeanCombination;
+  const combine = options?.combination ?? weightedGeometricMeanCombination;
 
   const scoringInputs = validConfigurations.map(transform);
   const context: NormalisationContext = { cohort: scoringInputs };
