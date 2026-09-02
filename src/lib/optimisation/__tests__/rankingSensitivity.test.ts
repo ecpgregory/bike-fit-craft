@@ -4,6 +4,7 @@ import type { RiderProfile } from "@/types";
 import { riderProfile } from "@/data/rider-profile";
 import { optimiseFleet } from "@/lib/optimisation/fleetOptimisationEngine";
 import type { FleetOptimisationResult } from "@/lib/optimisation/fleetOptimisationEngine";
+import { defaultScoringWeights } from "@/lib/rankingEngine";
 import { sensitivityTargets, sensitivityWidths } from "./fitTargets";
 
 /**
@@ -163,53 +164,83 @@ describe("Sprint 11B — ranking sensitivity matrix", () => {
 });
 
 /**
- * FINDING (Sprint 11B, defect D-11B-1) — handling can outrank position.
+ * D-11B-1 (raised Sprint 11B) — Sprint 11C PARTIAL fix.
  *
- * The positional component is normalised with an exponential whose length
- * scale is 10 mm, while the handling component still uses the default
- * reciprocal normaliser whose implicit length scale is 1 mm. With equal
- * weights, an exact width match scores 1.0 while a 20 mm width difference
- * scores 0.048, so handling can dominate a component with far more
- * positional information.
+ * Position is normalised on a 10 mm exponential scale; handling now uses
+ * `exp(-widthError / HANDLING_DECAY_MM)` with an explicit 20 mm scale (one
+ * manufactured handlebar size step) instead of the reciprocal's implicit
+ * 1 mm scale. That removes the scale mismatch and roughly halves the
+ * advantage a width match confers.
  *
- * The test below LOCKS the observed behaviour rather than asserting the
- * desired behaviour. It is documentation of a demonstrated defect, not an
- * endorsement: see docs/SCORING_MODEL.md for the proposed follow-up.
+ * It does NOT fully resolve the ranking inversion, because the residual
+ * mechanism is the arithmetic-mean combiner rather than the scale — see
+ * D-11C-1 in handlingNormalisation.test.ts and docs/SCORING_MODEL.md. These
+ * tests measure the improvement and lock the residual honestly.
  */
-describe("Sprint 11B — demonstrated defect: handling/position scale mismatch", () => {
-  it("lets an exact width match outrank a materially better RP3 position", () => {
-    const fleet = optimiseFleet({
-      target: { x: 490, y: 650 },
-      rider: riderWith(420),
-    });
+describe("D-11B-1 — Sprint 11C normalisation fix, measured at fleet level", () => {
+  const TARGET = { x: 490, y: 650 };
 
-    const first = fleet.rankedBikes[0]!;
+  it("materially closes the gap between better position and exact width", () => {
+    const fleet = optimiseFleet({ target: TARGET, rider: riderWith(420) });
+
+    const tcr = fleet.rankedBikes.find(
+      (b) => b.bikeId === "giant-tcr-advanced-sl-0-2025-m",
+    )!;
     const bmc = fleet.rankedBikes.find((b) => b.bikeId === "bmc-teammachine-slr01-56")!;
 
-    // Giant TCR: 420 mm bars (exact match) but ~58 mm of RP3 error.
-    expect(first.bikeId).toBe("giant-tcr-advanced-sl-0-2025-ml");
+    // Premise: TCR matches the width exactly but fits far worse.
+    expect(tcr.bestConfiguration.assessment.handlingMetric.value).toBe(0);
+    expect(bmc.bestConfiguration.assessment.handlingMetric.value).toBe(20);
     expect(
-      first.bestConfiguration.assessment.positionMetrics.euclideanDistance,
+      tcr.bestConfiguration.assessment.positionMetrics.euclideanDistance -
+        bmc.bestConfiguration.assessment.positionMetrics.euclideanDistance,
     ).toBeGreaterThan(50);
+
+    // Sprint 11B: BMC scored 0.1046 against TCR-M's 0.5002 (4.8x).
+    // Sprint 11C: BMC scores 0.2647 against an unchanged 0.5002 (1.9x).
+    expect(bmc.overallScore).toBeCloseTo(0.2647, 4);
+    expect(tcr.overallScore / bmc.overallScore).toBeLessThan(2);
+  });
+
+  it("RESIDUAL D-11C-1 — the mean still floors an exact width match at 0.5", () => {
+    const fleet = optimiseFleet({ target: TARGET, rider: riderWith(420) });
+    const first = fleet.rankedBikes[0]!;
+
+    // Locked, not endorsed: an exact-width bike 58 mm out still leads.
+    expect(first.bikeId).toBe("giant-tcr-advanced-sl-0-2025-ml");
+    expect(first.overallScore).toBeGreaterThan(0.5);
+    expect(first.bestConfiguration.componentScores.normalised.handling).toBe(1);
     expect(first.outcome).toBe("OUTSIDE_FIT_ENVELOPE");
-
-    // BMC: 18 mm of RP3 error and inside the fit envelope, yet ranked below.
-    expect(
-      bmc.bestConfiguration.assessment.positionMetrics.euclideanDistance,
-    ).toBeLessThan(20);
-    expect(bmc.outcome).toBe("SUCCESS");
-    expect(bmc.overallScore).toBeLessThan(first.overallScore);
   });
 
-  it("shows the scale mismatch is in normalisation, not in the weights", () => {
-    const fleet = optimiseFleet({
-      target: { x: 490, y: 650 },
-      rider: riderWith(420),
+  it("confines the residual inversion to near-exact width matches", () => {
+    for (const target of sensitivityTargets) {
+      for (const width of sensitivityWidths) {
+        const ranked = optimiseFleet({ target, rider: riderWith(width) }).rankedBikes;
+        if (!ranked.some((b) => b.outcome === "SUCCESS")) continue;
+
+        const leader = ranked[0]!;
+        if (leader.outcome === "SUCCESS") continue;
+
+        // Post-fix, a bike outside the fit envelope can only lead when its
+        // width error is at most half a size step (≤ 10 mm). Pre-fix a 20 mm
+        // error was already enough. Never a wider miss than that.
+        const widthError = leader.bestConfiguration.assessment.handlingMetric.value;
+        expect(widthError).not.toBeNull();
+        expect(widthError!).toBeLessThanOrEqual(10);
+      }
+    }
+  });
+
+
+
+  it("weights remain 1:1:1 — the fix is entirely in normalisation", () => {
+    expect(defaultScoringWeights).toEqual({
+      positionWeight: 1,
+      cockpitWeight: 1,
+      handlingWeight: 1,
     });
-    const tcr = fleet.rankedBikes[0]!.bestConfiguration.componentScores.normalised;
-
-    // Weights are 1:1:1 by design; the disparity is entirely normalisation.
-    expect(tcr.handling).toBeCloseTo(1, 10);
-    expect(tcr.position).toBeLessThan(0.01);
   });
+
 });
+
