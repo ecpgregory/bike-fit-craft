@@ -2,6 +2,7 @@ import type { Bike } from "@/types";
 import type {
   CockpitConfiguration,
   GeometryWarning,
+  PenaltyMetric,
   Point2D,
   PositionMetrics,
   TargetPosition,
@@ -93,6 +94,9 @@ function toRecommendation(
     configuration: solved?.configuration ?? null,
     explanation: summary.result.explanations[best.candidateId] ?? null,
     geometryWarnings: best.assessment.geometryWarnings,
+    cockpitMetric: best.assessment.cockpitMetric,
+    handlingMetric: best.assessment.handlingMetric,
+    handlebarWidth: solved?.configuration.handlebarWidth ?? null,
   };
 }
 
