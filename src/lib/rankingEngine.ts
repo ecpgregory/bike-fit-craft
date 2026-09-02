@@ -103,11 +103,44 @@ export const exponentialPositionNormalisation: NormalisationFunction = (value) =
   return Math.exp(-magnitude / POSITION_DECAY_MM);
 };
 
+/**
+ * Sprint 11C — handling normalisation (fix for defect D-11B-1).
+ *
+ * The handling metric is a handlebar-width error in MILLIMETRES, exactly like
+ * the positional metric. Under the reciprocal normaliser its implicit length
+ * scale was 1 mm, so an exact width match scored 1.0 while a 20 mm difference
+ * scored 0.048 — a far steeper response than the 10 mm positional scale. With
+ * 1:1:1 weights this let bar width overwhelm a materially better RP3
+ * position (Sprint 11B matrix, 490/650 @ 420 mm).
+ *
+ * Fix: the same exponential form as position, with its own explicit scale,
+ *
+ *   handlingScore = exp(-widthError / HANDLING_DECAY_MM)
+ *
+ * `HANDLING_DECAY_MM` = 20 mm: road handlebars are manufactured and specified
+ * in 20 mm width steps (360/380/400/420/440), so one decay length is exactly
+ * one available size step — the smallest width difference a rider can
+ * actually act on. Being one size out therefore costs the same score factor
+ * (1/e) as being one positional reporting band (10 mm) out, which restores
+ * the intended relationship: position error and width error are compared on
+ * their own physically meaningful scales, and neither is inflated.
+ *
+ * Weights remain 1:1:1; only this length scale changed.
+ */
+export const HANDLING_DECAY_MM = 20;
+
+export const exponentialHandlingNormalisation: NormalisationFunction = (value) => {
+  const magnitude = Math.abs(value);
+  if (!Number.isFinite(magnitude)) return 0;
+  return Math.exp(-magnitude / HANDLING_DECAY_MM);
+};
+
 export const defaultNormalisationStrategy: NormalisationStrategy = {
   position: exponentialPositionNormalisation,
   cockpit: reciprocalNormalisation,
-  handling: reciprocalNormalisation,
+  handling: exponentialHandlingNormalisation,
 };
+
 
 // --- Stage 3: weighting ------------------------------------------------------
 
