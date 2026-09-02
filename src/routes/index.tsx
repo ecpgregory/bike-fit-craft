@@ -202,25 +202,34 @@ function Dashboard() {
               />
             ) : (
               <>
-                <p className="text-xs text-muted-foreground">
-                  Ranked by the fit engine against your handlebar position of{" "}
-                  {state.view.target.x} × {state.view.target.y} mm.
-                </p>
-                <p className="mt-1 text-xs text-muted-foreground">
+                <p className="text-sm font-medium">
                   {
                     state.view.recommendations.filter((item) => item.outcome === "SUCCESS")
                       .length
                   }{" "}
-                  of {state.view.recommendations.length} ranked frames reproduce that position
-                  within the 35 mm fit envelope. Hood/rider-contact (RP5) data is not available
-                  for this fleet, so matching is to the handlebar clamp centre only.
+                  of {state.view.recommendations.length} ranked bikes can achieve a viable fit.
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Your target handlebar position: X {state.view.target.x} × Y{" "}
+                  {state.view.target.y} mm. A bike is a viable fit when it can be set up within
+                  35 mm of that position; the remaining bikes are ranked by how close they get.
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Hood-contact position is not evaluated — verified hood-contact data is not
+                  currently available for these bikes, so matching is to the handlebar clamp
+                  centre only.
                 </p>
               </>
             )}
           </Panel>
 
           {state.view.recommendations.map((item) => (
-            <RecommendationCard key={item.bikeId} item={item} />
+            <RecommendationCard
+              key={item.bikeId}
+              item={item}
+              target={state.view.target}
+              targetHandlebarWidth={pendingRequest?.rider.targetHandlebarWidth ?? null}
+            />
           ))}
 
           {state.view.unavailable.length > 0 ? (
