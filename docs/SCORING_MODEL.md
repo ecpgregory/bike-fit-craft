@@ -41,7 +41,9 @@ this sprint.
 ### Outcome classification and ranking
 
 - `classifyOptimisationOutcome` is purely positional: `NO_CANDIDATES`,
-  `NO_VALID_RESULT`, `SUCCESS` (RP3 error ≤ 35 mm) or `OUTSIDE_FIT_ENVELOPE`.
+  `NO_VALID_RESULT`, `SUCCESS` (RP3 |ΔX| ≤ 5 mm and |ΔY| ≤ 20 mm — the Bike Fit
+  Finder product tolerance for rider-target RP3 position, set in Sprint 12A.5)
+  or `OUTSIDE_FIT_ENVELOPE`.
   It is independent of the ranking score.
 - `optimiseFleet` sorts by `overallScore` descending; ties break by candidate id.
 
@@ -143,8 +145,10 @@ size the rider could actually buy — the smallest actionable difference. Being
 one size out costs the same 1/e factor as being one positional reporting band
 (10 mm) out, so both components are measured on their own physically
 meaningful millimetre scales. Weights remain 1:1:1; position normalisation,
-the 35 mm envelope, RP5 handling, production data and the rider UI are
-unchanged.
+the fit envelope, RP5 handling, production data and the rider UI are
+unchanged. (The envelope in force at the time of Sprint 11C was Euclidean
+35 mm; it was replaced in Sprint 12A.5 by the ±5 mm X / ±20 mm Y rule. The
+envelope is a classification only and never fed the combiner.)
 
 Curve: 0 mm → 1.000, 5 → 0.779, 10 → 0.607, 20 → 0.368, 30 → 0.223,
 40 → 0.135, 60 → 0.050. Exactly 1 at 0, strictly decreasing, bounded in (0,1],
@@ -206,7 +210,7 @@ reference implementation of the D-11C-1 defect.
 
 Unchanged: component weights (1:1:1), position normalisation
 (`exp(-mm/10)`), `HANDLING_DECAY_MM = 20`, cockpit reciprocal normalisation,
-availability rules, the 35 mm positional fit envelope, outcome classification,
+availability rules, the positional fit envelope, outcome classification,
 and all production bike/configuration data. The only runtime change is the
 combiner. The stale `reciprocalNormalisation` docstring — which still called
 cockpit *and* handling always-zero placeholders — was corrected to describe
@@ -267,7 +271,7 @@ scoring is pass-through under both combiners.
   moves from Cannondale LAB71 54 at 360–380 mm to BMC SLR01 56 at 390–420 mm).
 
 **Ranking changes vs outcome changes, reported separately:** 30 of 35 runs
-changed ranked ORDER; **0** runs changed any OUTCOME. The 35 mm envelope is
+changed ranked ORDER; **0** runs changed any OUTCOME. The fit envelope is
 computed in the evaluation layer and is provably independent of the combiner.
 
 ## Findings

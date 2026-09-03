@@ -20,7 +20,7 @@ import type { ScoringInputs, ScoringWeights } from "@/lib/rankingEngine";
  * The combiner receives weighted values (sᵢ·wᵢ) and divides the weight back
  * out, so these helpers construct inputs the same way the ranking pipeline
  * does. Nothing here tunes the model: weights, normalisers, availability rules
- * and the 35 mm envelope are all unchanged from Sprint 11C.
+ * and the fit envelope are all unchanged from Sprint 11C.
  */
 
 const EQUAL: ScoringWeights = { positionWeight: 1, cockpitWeight: 1, handlingWeight: 1 };
