@@ -1,6 +1,7 @@
 import { AlertTriangle } from "lucide-react";
 
 import type { Point2D } from "@/types/optimisation";
+import { defaultAcceptableFitEnvelope } from "@/lib/optimisation/optimisationOutcome";
 import { Panel, SpecRow } from "@/components/panel";
 import { Badge } from "@/components/ui/badge";
 import {
