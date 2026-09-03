@@ -92,11 +92,12 @@ export function RecommendationCard({
 
       <p className="mt-3 text-sm">
         {viable
-          ? `This bike can be set up within ${distance} mm of your target handlebar position, inside the ${FIT_ENVELOPE_MM} mm fit envelope.`
+          ? `This bike can be set up within ${FIT_ENVELOPE_X_MM} mm horizontally and ${FIT_ENVELOPE_Y_MM} mm vertically of your target handlebar position (${distance} mm total).`
           : `This bike cannot currently be set up close enough to your target position. The closest achievable position is ${distance} mm away (${round(
               Math.abs(metrics.deltaY),
-            )} mm ${verticalWord} your target), outside the ${FIT_ENVELOPE_MM} mm fit envelope.`}
+            )} mm ${verticalWord} your target), outside the ${FIT_ENVELOPE_X_MM} mm horizontal / ${FIT_ENVELOPE_Y_MM} mm vertical fit envelope.`}
       </p>
+
 
       <div className="mt-4 grid gap-x-8 sm:grid-cols-2">
         <div>
