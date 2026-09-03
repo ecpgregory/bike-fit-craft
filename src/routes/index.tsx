@@ -212,7 +212,8 @@ function Dashboard() {
                 <p className="mt-1 text-xs text-muted-foreground">
                   Your target handlebar position: X {state.view.target.x} × Y{" "}
                   {state.view.target.y} mm. A bike is a viable fit when it can be set up within
-                  35 mm of that position; the remaining bikes are ranked by how close they get.
+                  5 mm horizontally and 20 mm vertically of that position; the remaining bikes
+                  are ranked by how close they get.
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
                   Hood-contact position is not evaluated — verified hood-contact data is not
