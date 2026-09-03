@@ -298,7 +298,8 @@ export type TargetPosition = Point2D;
  *                           solver, constraint or evaluation stages.
  * - OUTSIDE_FIT_ENVELOPE:   a valid, ranked configuration exists, but its best
  *                           achievable RP3 positional error lies outside the
- *                           application's acceptable fit envelope. A valid
+ *                           application's acceptable fit envelope (±5 mm X /
+ *                           ±20 mm Y — see `optimisationOutcome.ts`). A valid
  *                           mathematical configuration is not the same thing
  *                           as a useful bike-fit match.
  * - SUCCESS:                a valid configuration exists AND its positional

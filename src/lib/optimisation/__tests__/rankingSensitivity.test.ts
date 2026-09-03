@@ -212,7 +212,6 @@ describe("D-11C-1 — Sprint 11D geometric combiner, measured at fleet level", (
     const first = fleet.rankedBikes[0]!;
 
     expect(first.bikeId).toBe("bmc-teammachine-slr01-56");
-    expect(first.outcome).toBe("SUCCESS");
 
     // The former leader — exact width, 58 mm out of position — is demoted.
     const tcrMl = fleet.rankedBikes.find(
@@ -221,6 +220,9 @@ describe("D-11C-1 — Sprint 11D geometric combiner, measured at fleet level", (
     expect(tcrMl.bestConfiguration.componentScores.normalised.handling).toBe(1);
     expect(tcrMl.outcome).toBe("OUTSIDE_FIT_ENVELOPE");
     expect(tcrMl.overallScore).toBeLessThan(first.overallScore);
+    expect(
+      first.bestConfiguration.assessment.positionMetrics.euclideanDistance,
+    ).toBeLessThan(tcrMl.bestConfiguration.assessment.positionMetrics.euclideanDistance);
     // A perfect secondary component can lift a score only to sqrt(position).
     expect(tcrMl.overallScore).toBeCloseTo(
       Math.sqrt(tcrMl.bestConfiguration.componentScores.normalised.position),
@@ -228,15 +230,24 @@ describe("D-11C-1 — Sprint 11D geometric combiner, measured at fleet level", (
     );
   });
 
-  it("never lets a bike outside the fit envelope lead when a SUCCESS exists", () => {
+  it("never lets a far-out bike lead when a well-fitting bike exists", () => {
+    // Sprint 12A.5: the product fit envelope (±5 mm X / ±20 mm Y) is a
+    // classification only and is not a ranking input, so this Sprint 11D
+    // dominance guard is expressed against its own local 35 mm positional
+    // baseline — the same measurement 11D used — rather than the outcome label.
+    const RANKING_BASELINE_MM = 35;
     for (const target of sensitivityTargets) {
       for (const width of sensitivityWidths) {
         const ranked = optimiseFleet({ target, rider: riderWith(width) }).rankedBikes;
-        if (!ranked.some((b) => b.outcome === "SUCCESS")) continue;
-        expect(ranked[0]!.outcome).toBe("SUCCESS");
+        const error = (b: (typeof ranked)[number]) =>
+          b.bestConfiguration.assessment.positionMetrics.euclideanDistance;
+        if (!ranked.some((b) => error(b) <= RANKING_BASELINE_MM)) continue;
+        expect(error(ranked[0]!)).toBeLessThanOrEqual(RANKING_BASELINE_MM);
       }
     }
   });
+
+
 
 
 

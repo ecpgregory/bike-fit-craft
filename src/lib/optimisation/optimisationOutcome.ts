@@ -15,31 +15,33 @@ import type { BikeOptimisationResult } from "./bikeOptimisationEngine";
  */
 
 /**
- * The positional error a bike must achieve before it is called a fit match.
+ * The RP3 acceptance envelope: how far the best achievable handlebar clamp
+ * position may sit from the rider's target before the bike stops being called
+ * a viable fit.
  *
- * DESIGN DECISION (Sprint 9.7) — the domain model had no maximum positional
- * error for RP3. The values that did exist are:
+ * PRODUCT DECISION (Sprint 12A.4/12A.5) — the envelope is axis-separated, not
+ * Euclidean: ±5 mm horizontally (X, fore/aft) and ±20 mm vertically (Y).
+ * Vertical position is more readily adjusted (spacers, stem angle) than
+ * fore/aft, so the two axes carry different tolerances.
  *
- *  - `defaultPositionReportingThresholds` in the Explanation Engine:
- *    excellent ≤ 5 mm, close ≤ 10 mm. These are documented as wording bands
- *    for a single measurement, explicitly "never to score it", and are far too
- *    tight to act as an acceptance envelope.
- *  - `assessFit()` in the Fit Engine: "Good Candidate" = frame reach within
- *    5 mm AND frame stack within 35 mm. 35 mm is the largest deviation the
- *    existing domain model still calls a candidate.
+ * This is the Bike Fit Finder product tolerance for rider-target RP3 position.
+ * It is not a universal biomechanical standard, and it is deliberately NOT
+ * derived from the historical frame-comparison rules in `fitEngine.ts`, which
+ * compare two frames rather than a rider target.
  *
- * `maximumPositionalError` therefore reuses the Fit Engine's 35 mm candidate
- * tolerance as the acceptance envelope for RP3 Euclidean error, rather than
- * inventing a round number. This is a product decision that should be
- * confirmed: it is the one threshold in this module and it is configurable.
+ * The envelope affects classification only. Scoring, ranking and the selected
+ * configuration are unaffected by it.
  */
 export interface AcceptableFitEnvelope {
-  /** Maximum RP3 Euclidean error, in millimetres, still called SUCCESS. */
-  maximumPositionalError: number;
+  /** Maximum |RP3 deltaX| (mm, fore/aft) still called SUCCESS. */
+  maximumHorizontalError: number;
+  /** Maximum |RP3 deltaY| (mm, vertical) still called SUCCESS. */
+  maximumVerticalError: number;
 }
 
 export const defaultAcceptableFitEnvelope: AcceptableFitEnvelope = {
-  maximumPositionalError: 35,
+  maximumHorizontalError: 5,
+  maximumVerticalError: 20,
 };
 
 export function classifyOptimisationOutcome(
@@ -49,7 +51,21 @@ export function classifyOptimisationOutcome(
   if (result.optimisationSummary.totalConfigurations === 0) return "NO_CANDIDATES";
   const best = result.bestConfiguration;
   if (best === null) return "NO_VALID_RESULT";
-  const distance = best.assessment?.positionMetrics?.euclideanDistance;
-  if (typeof distance !== "number" || !Number.isFinite(distance)) return "SUCCESS";
-  return distance <= envelope.maximumPositionalError ? "SUCCESS" : "OUTSIDE_FIT_ENVELOPE";
+  const metrics = best.assessment?.positionMetrics;
+  const deltaX = metrics?.deltaX;
+  const deltaY = metrics?.deltaY;
+  // Missing or non-finite deltas: no evidence to reject a valid ranked result.
+  if (
+    typeof deltaX !== "number" ||
+    !Number.isFinite(deltaX) ||
+    typeof deltaY !== "number" ||
+    !Number.isFinite(deltaY)
+  ) {
+    return "SUCCESS";
+  }
+  return Math.abs(deltaX) <= envelope.maximumHorizontalError &&
+    Math.abs(deltaY) <= envelope.maximumVerticalError
+    ? "SUCCESS"
+    : "OUTSIDE_FIT_ENVELOPE";
 }
+

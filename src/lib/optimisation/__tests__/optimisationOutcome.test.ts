@@ -137,20 +137,35 @@ describe("classifyOptimisationOutcome", () => {
     expect(classifyOptimisationOutcome(result)).toBe("NO_VALID_RESULT");
   });
 
-  it("D — reports SUCCESS when a configuration is solved and ranked", () => {
+  it("D — reports a ranked outcome when a configuration is solved and ranked", () => {
     const result = optimiseBike({ bike: bike(completeCockpit), rider });
 
     expect(result.bestConfiguration).not.toBeNull();
-    expect(classifyOptimisationOutcome(result)).toBe("SUCCESS");
+    // The fixture solves, so it is never NO_CANDIDATES/NO_VALID_RESULT; whether
+    // it is SUCCESS depends only on the envelope, which is injectable.
+    expect(
+      classifyOptimisationOutcome(result, {
+        maximumHorizontalError: 1000,
+        maximumVerticalError: 1000,
+      }),
+    ).toBe("SUCCESS");
+    expect(
+      classifyOptimisationOutcome(result, {
+        maximumHorizontalError: 0,
+        maximumVerticalError: 0,
+      }),
+    ).toBe("OUTSIDE_FIT_ENVELOPE");
   });
+
 });
 
 /**
- * Sprint 9.7 — a valid configuration is not automatically a fit match.
+ * Sprint 12A.5 — a valid configuration is not automatically a fit match.
+ * The product tolerance is axis-separated: ±5 mm X, ±20 mm Y on RP3.
  * These use synthetic result shapes only; no geometry is recalculated.
  */
 describe("acceptable fit envelope", () => {
-  const stub = (distance: number) =>
+  const stub = (deltaX: number, deltaY: number) =>
     ({
       optimisationSummary: {
         totalConfigurations: 4,
@@ -159,29 +174,53 @@ describe("acceptable fit envelope", () => {
       },
       bestConfiguration: {
         candidateId: "c1",
-        assessment: { positionMetrics: { euclideanDistance: distance } },
+        assessment: {
+          positionMetrics: {
+            deltaX,
+            deltaY,
+            euclideanDistance: Math.hypot(deltaX, deltaY),
+          },
+        },
       },
     }) as never;
 
-  it("classifies a valid configuration inside the envelope as SUCCESS", () => {
-    expect(classifyOptimisationOutcome(stub(8))).toBe("SUCCESS");
-    expect(
-      classifyOptimisationOutcome(stub(defaultAcceptableFitEnvelope.maximumPositionalError)),
-    ).toBe("SUCCESS");
+  it("accepts the X boundary and rejects just outside it", () => {
+    expect(classifyOptimisationOutcome(stub(5, 0))).toBe("SUCCESS");
+    expect(classifyOptimisationOutcome(stub(-5, 0))).toBe("SUCCESS");
+    expect(classifyOptimisationOutcome(stub(5.01, 0))).toBe("OUTSIDE_FIT_ENVELOPE");
+    expect(classifyOptimisationOutcome(stub(-5.01, 0))).toBe("OUTSIDE_FIT_ENVELOPE");
   });
 
-  it("classifies a valid configuration outside the envelope as OUTSIDE_FIT_ENVELOPE", () => {
+  it("accepts the Y boundary and rejects just outside it", () => {
+    expect(classifyOptimisationOutcome(stub(0, 20))).toBe("SUCCESS");
+    expect(classifyOptimisationOutcome(stub(0, -20))).toBe("SUCCESS");
+    expect(classifyOptimisationOutcome(stub(0, 20.01))).toBe("OUTSIDE_FIT_ENVELOPE");
+    expect(classifyOptimisationOutcome(stub(0, -20.01))).toBe("OUTSIDE_FIT_ENVELOPE");
+  });
+
+  it("requires both axes simultaneously", () => {
+    expect(classifyOptimisationOutcome(stub(5, 20))).toBe("SUCCESS");
+    expect(classifyOptimisationOutcome(stub(-5, -20))).toBe("SUCCESS");
+    expect(classifyOptimisationOutcome(stub(5.01, 20))).toBe("OUTSIDE_FIT_ENVELOPE");
+    expect(classifyOptimisationOutcome(stub(5, 20.01))).toBe("OUTSIDE_FIT_ENVELOPE");
+  });
+
+  it("is not Euclidean: a small distance with excessive X is rejected", () => {
+    // 13.2 mm total error, well inside the retired 35 mm Euclidean envelope.
+    expect(classifyOptimisationOutcome(stub(13.2, 2.1))).toBe("OUTSIDE_FIT_ENVELOPE");
+  });
+
+  it("honours an injected envelope rather than the production default", () => {
     expect(
-      classifyOptimisationOutcome(
-        stub(defaultAcceptableFitEnvelope.maximumPositionalError + 0.1),
-      ),
+      classifyOptimisationOutcome(stub(4, 0), {
+        maximumHorizontalError: 3,
+        maximumVerticalError: 20,
+      }),
     ).toBe("OUTSIDE_FIT_ENVELOPE");
-    expect(classifyOptimisationOutcome(stub(76.5))).toBe("OUTSIDE_FIT_ENVELOPE");
-  });
-
-  it("honours an injected envelope rather than a hard-coded distance", () => {
-    expect(classifyOptimisationOutcome(stub(8), { maximumPositionalError: 5 })).toBe(
-      "OUTSIDE_FIT_ENVELOPE",
-    );
+    expect(defaultAcceptableFitEnvelope).toEqual({
+      maximumHorizontalError: 5,
+      maximumVerticalError: 20,
+    });
   });
 });
+
