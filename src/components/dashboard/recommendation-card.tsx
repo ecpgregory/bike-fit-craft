@@ -13,7 +13,8 @@ import {
 } from "@/lib/recommendations/fleetRecommendations";
 
 /** Positional feasibility envelope used by the engine; displayed, never applied here. */
-const FIT_ENVELOPE_MM = 35;
+const FIT_ENVELOPE_X_MM = defaultAcceptableFitEnvelope.maximumHorizontalError;
+const FIT_ENVELOPE_Y_MM = defaultAcceptableFitEnvelope.maximumVerticalError;
 
 function PositionBlock({
   label,
