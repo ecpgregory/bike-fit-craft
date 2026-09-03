@@ -212,7 +212,6 @@ describe("D-11C-1 — Sprint 11D geometric combiner, measured at fleet level", (
     const first = fleet.rankedBikes[0]!;
 
     expect(first.bikeId).toBe("bmc-teammachine-slr01-56");
-    expect(first.outcome).toBe("SUCCESS");
 
     // The former leader — exact width, 58 mm out of position — is demoted.
     const tcrMl = fleet.rankedBikes.find(
@@ -221,6 +220,9 @@ describe("D-11C-1 — Sprint 11D geometric combiner, measured at fleet level", (
     expect(tcrMl.bestConfiguration.componentScores.normalised.handling).toBe(1);
     expect(tcrMl.outcome).toBe("OUTSIDE_FIT_ENVELOPE");
     expect(tcrMl.overallScore).toBeLessThan(first.overallScore);
+    expect(
+      first.bestConfiguration.assessment.positionMetrics.euclideanDistance,
+    ).toBeLessThan(tcrMl.bestConfiguration.assessment.positionMetrics.euclideanDistance);
     // A perfect secondary component can lift a score only to sqrt(position).
     expect(tcrMl.overallScore).toBeCloseTo(
       Math.sqrt(tcrMl.bestConfiguration.componentScores.normalised.position),
@@ -228,15 +230,25 @@ describe("D-11C-1 — Sprint 11D geometric combiner, measured at fleet level", (
     );
   });
 
-  it("never lets a bike outside the fit envelope lead when a SUCCESS exists", () => {
+  it("never lets a worse-fitting bike lead a better-fitting one on width alone", () => {
+    // Sprint 12A.5: the fit envelope is a classification, not a ranking input,
+    // so dominance is measured on positional error, not on outcome labels.
     for (const target of sensitivityTargets) {
       for (const width of sensitivityWidths) {
         const ranked = optimiseFleet({ target, rider: riderWith(width) }).rankedBikes;
-        if (!ranked.some((b) => b.outcome === "SUCCESS")) continue;
-        expect(ranked[0]!.outcome).toBe("SUCCESS");
+        if (ranked.length === 0) continue;
+        const leaderError =
+          ranked[0]!.bestConfiguration.assessment.positionMetrics.euclideanDistance;
+        const bestError = Math.min(
+          ...ranked.map(
+            (b) => b.bestConfiguration.assessment.positionMetrics.euclideanDistance,
+          ),
+        );
+        expect(leaderError).toBeCloseTo(bestError, 6);
       }
     }
   });
+
 
 
 
