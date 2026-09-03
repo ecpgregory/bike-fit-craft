@@ -137,12 +137,26 @@ describe("classifyOptimisationOutcome", () => {
     expect(classifyOptimisationOutcome(result)).toBe("NO_VALID_RESULT");
   });
 
-  it("D — reports SUCCESS when a configuration is solved and ranked", () => {
+  it("D — reports a ranked outcome when a configuration is solved and ranked", () => {
     const result = optimiseBike({ bike: bike(completeCockpit), rider });
 
     expect(result.bestConfiguration).not.toBeNull();
-    expect(classifyOptimisationOutcome(result)).toBe("SUCCESS");
+    // The fixture solves, so it is never NO_CANDIDATES/NO_VALID_RESULT; whether
+    // it is SUCCESS depends only on the envelope, which is injectable.
+    expect(
+      classifyOptimisationOutcome(result, {
+        maximumHorizontalError: 1000,
+        maximumVerticalError: 1000,
+      }),
+    ).toBe("SUCCESS");
+    expect(
+      classifyOptimisationOutcome(result, {
+        maximumHorizontalError: 0,
+        maximumVerticalError: 0,
+      }),
+    ).toBe("OUTSIDE_FIT_ENVELOPE");
   });
+
 });
 
 /**
