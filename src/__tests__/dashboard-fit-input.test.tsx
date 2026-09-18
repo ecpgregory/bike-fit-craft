@@ -81,7 +81,10 @@ describe("Dashboard rider fit input", () => {
       bikes,
     );
     const first = view.recommendations[0]!;
-    await screen.findByText(new RegExp(`1\\. ${first.bike!.brand}`, "i"));
+    await screen.findByText(
+      new RegExp(`${first.bike!.brand} ${first.bike!.model} — ${first.bike!.size}`, "i"),
+    );
+    expect(screen.getByText(/rank 1/i)).toBeTruthy();
     await screen.findByText(/unable to evaluate/i);
   });
 

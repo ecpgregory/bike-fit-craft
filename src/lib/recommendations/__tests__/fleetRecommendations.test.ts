@@ -100,5 +100,18 @@ describe("recommendation flow", () => {
     expect(top.predictedPosition?.x).toBeCloseTo(465.4, 1);
     expect(top.configuration?.stemLength).toBe(100);
   });
+
+  it("exposes source-backed cockpit context without changing the selected configuration", () => {
+    const bmc54 = view.recommendations.find((item) => item.bikeId === "bmc-teammachine-slr01-54");
+    const v5rs = view.recommendations.find((item) => item.bikeId === "colnago-v5rs-2025-510");
+
+    expect(bmc54?.cockpit).toEqual({
+      name: "BMC ICS integrated cockpit",
+      handlebarReach: 68,
+      stemChoice: "only-documented-option",
+    });
+    expect(v5rs?.cockpit?.stemChoice).toBe("selected-from-options");
+    expect(bmc54?.configuration?.stemLength).toBe(100);
+  });
 });
 
