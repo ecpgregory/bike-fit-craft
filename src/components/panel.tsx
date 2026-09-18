@@ -27,7 +27,7 @@ export function Panel({
         <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border px-5 py-4">
           <div className="min-w-0">
             {title && (
-              <h2 className={cn("text-sm font-semibold tracking-tight", titleClassName)}>{title}</h2>
+              <h2 className={cn("truncate text-sm font-semibold tracking-tight", titleClassName)}>{title}</h2>
             )}
             {subtitle && <p className="truncate text-xs text-muted-foreground">{subtitle}</p>}
           </div>

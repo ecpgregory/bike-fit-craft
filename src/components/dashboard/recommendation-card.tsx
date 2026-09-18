@@ -107,6 +107,7 @@ export function RecommendationCard({
     <Panel
       title={`${name}${size ? ` — ${size}` : ""}`}
       subtitle={`Rank ${item.rank}${year ? ` · ${year}` : ""}`}
+      titleClassName="whitespace-normal"
       action={
         <Badge
           variant={viable ? "default" : "destructive"}
