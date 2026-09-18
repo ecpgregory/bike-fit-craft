@@ -7,9 +7,14 @@ import {
 
 const OUTCOME_COPY: Record<UnavailableBikeView["outcome"], string> = {
   NO_CANDIDATES:
-    "No buildable configuration could be generated because the required frame or cockpit data is unavailable.",
+    "No valid configurations exist to evaluate because required frame or cockpit data is unavailable.",
   NO_VALID_RESULT:
-    "Configurations were generated but none could be resolved into a valid handlebar position.",
+    "Configurations were evaluated, but none produced a valid handlebar clamp position.",
+};
+
+const OUTCOME_LABEL: Record<UnavailableBikeView["outcome"], string> = {
+  NO_CANDIDATES: "Configuration data unavailable",
+  NO_VALID_RESULT: "No valid result",
 };
 
 /** Bikes the engine could not evaluate. Never shown with a fit score. */
@@ -20,7 +25,7 @@ export function UnavailableBikeCard({ item }: { item: UnavailableBikeView }) {
       <div className="flex flex-wrap items-center gap-2">
         <p className="text-sm font-medium">{bikeDisplayName(item.bike, item.bikeId)}</p>
         {size ? <span className="text-xs text-muted-foreground">{size}</span> : null}
-        <Badge variant="secondary">{item.outcome}</Badge>
+        <Badge variant="secondary">{OUTCOME_LABEL[item.outcome]}</Badge>
       </div>
       <p className="mt-1 text-xs text-muted-foreground">{OUTCOME_COPY[item.outcome]}</p>
       {item.diagnostics.length > 0 ? (
