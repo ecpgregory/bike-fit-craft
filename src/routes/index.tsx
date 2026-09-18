@@ -35,7 +35,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "See which high-end road frames reproduce your professional fit, ranked by the production fit engine with recommended stem, angle and spacer setup.",
+          "See how closely high-end road frames reproduce your professional fit, with achieved handlebar positions and documented cockpit setups.",
       },
       { property: "og:title", content: "Bike Matches — Bike Fit Finder" },
       {
