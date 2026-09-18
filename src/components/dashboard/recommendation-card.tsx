@@ -43,7 +43,7 @@ function PositionBlock({
 
 function formatPoint(point: Point2D | null): string {
   if (!point) return "—";
-  return `${round(point.x)} × ${round(point.y)} mm`;
+  return `X ${round(point.x)} mm · Y ${round(point.y)} mm`;
 }
 
 function axisDirection(value: number, positive: string, negative: string): string {
