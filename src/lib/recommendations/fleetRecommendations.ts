@@ -8,6 +8,7 @@ import type {
   TargetPosition,
 } from "@/types/optimisation";
 import type { RecommendationExplanation } from "@/lib/explanationEngine";
+import { bikeConfigurations } from "@/data/bike-configurations";
 import type {
   FleetOptimisationResult,
   RankedBikeSummary,
@@ -45,6 +46,12 @@ export interface RecommendedBikeView {
   handlingMetric: PenaltyMetric;
   /** Verified handlebar width of the recommended configuration; never inferred. */
   handlebarWidth: number | null;
+  /** Source-backed cockpit label and option context; presentation only. */
+  cockpit: {
+    name: string;
+    handlebarReach: number | null;
+    stemChoice: "only-documented-option" | "selected-from-options";
+  } | null;
 }
 
 export interface UnavailableBikeView {
@@ -75,6 +82,25 @@ function solvedFor(summary: RankedBikeSummary, candidateId: string) {
   );
 }
 
+function cockpitFor(bikeId: string, configuration: CockpitConfiguration | null) {
+  if (!configuration?.cockpitOptionId) return null;
+  const source = bikeConfigurations.find((entry) => entry.bikeId === bikeId);
+  const cockpit = source?.cockpits.find(
+    (option) =>
+      configuration.cockpitOptionId === option.id ||
+      configuration.cockpitOptionId?.startsWith(`${option.id}-`),
+  );
+  if (!cockpit) return null;
+  return {
+    name: cockpit.name.replace(/\s*\([^)]*\)\s*$/, ""),
+    handlebarReach: cockpit.handlebarReach,
+    stemChoice:
+      cockpit.stemLengths.length > 1
+        ? ("selected-from-options" as const)
+        : ("only-documented-option" as const),
+  };
+}
+
 function toRecommendation(
   summary: RankedBikeSummary,
   index: number,
@@ -82,6 +108,7 @@ function toRecommendation(
 ): RecommendedBikeView {
   const best = summary.bestConfiguration;
   const solved = solvedFor(summary, best.candidateId);
+  const configuration = solved?.configuration ?? null;
   return {
     rank: index + 1,
     bikeId: summary.bikeId,
@@ -91,12 +118,13 @@ function toRecommendation(
     candidateId: best.candidateId,
     positionMetrics: best.assessment.positionMetrics,
     predictedPosition: solved?.rp3 ?? null,
-    configuration: solved?.configuration ?? null,
+    configuration,
     explanation: summary.result.explanations[best.candidateId] ?? null,
     geometryWarnings: best.assessment.geometryWarnings,
     cockpitMetric: best.assessment.cockpitMetric,
     handlingMetric: best.assessment.handlingMetric,
     handlebarWidth: solved?.configuration.handlebarWidth ?? null,
+    cockpit: cockpitFor(summary.bikeId, configuration),
   };
 }
 
