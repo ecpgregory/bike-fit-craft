@@ -1,6 +1,6 @@
 # Sprint 12B
 
-- [ ] Extend the read-only recommendation view with cockpit provenance.
-- [ ] Redesign ranked and unavailable result cards.
-- [ ] Add presentation tests for outcomes, deltas, cockpit availability, and empty states.
-- [ ] Run full tests, typecheck, and responsive browser verification.
+- [x] Extend the read-only recommendation view with cockpit provenance.
+- [x] Redesign ranked and unavailable result cards.
+- [x] Add presentation tests for outcomes, deltas, cockpit availability, and empty states.
+- [x] Run full tests, typecheck, and responsive browser verification.
