@@ -1,6 +1,6 @@
-# Sprint 12B
+# Sprint 12C.1
 
-- [x] Extend the read-only recommendation view with cockpit provenance.
-- [x] Redesign ranked and unavailable result cards.
-- [x] Add presentation tests for outcomes, deltas, cockpit availability, and empty states.
-- [x] Run full tests, typecheck, and responsive browser verification.
+- [x] Add source-backed 2025 S-Works Tarmac SL8 size 56 frame record.
+- [x] Add documented Rapide cockpit and spacer/transition kit configuration.
+- [x] Add focused tests; update fleet-composition expectations only.
+- [x] Full test suite and typecheck pass.
