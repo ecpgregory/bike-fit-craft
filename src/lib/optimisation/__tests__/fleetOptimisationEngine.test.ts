@@ -124,6 +124,9 @@ describe("optimiseFleet", () => {
       "cannondale-supersix-evo-lab71-54",
       "cannondale-supersix-evo-lab71-56",
       "bmc-teammachine-slr01-56",
+      // Sprint 12C.1 fleet addition; every other position and score is
+      // unchanged.
+      "specialized-tarmac-sl8-2025-56",
       "bmc-teammachine-slr01-54",
       "canyon-ultimate-cfr-l",
       "specialized-tarmac-sl8-2025-54",

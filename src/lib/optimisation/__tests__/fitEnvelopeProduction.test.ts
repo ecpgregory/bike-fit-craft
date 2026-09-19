@@ -53,13 +53,15 @@ describe("fleet classification totals across the established targets", () => {
       };
     });
 
+    // Sprint 12C.1 added the Tarmac SL8 size 56 to the fleet (13 ranked
+    // results). The envelope rule itself is unchanged.
     expect(counts).toEqual([
-      { target: "450/600", ranked: 12, viable: 0 },
-      { target: "460/615", ranked: 12, viable: 0 },
-      { target: "470/631", ranked: 12, viable: 3 },
-      { target: "480/640", ranked: 12, viable: 1 },
-      { target: "490/650", ranked: 12, viable: 0 },
+      { target: "450/600", ranked: 13, viable: 0 },
+      { target: "460/615", ranked: 13, viable: 0 },
+      { target: "470/631", ranked: 13, viable: 3 },
+      { target: "480/640", ranked: 13, viable: 2 },
+      { target: "490/650", ranked: 13, viable: 0 },
     ]);
-    expect(counts.reduce((sum, c) => sum + c.viable, 0)).toBe(4);
+    expect(counts.reduce((sum, c) => sum + c.viable, 0)).toBe(5);
   });
 });

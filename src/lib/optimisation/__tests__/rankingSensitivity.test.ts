@@ -211,7 +211,10 @@ describe("D-11C-1 — Sprint 11D geometric combiner, measured at fleet level", (
     const fleet = optimiseFleet({ target: TARGET, rider: riderWith(420) });
     const first = fleet.rankedBikes[0]!;
 
-    expect(first.bikeId).toBe("bmc-teammachine-slr01-56");
+    // Sprint 12C.1: the Tarmac SL8 size 56 joined the fleet and is better
+    // positioned at this target than the previous leader. The guard is the
+    // property below — position beats an exact width match — not the identity.
+    expect(first.bikeId).toBe("specialized-tarmac-sl8-2025-56");
 
     // The former leader — exact width, 58 mm out of position — is demoted.
     const tcrMl = fleet.rankedBikes.find(
