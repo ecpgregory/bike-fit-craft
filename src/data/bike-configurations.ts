@@ -715,6 +715,82 @@ export const bikeConfigurations: BikeConfiguration[] = [
     seatpost: null,
     notes: "Seatpost offset options not established; left unknown.",
   },
+  {
+    // Sprint 12C.1
+    bikeId: "specialized-tarmac-sl8-2025-56",
+    cockpits: [
+      {
+        id: "tarmac-sl8-56-rapide-cockpit",
+        name: "Roval Rapide integrated cockpit (100 mm x 420 mm)",
+        kind: "integrated",
+        isStock: true,
+        // Complete-bike specification for the 2025 S-Works Tarmac SL8 size 56.
+        stemLengths: [100],
+        // -6 deg is a documented property of the Roval Rapide cockpit itself
+        // (identical across the published lengths), not a size-54 value copied
+        // across.
+        stemAngles: [-6],
+        // Rapide cockpit handlebar reach/drop are published as cockpit
+        // dimensions and do not vary with the bar width.
+        handlebarReach: 75,
+        handlebarDrop: 127,
+        handlebarWidth: 420,
+        manufacturerReference: {
+          // Specialized published SL8 size-56 frame-to-stem reference figures.
+          stackToStem: 573,
+          reachToStem: 393,
+        },
+        notes:
+          "Stock 2025 S-Works Tarmac SL8 size 56 ships with the Roval Rapide one-piece cockpit at 100 mm stem length and 420 mm bar width. Stem angle (-6 deg), bar reach (75 mm) and bar drop (127 mm) are Roval Rapide cockpit product dimensions. Handlebar stack, handlebar rotation and hood reach/stack/rotation are not substantiated by Specialized documentation for this size and remain unknown.",
+        sources: [
+          {
+            label: "S-Works Tarmac SL8 Shimano Dura-Ace Di2 (spec & geometry)",
+            url: "https://www.specialized.com/ca/en/s-works-tarmac-sl8-shimano-dura-ace-di2/p/4221536",
+          },
+          {
+            label: "2025 S-Works Tarmac SL8 Di2 complete-bike specification",
+            url: "https://www.incycle.com/products/2025-specialized-s-works-tarmac-sl8-di2",
+          },
+          {
+            label: "2025 S-Works Tarmac SL8 Dura-Ace Di2 build specification",
+            url: "https://roadbikedatabase.com/bikes/2025/specialized/tarmac/2025-specialized-s-works-tarmac-sl8-shimano-dura-ace-di2/",
+          },
+          {
+            label: "Roval Rapide Cockpit",
+            url: "https://www.specialized.com/au/en/roval-rapide-cockpit/p/218323",
+          },
+        ],
+      },
+    ],
+    headset: {
+      spacerIncrement: 5,
+      suppliedParts: [
+        { description: "Lower transition cover", height: 6.6, quantity: 1 },
+        { description: "Aero spacer", height: 10, quantity: 3 },
+        { description: "Aero spacer", height: 5, quantity: 1 },
+        // Documented as supplied, but Specialized publishes no height for it,
+        // so it contributes no enumerated spacer height (never invented, never
+        // double-counted with the lower transition cover).
+        { description: "Upper stem transition spacer", height: null, quantity: 1 },
+      ],
+      // Not summed into a single figure: the transition parts are shaped
+      // components and the upper transition height is undocumented.
+      suppliedSpacerCapacity: null,
+      documentedMaximumBelowStem: null,
+      isManufacturerStatedMaximum: false,
+      notes:
+        "Contents of the Specialized Tarmac SL8 headset spacer + transition kit for the Rapide cockpit (1 x 6.6 mm lower transition cover, 3 x 10 mm aero spacers, 1 x 5 mm aero spacer, 1 x upper stem transition spacer of undocumented height). Specialized states the maximum stack as the combination of these supplied components rather than a separate numeric limit, so enumerated heights are subset sums of the documented parts only and cannot exceed the documented hardware.",
+      sources: [
+        {
+          label: "Tarmac SL8 headset spacer + transition kit for Rapide cockpit",
+          url: "https://www.specialized.com/us/en/tarmac-sl8-headset-spacer--transition-kit-for-rapide-cockpit/p/4242711",
+        },
+      ],
+    },
+    seatpost: null,
+    notes:
+      "Size 56 seatpost offset not established from manufacturer documentation; left unknown.",
+  },
 ];
 
 
