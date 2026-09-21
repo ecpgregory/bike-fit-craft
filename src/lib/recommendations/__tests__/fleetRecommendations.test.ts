@@ -54,8 +54,12 @@ describe("recommendation flow", () => {
       "specialized-tarmac-sl8-2025-56",
       "bmc-teammachine-slr01-54",
       "canyon-ultimate-cfr-l",
+      // Sprint 12C.2 fleet additions.
+      "pinarello-dogma-f-2025-550",
       "specialized-tarmac-sl8-2025-54",
       "colnago-v5rs-2025-510",
+      "pinarello-dogma-f-2025-540",
+
       "canyon-ultimate-cfr-m",
       "giant-tcr-advanced-sl-0-2025-ml",
       "specialized-tarmac-sl8-2025-52",

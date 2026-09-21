@@ -1,6 +1,10 @@
-# Sprint 12C.1
+# Roadmap
 
-- [x] Add source-backed 2025 S-Works Tarmac SL8 size 56 frame record.
-- [x] Add documented Rapide cockpit and spacer/transition kit configuration.
-- [x] Add focused tests; update fleet-composition expectations only.
-- [x] Full test suite and typecheck pass.
+## Sprint 12C.2 — Pinarello Dogma F (sizes 540, 550)
+
+- [x] Inspect existing schema, SL8 records and provenance conventions
+- [x] Web research: official Pinarello geometry, Talon cockpit, eTiCR spacer kit
+- [x] Add source-backed bike records for sizes 540 and 550
+- [x] Add cockpit + headset configuration records (unknowns left unknown)
+- [x] Focused tests + fleet-composition updates
+- [x] Full Vitest suite and typecheck pass

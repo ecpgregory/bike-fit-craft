@@ -385,5 +385,59 @@ export const bikes: Bike[] = [
     notes:
       "Source: Canyon Ultimate CFR geometry table and CP0018 cockpit documentation (size L). Standover 828 mm has no matching schema field. Stock supplied stem length is not established by the source and remains unknown.",
   },
+
+  // --- Sprint 12C.2: Pinarello Dogma F (current eTiCR generation, MY2025) ---
+  // Geometry taken verbatim from Pinarello's official geometry table for the
+  // current Dogma F. Pinarello labels sizes by seat-tube centre-centre length
+  // in mm, so "540" and "550" are the manufacturer's own size codes. Pinarello
+  // does not publish wheelbase or front centre for this frame, so both stay
+  // unknown rather than being taken from third-party calculators. Pre-2024
+  // Dogma F charts differ (43 mm rake, different head tube lengths) and are
+  // not mixed in here.
+  {
+    id: "pinarello-dogma-f-2025-540",
+    brand: "Pinarello",
+    model: "Dogma F",
+    year: 2025,
+    size: "540",
+    frameStack: 551,
+    frameReach: 385.3,
+    headTube: 136,
+    wheelbase: null,
+    frontCentre: null,
+    chainstay: 408,
+    bbDrop: 72,
+    tyreClearance: null,
+    integratedCockpit: true,
+    headTubeAngle: 72.8,
+    seatTubeAngle: 73.4,
+    forkOffset: 47,
+    maxSpacerHeight: null,
+    notes:
+      "Source: Pinarello official Dogma F geometry table (size 540, current eTiCR generation). Additional published values with no matching schema field: seat tube centre-end 510 mm, seat tube centre-centre 540 mm, top tube 550 mm, fork length (axle to crown) 373 mm. Wheelbase and front centre are not published by Pinarello for this frame and remain unknown.",
+  },
+  {
+    id: "pinarello-dogma-f-2025-550",
+    brand: "Pinarello",
+    model: "Dogma F",
+    year: 2025,
+    size: "550",
+    frameStack: 561.5,
+    frameReach: 389.2,
+    headTube: 147,
+    wheelbase: null,
+    frontCentre: null,
+    chainstay: 408,
+    bbDrop: 72,
+    tyreClearance: null,
+    integratedCockpit: true,
+    headTubeAngle: 72.8,
+    seatTubeAngle: 73.4,
+    forkOffset: 47,
+    maxSpacerHeight: null,
+    notes:
+      "Source: Pinarello official Dogma F geometry table (size 550, current eTiCR generation). Additional published values with no matching schema field: seat tube centre-end 520 mm, seat tube centre-centre 550 mm, top tube 557 mm, fork length (axle to crown) 373 mm. Wheelbase and front centre are not published by Pinarello for this frame and remain unknown.",
+  },
 ];
+
 

@@ -791,7 +791,130 @@ export const bikeConfigurations: BikeConfiguration[] = [
     notes:
       "Size 56 seatpost offset not established from manufacturer documentation; left unknown.",
   },
+
+  // --- Sprint 12C.2: Pinarello Dogma F (current eTiCR generation) ----------
+  // The MOST Talon Ultra Fast one-piece cockpit is documented by Pinarello as a
+  // matrix of bar-width / stem-length SKUs (40/80 through 46/140) with a single
+  // published set of cockpit dimensions (reach 80 mm, drop 125 mm, stem angle
+  // -8 deg). Pinarello does NOT publish which SKU ships on a 540 or a 550
+  // complete bike, so the stock combination is unknown: isStock is false and
+  // handlebarWidth stays unknown rather than being guessed from a build list.
+  {
+    bikeId: "pinarello-dogma-f-2025-540",
+    cockpits: [
+      {
+        id: "pinarello-dogma-f-540-talon-ultra-fast",
+        name: "MOST Talon Ultra Fast integrated cockpit",
+        kind: "integrated",
+        isStock: false,
+        // Documented stem lengths across the published Talon Ultra Fast SKU
+        // matrix. Each length exists as a genuine Pinarello option for this
+        // cockpit; none is invented.
+        stemLengths: [80, 90, 100, 110, 120, 130, 140],
+        stemAngles: [-8],
+        handlebarReach: 80,
+        handlebarDrop: 125,
+        // Width is SKU-specific (40/42/44/46) and the size-specific stock
+        // width is not published, so it stays unknown.
+        handlebarWidth: null,
+        notes:
+          "MOST Talon Ultra Fast published dimensions: reach 80 mm, drop 125 mm, stem angle -8 deg, flare 7 deg. Published SKUs are 40/80, 42/90-42/130, 44/90-44/140 and 46/100-46/140 (bar width / stem length); the 80 mm stem length is documented only with the 40 cm width. Pinarello does not publish which SKU is fitted to a size 540 complete bike, so no stock combination, handlebar width, handlebar stack, handlebar rotation or hood geometry is recorded.",
+        sources: [
+          {
+            label: "Pinarello MOST Talon Ultra Fast cockpit (official specifications)",
+            url: "https://pinarello.com/global/en/accessories/components/handlebars/talon/talon-ultra-fast",
+          },
+          {
+            label: "Pinarello Dogma F (official product page, integrated handlebar spec)",
+            url: "https://pinarello.com/global/en/bikes/road/competition/new-dogma-f/new-dogma-f-dura-ace-di2",
+          },
+        ],
+      },
+    ],
+    headset: {
+      spacerIncrement: 5,
+      suppliedParts: [
+        { description: "Flatback headset spacer", height: 5, quantity: 2 },
+        { description: "Flatback headset spacer", height: 10, quantity: 2 },
+      ],
+      suppliedSpacerCapacity: 30,
+      // No Pinarello document states a maximum below-stem spacer height for the
+      // eTiCR Dogma F; a retailer's "up to 30 mm" phrasing is kit capacity, not
+      // a manufacturer-stated limit.
+      documentedMaximumBelowStem: null,
+      isManufacturerStatedMaximum: false,
+      notes:
+        "Genuine Pinarello eTiCR headset spacer kit (part PSHS0005AM, fits 2025-and-later Dogma F): 2 x 5 mm plus 2 x 10 mm flatback spacers. Enumerated heights are subset sums of these documented parts only. The earlier TiCR kit (PSHS0003AM) is a different, non-interchangeable profile for the pre-2025 Dogma F and is not used here.",
+      sources: [
+        {
+          label: "Pinarello eTiCR flatback headset spacer kit (PSHS0005AM) contents",
+          url: "https://www.excelsports.com/pinarello-spacer-kit-eticr-flatback-2x5-2x10",
+        },
+        {
+          label: "Pinarello eTiCR headset spacer kit (compatibility and contents)",
+          url: "https://www.biketiresdirect.com/product/pinarello-eticr-headset-spacer-kit",
+        },
+      ],
+    },
+    seatpost: null,
+    notes:
+      "Size 540 seatpost offset options are not established from Pinarello documentation; left unknown.",
+  },
+  {
+    bikeId: "pinarello-dogma-f-2025-550",
+    cockpits: [
+      {
+        id: "pinarello-dogma-f-550-talon-ultra-fast",
+        name: "MOST Talon Ultra Fast integrated cockpit",
+        kind: "integrated",
+        isStock: false,
+        stemLengths: [80, 90, 100, 110, 120, 130, 140],
+        stemAngles: [-8],
+        handlebarReach: 80,
+        handlebarDrop: 125,
+        handlebarWidth: null,
+        notes:
+          "MOST Talon Ultra Fast published dimensions: reach 80 mm, drop 125 mm, stem angle -8 deg, flare 7 deg. Published SKUs are 40/80, 42/90-42/130, 44/90-44/140 and 46/100-46/140 (bar width / stem length); the 80 mm stem length is documented only with the 40 cm width. Pinarello does not publish which SKU is fitted to a size 550 complete bike, so no stock combination, handlebar width, handlebar stack, handlebar rotation or hood geometry is recorded.",
+        sources: [
+          {
+            label: "Pinarello MOST Talon Ultra Fast cockpit (official specifications)",
+            url: "https://pinarello.com/global/en/accessories/components/handlebars/talon/talon-ultra-fast",
+          },
+          {
+            label: "Pinarello Dogma F (official product page, integrated handlebar spec)",
+            url: "https://pinarello.com/global/en/bikes/road/competition/new-dogma-f/new-dogma-f-dura-ace-di2",
+          },
+        ],
+      },
+    ],
+    headset: {
+      spacerIncrement: 5,
+      suppliedParts: [
+        { description: "Flatback headset spacer", height: 5, quantity: 2 },
+        { description: "Flatback headset spacer", height: 10, quantity: 2 },
+      ],
+      suppliedSpacerCapacity: 30,
+      documentedMaximumBelowStem: null,
+      isManufacturerStatedMaximum: false,
+      notes:
+        "Genuine Pinarello eTiCR headset spacer kit (part PSHS0005AM, fits 2025-and-later Dogma F): 2 x 5 mm plus 2 x 10 mm flatback spacers. Enumerated heights are subset sums of these documented parts only. The earlier TiCR kit (PSHS0003AM) is a different, non-interchangeable profile for the pre-2025 Dogma F and is not used here.",
+      sources: [
+        {
+          label: "Pinarello eTiCR flatback headset spacer kit (PSHS0005AM) contents",
+          url: "https://www.excelsports.com/pinarello-spacer-kit-eticr-flatback-2x5-2x10",
+        },
+        {
+          label: "Pinarello eTiCR headset spacer kit (compatibility and contents)",
+          url: "https://www.biketiresdirect.com/product/pinarello-eticr-headset-spacer-kit",
+        },
+      ],
+    },
+    seatpost: null,
+    notes:
+      "Size 550 seatpost offset options are not established from Pinarello documentation; left unknown.",
+  },
 ];
+
 
 
 /** Lookup helper. Returns null when no configuration data exists for a bike. */
