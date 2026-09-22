@@ -548,7 +548,7 @@ export const bikeConfigurations: BikeConfiguration[] = [
         handlebarDrop: null,
         handlebarWidth: null,
         notes:
-          "Cervélo documents the S5 ST35 stem in 80-130 mm lengths, supplied at 100 mm, with the HB14 handlebar. Stem angle, handlebar reach/stack/drop and hood geometry are not published. The documented ±5 deg rotation is an adjustment range, not a stock orientation, so handlebar rotation remains unknown.",
+          "Cervélo documents the S5 ST35 (ST-C035) stem in 80-130 mm lengths, supplied at 100 mm, with the HB14 handlebar. Stem angle, handlebar reach/stack/drop and hood geometry are not published. The documented ±5 deg rotation is an adjustment range, not a stock orientation, so handlebar rotation remains unknown. Sprint 12C.5 re-examined the primary source: the 2023 S5 Retailer Assembly Manual (Stack Adjustment, p.19) states only that the 'Base position for the S5 stem and handlebar matches that of the 2022 S5, and also that of the 2018 S5 with a 6 deg stem and a 5mm bearing cover'. That is a positional equivalence stated against a DIFFERENT frame generation (different head tube angle and stack), not a geometric angle for the ST35 on this frame, so no numeric stem angle is recorded.",
         sources: [
           {
             label: "Cervélo S5 specifications and geometry",
@@ -558,7 +558,12 @@ export const bikeConfigurations: BikeConfiguration[] = [
             label: "Cervélo ST35 stem / HB14 handlebar technical documentation",
             url: "https://www.cervelo.com/en-AU/support/manuals",
           },
+          {
+            label: "Cervélo 2023 S5 Retailer Assembly Manual v3.1 (Stem Installation / Stack Adjustment)",
+            url: "https://cervelo.cdn.prismic.io/cervelo/4b0f94ea-7f5e-441a-87f9-abeaa8f7fede_S5_2023_manual_v3.1_web.pdf",
+          },
         ],
+
       },
     ],
     headset: {
@@ -593,7 +598,7 @@ export const bikeConfigurations: BikeConfiguration[] = [
         handlebarDrop: null,
         handlebarWidth: null,
         notes:
-          "Cervélo documents the S5 ST35 stem in 80-130 mm lengths, supplied at 100 mm, with the HB14 handlebar. Stem angle, handlebar geometry and hood geometry are not published. The ±5 deg rotation figure is an adjustment range, not stock rotation.",
+          "Cervélo documents the S5 ST35 (ST-C035) stem in 80-130 mm lengths, supplied at 100 mm, with the HB14 handlebar. Stem angle, handlebar geometry and hood geometry are not published. The ±5 deg rotation figure is an adjustment range, not stock rotation. Sprint 12C.5 re-examined the primary source: the 2023 S5 Retailer Assembly Manual (Stack Adjustment, p.19) states only that the base position matches the 2018 S5 'with a 6 deg stem and a 5mm bearing cover' — a positional equivalence against a different frame generation, not a geometric angle for the ST35 on this frame, so no numeric stem angle is recorded.",
         sources: [
           {
             label: "Cervélo S5 specifications and geometry",
@@ -603,7 +608,12 @@ export const bikeConfigurations: BikeConfiguration[] = [
             label: "Cervélo ST35 stem / HB14 handlebar technical documentation",
             url: "https://www.cervelo.com/en-AU/support/manuals",
           },
+          {
+            label: "Cervélo 2023 S5 Retailer Assembly Manual v3.1 (Stem Installation / Stack Adjustment)",
+            url: "https://cervelo.cdn.prismic.io/cervelo/4b0f94ea-7f5e-441a-87f9-abeaa8f7fede_S5_2023_manual_v3.1_web.pdf",
+          },
         ],
+
       },
     ],
     headset: {
