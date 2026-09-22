@@ -716,6 +716,79 @@ export const bikeConfigurations: BikeConfiguration[] = [
     notes: "Seatpost offset options not established; left unknown.",
   },
   {
+    // Sprint 12C.4: size 58. The stock cockpit combination comes from
+    // Specialized's own per-size complete-bike specification chart for the
+    // 2025 S-Works Tarmac SL8, not from the size 54 / 56 records.
+    bikeId: "specialized-tarmac-sl8-2025-58",
+    cockpits: [
+      {
+        id: "tarmac-sl8-58-rapide-cockpit",
+        name: "Roval Rapide integrated cockpit (110 mm x 420 mm)",
+        kind: "integrated",
+        isStock: true,
+        // Size-specific stock stem length from Specialized's published
+        // per-size specification chart (58 = 110 mm).
+        stemLengths: [110],
+        // -6 deg is a documented property of the Roval Rapide cockpit itself,
+        // identical across the published lengths.
+        stemAngles: [-6],
+        handlebarReach: 75,
+        handlebarDrop: 127,
+        // Size-specific stock bar width from the same published chart.
+        handlebarWidth: 420,
+        manufacturerReference: {
+          // Specialized published SL8 size-58 frame-to-stem reference figures.
+          stackToStem: 599,
+          reachToStem: 400,
+        },
+        notes:
+          "Stock 2025 Tarmac SL8 size 58 ships with the Roval Rapide one-piece cockpit at 110 mm stem length and 420 mm bar width, per Specialized's published per-size specification chart. Stem angle (-6 deg), bar reach (75 mm) and bar drop (127 mm) are Roval Rapide cockpit product dimensions. Handlebar stack, handlebar rotation and hood reach/stack/rotation are not substantiated for this size and remain unknown. Note: a third-party database lists a 440 mm bar for a 2023 Tarmac SL8 Pro size 58; that is a different model year and build, so the 2025 manufacturer chart value (420 mm) is used.",
+        sources: [
+          {
+            label: "Specialized S-Works Tarmac SL8 Team Frameset (official per-size geometry chart)",
+            url: "https://www.specialized.com/ua/en/s-works-tarmac-sl8-team-frameset-fdj-suez/p/4294240",
+          },
+          {
+            label:
+              "S-Works Tarmac SL8 Shimano Dura-Ace Di2 manufacturer-supplied geometry and per-size specification chart (authorised Specialized dealer)",
+            url: "https://www.bikemart.com/products/s-works-tarmac-sl8-shimano-dura-ace-di2",
+          },
+          {
+            label: "Roval Rapide Cockpit",
+            url: "https://www.specialized.com/au/en/roval-rapide-cockpit/p/218323",
+          },
+        ],
+      },
+    ],
+    headset: {
+      spacerIncrement: 5,
+      suppliedParts: [
+        { description: "Lower transition cover", height: 6.6, quantity: 1 },
+        { description: "Aero spacer", height: 10, quantity: 3 },
+        { description: "Aero spacer", height: 5, quantity: 1 },
+        { description: "Upper stem transition spacer", height: null, quantity: 1 },
+      ],
+      suppliedSpacerCapacity: null,
+      documentedMaximumBelowStem: null,
+      isManufacturerStatedMaximum: false,
+      notes:
+        "Specialized documents the Tarmac SL8 headset spacer + transition kit for the Rapide cockpit at model level (compatibility is listed by Tarmac SL8 model, including the frameset, not by frame size), so the documented kit contents apply to size 58. Enumerated heights are subset sums of the documented parts only; the upper stem transition spacer has no published height and therefore contributes none, and no manufacturer-stated numeric maximum below-stem height exists.",
+      sources: [
+        {
+          label: "Tarmac SL8 headset spacer + transition kit for Rapide cockpit",
+          url: "https://www.specialized.com/us/en/tarmac-sl8-headset-spacer--transition-kit-for-rapide-cockpit/p/4242711",
+        },
+        {
+          label: "Tarmac SL8 headset spacer and stem transition kit (documented model compatibility)",
+          url: "https://www.tradeinn.com/bikeinn/en/specialized-tarmac-sl8-headset-spacer/140416099/p",
+        },
+      ],
+    },
+    seatpost: null,
+    notes:
+      "Size 58 seatpost offset not established from manufacturer documentation; left unknown.",
+  },
+  {
     // Sprint 12C.1
     bikeId: "specialized-tarmac-sl8-2025-56",
     cockpits: [
