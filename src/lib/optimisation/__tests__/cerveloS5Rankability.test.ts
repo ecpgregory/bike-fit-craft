@@ -41,9 +41,20 @@ function configuration(bikeId: string) {
 const rider: RiderProfile = {
   id: "sprint-12c5-rider",
   name: "Sprint 12C.5 reference rider",
+  currentBike: "Reference",
   handlebarX: 470,
   handlebarY: 631,
+  frameReach: 390,
+  frameStack: 570,
+  stemLength: 100,
+  spacerHeight: 20,
+  saddleHeight: 740,
+  saddleSetback: 70,
+  preferredBikeType: null,
+  preferredTyreWidth: null,
+  budget: null,
 };
+
 
 describe("Sprint 12C.5 — Cervélo S5 rankability", () => {
   it("preserves the existing S5 record and configuration identities", () => {
