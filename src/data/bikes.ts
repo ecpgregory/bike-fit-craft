@@ -84,6 +84,31 @@ export const bikes: Bike[] = [
       "Source: Specialized 2025 S-Works Tarmac SL8 official geometry and specification (size 56), supported by the published complete-bike specification. Additional published values with no matching schema field: stack to stem 573 mm, reach to stem 393 mm (recorded as manufacturerReference in the configuration record), seat tube length 494 mm, top tube length 563 mm.",
   },
   {
+    // Sprint 12C.4: 2025 Tarmac SL8, size 58. Every value below is taken
+    // verbatim from Specialized's own per-size geometry chart for the 2025
+    // model year; nothing is interpolated from size 54 or 56.
+    id: "specialized-tarmac-sl8-2025-58",
+    brand: "Specialized",
+    model: "Tarmac SL8",
+    year: 2025,
+    size: "58",
+    frameStack: 591,
+    frameReach: 402,
+    headTube: 184,
+    wheelbase: 1006,
+    frontCentre: 606,
+    chainstay: 410,
+    bbDrop: 72,
+    tyreClearance: null,
+    integratedCockpit: true,
+    headTubeAngle: 73.5,
+    seatTubeAngle: 73.5,
+    forkOffset: 44,
+    maxSpacerHeight: null,
+    notes:
+      "Source: Specialized official 2025 Tarmac SL8 geometry chart (size 58), published on the Specialized S-Works Tarmac SL8 product pages and reproduced by an authorised Specialized dealer. Additional published values with no matching schema field: stack to stem 599 mm, reach to stem 400 mm (recorded as manufacturerReference in the configuration record), seat tube length 515 mm, top tube length 577 mm, trail 55 mm, fork length 370 mm, standover 808 mm. Tyre clearance is published for the frame platform rather than this size and is left unknown.",
+  },
+  {
     id: "colnago-v5rs-2025-485",
     brand: "Colnago",
     model: "V5Rs",
