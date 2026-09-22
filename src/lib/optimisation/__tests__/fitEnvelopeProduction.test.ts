@@ -57,11 +57,11 @@ describe("fleet classification totals across the established targets", () => {
     // results). The envelope rule itself is unchanged; the extra viable result
     // at 460/615 is a new fleet member, not a reclassification.
     expect(counts).toEqual([
-      { target: "450/600", ranked: 15, viable: 0 },
-      { target: "460/615", ranked: 15, viable: 1 },
-      { target: "470/631", ranked: 15, viable: 3 },
-      { target: "480/640", ranked: 15, viable: 2 },
-      { target: "490/650", ranked: 15, viable: 0 },
+      { target: "450/600", ranked: 16, viable: 0 },
+      { target: "460/615", ranked: 16, viable: 1 },
+      { target: "470/631", ranked: 16, viable: 3 },
+      { target: "480/640", ranked: 16, viable: 2 },
+      { target: "490/650", ranked: 16, viable: 0 },
     ]);
     expect(counts.reduce((sum, c) => sum + c.viable, 0)).toBe(6);
 

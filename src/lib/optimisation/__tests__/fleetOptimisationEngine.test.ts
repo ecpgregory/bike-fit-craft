@@ -133,6 +133,7 @@ describe("optimiseFleet", () => {
       // unchanged.
       "pinarello-dogma-f-2025-550",
       "specialized-tarmac-sl8-2025-54",
+      "specialized-tarmac-sl8-2025-58",
       "colnago-v5rs-2025-510",
       "pinarello-dogma-f-2025-540",
 
