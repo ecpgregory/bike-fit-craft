@@ -121,18 +121,24 @@ describe("optimiseFleet", () => {
     expect(result.rankedBikes.length + result.unrankedBikes.length).toBe(result.totalBikes);
 
     expect(result.rankedBikes.map((r) => r.bikeId)).toEqual([
+      // Sprint 12D.1 fleet additions (Factor); every other relative position
+      // and score is unchanged.
+      "factor-o2-vam-2023-56",
       "cannondale-supersix-evo-lab71-54",
+      "factor-ostro-vam-2024-56",
       "cannondale-supersix-evo-lab71-56",
       "bmc-teammachine-slr01-56",
       // Sprint 12C.1 fleet addition; every other position and score is
       // unchanged.
       "specialized-tarmac-sl8-2025-56",
       "bmc-teammachine-slr01-54",
+      "factor-o2-vam-2023-54",
       "canyon-ultimate-cfr-l",
       // Sprint 12C.2 fleet additions; every other position and score is
       // unchanged.
       "pinarello-dogma-f-2025-550",
       "specialized-tarmac-sl8-2025-54",
+      "factor-ostro-vam-2024-54",
       "specialized-tarmac-sl8-2025-58",
       "colnago-v5rs-2025-510",
       "pinarello-dogma-f-2025-540",

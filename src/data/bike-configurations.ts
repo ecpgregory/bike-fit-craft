@@ -1010,6 +1010,250 @@ export const bikeConfigurations: BikeConfiguration[] = [
     notes:
       "Size 550 seatpost offset options are not established from Pinarello documentation; left unknown.",
   },
+  // --- Sprint 12D.1: Factor OSTRO VAM v2 (Black Inc Integrated Aero Barstem AB02) ---
+  {
+    bikeId: "factor-ostro-vam-2024-54",
+    cockpits: [
+      {
+        id: "factor-ostro-vam-54-black-inc-ab02",
+        name: "Black Inc Integrated Aero Barstem (AB02)",
+        kind: "integrated",
+        isStock: false,
+        stemLengths: [80, 90, 100, 110, 120, 130, 140],
+        stemAngles: [-6],
+        handlebarReach: 80,
+        handlebarDrop: 120,
+        handlebarWidth: null,
+        notes:
+          "Factor's OSTRO VAM frame specification lists the Black Inc Integrated Aero Barstem (AB02), reach 80 mm, drop 120 mm, 'multiple stem lengths and bar widths available'. Black Inc publishes the AB02 as -6 deg angle, 120 mm drop, 80 mm reach, 39 mm barstem stack, 7 deg flare, 3 deg backsweep, in widths 36/38/40/42 cm and lengths 80-140 mm. Factor bikes are built to order with rider-selected width and length, and no size-specific stock combination is published for size 54, so isStock is false and handlebar width is left unknown. Barstem stack (39 mm) is a component dimension with no schema field and is not used as handlebarStack. Handlebar rotation and hood geometry are not published and remain unknown.",
+        sources: [
+          {
+            label: "Factor OSTRO VAM (official frame specification: barstem, reach, drop)",
+            url: "https://factorbikes.com/bikes/ostro-vam",
+          },
+          {
+            label: "Black Inc Integrated Aero Barstem AB02 (official specifications and sizes)",
+            url: "https://blackinc.cc/products/integrated-aero-barstem-ab02",
+          },
+        ],
+      },
+    ],
+    headset: {
+      spacerIncrement: 5,
+      suppliedParts: [],
+      suppliedSpacerCapacity: 40,
+      documentedMaximumBelowStem: 40,
+      isManufacturerStatedMaximum: true,
+      notes:
+        "Factor's 2024 OSTRO 2.0 Assembly Manual v2 states: 'Only use a maximum of 40mm of spacers (including tall headset cover) supplied with the frameset.' That is an explicit manufacturer maximum, so it is recorded as such. Factor documents V.A.M. headset spacers in 5 mm and 10 mm heights (part numbers 116-A454ACJ-BK and 116-A454BCJ-BK), but does not publish how many of each are supplied, so individual supplied parts are left unrecorded and heights are enumerated in the documented 5 mm step up to the stated 40 mm limit. The stated 40 mm includes the tall headset cover, whose height Factor does not publish.",
+      sources: [
+        {
+          label: "Factor 2024 OSTRO 2.0 Assembly Manual v2 (Steerer: maximum 40 mm of spacers)",
+          url: "https://assets.ctfassets.net/uyc32o2uod42/2MPYR6VZUI4GEDZsr9EEd7/f5c0f9a1baebd142a7de5ec99f55d265/2024_Ostro_2.0_Manual-v2.pdf",
+        },
+        {
+          label: "Factor headset spacer for V.A.M. frames, 5 mm and 10 mm (distributor listing, Factor part numbers)",
+          url: "https://www.bike-components.de/en/Factor/Headset-Spacer-p80308/",
+        },
+      ],
+    },
+    seatpost: {
+      offsets: [0, 20],
+      notes:
+        "Factor OSTRO VAM frame specification: seatpost available in 0 mm and 20 mm setback.",
+      sources: [
+        {
+          label: "Factor OSTRO VAM (official frame specification: seatpost setback options)",
+          url: "https://factorbikes.com/bikes/ostro-vam",
+        },
+      ],
+    },
+    notes:
+      "OSTRO VAM v2 (generation launched 2024). Cockpit, spacer and seatpost data are documented at model level by Factor, not per frame size.",
+  },
+  {
+    bikeId: "factor-ostro-vam-2024-56",
+    cockpits: [
+      {
+        id: "factor-ostro-vam-56-black-inc-ab02",
+        name: "Black Inc Integrated Aero Barstem (AB02)",
+        kind: "integrated",
+        isStock: false,
+        stemLengths: [80, 90, 100, 110, 120, 130, 140],
+        stemAngles: [-6],
+        handlebarReach: 80,
+        handlebarDrop: 120,
+        handlebarWidth: null,
+        notes:
+          "Factor's OSTRO VAM frame specification lists the Black Inc Integrated Aero Barstem (AB02), reach 80 mm, drop 120 mm, 'multiple stem lengths and bar widths available'. Black Inc publishes the AB02 as -6 deg angle, 120 mm drop, 80 mm reach, 39 mm barstem stack, 7 deg flare, 3 deg backsweep, in widths 36/38/40/42 cm and lengths 80-140 mm. No size-specific stock combination is published for size 56, so isStock is false and handlebar width is left unknown. Handlebar rotation and hood geometry are not published and remain unknown.",
+        sources: [
+          {
+            label: "Factor OSTRO VAM (official frame specification: barstem, reach, drop)",
+            url: "https://factorbikes.com/bikes/ostro-vam",
+          },
+          {
+            label: "Black Inc Integrated Aero Barstem AB02 (official specifications and sizes)",
+            url: "https://blackinc.cc/products/integrated-aero-barstem-ab02",
+          },
+        ],
+      },
+    ],
+    headset: {
+      spacerIncrement: 5,
+      suppliedParts: [],
+      suppliedSpacerCapacity: 40,
+      documentedMaximumBelowStem: 40,
+      isManufacturerStatedMaximum: true,
+      notes:
+        "Factor's 2024 OSTRO 2.0 Assembly Manual v2 states a maximum of 40 mm of spacers (including tall headset cover) supplied with the frameset — an explicit manufacturer maximum. Factor documents V.A.M. headset spacers in 5 mm and 10 mm heights but does not publish supplied quantities, so heights are enumerated in the documented 5 mm step up to the stated 40 mm limit.",
+      sources: [
+        {
+          label: "Factor 2024 OSTRO 2.0 Assembly Manual v2 (Steerer: maximum 40 mm of spacers)",
+          url: "https://assets.ctfassets.net/uyc32o2uod42/2MPYR6VZUI4GEDZsr9EEd7/f5c0f9a1baebd142a7de5ec99f55d265/2024_Ostro_2.0_Manual-v2.pdf",
+        },
+        {
+          label: "Factor headset spacer for V.A.M. frames, 5 mm and 10 mm (distributor listing, Factor part numbers)",
+          url: "https://www.bike-components.de/en/Factor/Headset-Spacer-p80308/",
+        },
+      ],
+    },
+    seatpost: {
+      offsets: [0, 20],
+      notes:
+        "Factor OSTRO VAM frame specification: seatpost available in 0 mm and 20 mm setback.",
+      sources: [
+        {
+          label: "Factor OSTRO VAM (official frame specification: seatpost setback options)",
+          url: "https://factorbikes.com/bikes/ostro-vam",
+        },
+      ],
+    },
+    notes:
+      "OSTRO VAM v2 (generation launched 2024). Cockpit, spacer and seatpost data are documented at model level by Factor, not per frame size.",
+  },
+  // --- Sprint 12D.1: Factor O2 VAM v2 (Black Inc Integrated Barstem, non-aero) ---
+  {
+    bikeId: "factor-o2-vam-2023-54",
+    cockpits: [
+      {
+        id: "factor-o2-vam-54-black-inc-integrated-barstem",
+        name: "Black Inc Integrated Barstem",
+        kind: "integrated",
+        isStock: false,
+        stemLengths: [90, 100, 110, 120, 130],
+        stemAngles: [-6],
+        handlebarReach: 80,
+        handlebarDrop: 120,
+        handlebarWidth: null,
+        notes:
+          "Factor's O2 VAM frame specification lists the Black Inc Integrated Barstem (the non-aero HB-series unit referenced in the O2 VAM assembly manual), reach 80 mm, drop 120 mm, 'multiple stem lengths and bar widths available'. Factor's published Integrated Barstem specification gives -6 deg angle, 120 mm drop, 80 mm reach, 42 mm barstem stack, 3 deg flare, 2 deg backsweep, in widths 38/40/42/44 cm and lengths 90-130 mm. This is a different cockpit from the OSTRO VAM's AB02 aero barstem and its dimensions are recorded separately. No size-specific stock width/length combination is published for size 54, so isStock is false and handlebar width is left unknown. Handlebar rotation and hood geometry are not published and remain unknown.",
+        sources: [
+          {
+            label: "Factor O2 VAM (official frame specification: barstem, reach, drop)",
+            url: "https://factorbikes.com/bikes/o2-vam",
+          },
+          {
+            label:
+              "Factor Black Inc Integrated Barstem (manufacturer specifications and sizes; page since retired, archived copy)",
+            url: "https://web.archive.org/web/2024/https://factorbikes.com/products/black-inc-integrated-barstem",
+          },
+        ],
+      },
+    ],
+    headset: {
+      spacerIncrement: 5,
+      suppliedParts: [],
+      suppliedSpacerCapacity: 40,
+      documentedMaximumBelowStem: 40,
+      isManufacturerStatedMaximum: true,
+      notes:
+        "Factor's New O2 VAM Assembly Manual states: 'Only use a maximum of 40mm of spacers (including tall headset cover) supplied with the frameset.' That is an explicit manufacturer maximum. Factor documents V.A.M. headset spacers in 5 mm and 10 mm heights (parts 116-A454ACJ-BK and 116-A454BCJ-BK) but does not publish supplied quantities, so heights are enumerated in the documented 5 mm step up to the stated 40 mm limit. The manual also requires a shape-matching spacer when the non-aero barstem is used; its height is not published.",
+      sources: [
+        {
+          label: "Factor New O2 VAM Assembly Manual (Steerer: maximum 40 mm of spacers)",
+          url: "https://assets.ctfassets.net/uyc32o2uod42/4tilfMcqAd3aG2yvddQd2f/f84ba94ebf86b407a4d13200fac80c9e/New_O2_VAM__2023_.pdf",
+        },
+        {
+          label: "Factor headset spacer for V.A.M. frames, 5 mm and 10 mm (distributor listing, Factor part numbers)",
+          url: "https://www.bike-components.de/en/Factor/Headset-Spacer-p80308/",
+        },
+      ],
+    },
+    seatpost: {
+      offsets: [0, 25],
+      notes:
+        "Factor O2 VAM frame specification: seatpost available in 0 mm and 25 mm setback.",
+      sources: [
+        {
+          label: "Factor O2 VAM (official frame specification: seatpost setback options)",
+          url: "https://factorbikes.com/bikes/o2-vam",
+        },
+      ],
+    },
+    notes:
+      "O2 VAM v2 (current generation, 10 mm higher stack than the previous O2 VAM). Cockpit, spacer and seatpost data are documented at model level by Factor, not per frame size.",
+  },
+  {
+    bikeId: "factor-o2-vam-2023-56",
+    cockpits: [
+      {
+        id: "factor-o2-vam-56-black-inc-integrated-barstem",
+        name: "Black Inc Integrated Barstem",
+        kind: "integrated",
+        isStock: false,
+        stemLengths: [90, 100, 110, 120, 130],
+        stemAngles: [-6],
+        handlebarReach: 80,
+        handlebarDrop: 120,
+        handlebarWidth: null,
+        notes:
+          "Factor's O2 VAM frame specification lists the Black Inc Integrated Barstem, reach 80 mm, drop 120 mm, 'multiple stem lengths and bar widths available'. Factor's published Integrated Barstem specification gives -6 deg angle, 120 mm drop, 80 mm reach, 42 mm barstem stack, in widths 38/40/42/44 cm and lengths 90-130 mm. No size-specific stock width/length combination is published for size 56, so isStock is false and handlebar width is left unknown. Handlebar rotation and hood geometry are not published and remain unknown.",
+        sources: [
+          {
+            label: "Factor O2 VAM (official frame specification: barstem, reach, drop)",
+            url: "https://factorbikes.com/bikes/o2-vam",
+          },
+          {
+            label:
+              "Factor Black Inc Integrated Barstem (manufacturer specifications and sizes; page since retired, archived copy)",
+            url: "https://web.archive.org/web/2024/https://factorbikes.com/products/black-inc-integrated-barstem",
+          },
+        ],
+      },
+    ],
+    headset: {
+      spacerIncrement: 5,
+      suppliedParts: [],
+      suppliedSpacerCapacity: 40,
+      documentedMaximumBelowStem: 40,
+      isManufacturerStatedMaximum: true,
+      notes:
+        "Factor's New O2 VAM Assembly Manual states a maximum of 40 mm of spacers (including tall headset cover) supplied with the frameset — an explicit manufacturer maximum. Factor documents V.A.M. headset spacers in 5 mm and 10 mm heights but does not publish supplied quantities, so heights are enumerated in the documented 5 mm step up to the stated 40 mm limit.",
+      sources: [
+        {
+          label: "Factor New O2 VAM Assembly Manual (Steerer: maximum 40 mm of spacers)",
+          url: "https://assets.ctfassets.net/uyc32o2uod42/4tilfMcqAd3aG2yvddQd2f/f84ba94ebf86b407a4d13200fac80c9e/New_O2_VAM__2023_.pdf",
+        },
+        {
+          label: "Factor headset spacer for V.A.M. frames, 5 mm and 10 mm (distributor listing, Factor part numbers)",
+          url: "https://www.bike-components.de/en/Factor/Headset-Spacer-p80308/",
+        },
+      ],
+    },
+    seatpost: {
+      offsets: [0, 25],
+      notes:
+        "Factor O2 VAM frame specification: seatpost available in 0 mm and 25 mm setback.",
+      sources: [
+        {
+          label: "Factor O2 VAM (official frame specification: seatpost setback options)",
+          url: "https://factorbikes.com/bikes/o2-vam",
+        },
+      ],
+    },
+    notes:
+      "O2 VAM v2 (current generation). Cockpit, spacer and seatpost data are documented at model level by Factor, not per frame size.",
+  },
 ];
 
 
