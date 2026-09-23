@@ -47,16 +47,21 @@ describe("recommendation flow", () => {
 
   it("resolves brand, model and size by bikeId lookup for the verified SUCCESS bikes", () => {
     expect(view.recommendations.map((r) => r.bikeId)).toEqual([
+      // Sprint 12D.1 fleet additions (Factor).
+      "factor-o2-vam-2023-56",
       "cannondale-supersix-evo-lab71-54",
+      "factor-ostro-vam-2024-56",
       "cannondale-supersix-evo-lab71-56",
       "bmc-teammachine-slr01-56",
       // Sprint 12C.1 fleet addition.
       "specialized-tarmac-sl8-2025-56",
       "bmc-teammachine-slr01-54",
+      "factor-o2-vam-2023-54",
       "canyon-ultimate-cfr-l",
       // Sprint 12C.2 fleet additions.
       "pinarello-dogma-f-2025-550",
       "specialized-tarmac-sl8-2025-54",
+      "factor-ostro-vam-2024-54",
       "specialized-tarmac-sl8-2025-58",
       "colnago-v5rs-2025-510",
       "pinarello-dogma-f-2025-540",
@@ -67,12 +72,13 @@ describe("recommendation flow", () => {
       "colnago-v5rs-2025-485",
       "giant-tcr-advanced-sl-0-2025-m",
     ]);
+    // Sprint 12D.1: the Factor O2 VAM 56 now tops the ranking on the
+    // unchanged scoring rules.
     const top = view.recommendations[0]!;
-    expect(top.bike?.brand).toBe("Cannondale");
-    expect(top.bike?.model).toBe("SuperSix EVO LAB71");
-    expect(top.bike?.size).toBe("54");
-    // Sprint 9.8 availability-aware score; same bike, configuration and RP3.
-    expect(top.overallScore).toBeCloseTo(0.4506, 4);
+    expect(top.bike?.brand).toBe("Factor");
+    expect(top.bike?.model).toBe("O2 VAM");
+    expect(top.bike?.size).toBe("56");
+    expect(top.overallScore).toBeCloseTo(0.6367, 4);
     expect(top.outcome).toBe("SUCCESS");
   });
 
