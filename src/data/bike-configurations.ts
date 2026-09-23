@@ -567,14 +567,21 @@ export const bikeConfigurations: BikeConfiguration[] = [
       },
     ],
     headset: {
-      spacerIncrement: null,
-      suppliedParts: [],
-      suppliedSpacerCapacity: null,
-      documentedMaximumBelowStem: 30,
-      isManufacturerStatedMaximum: true,
+      spacerIncrement: 2.5,
+      suppliedParts: [
+        { description: "CO35 stem spacer (HSS-S5F-KT)", height: 5, quantity: 3 },
+        { description: "CO35 stem spacer (HSS-S5F-KT)", height: 7.5, quantity: 2 },
+      ],
+      suppliedSpacerCapacity: 30,
+      documentedMaximumBelowStem: null,
+      isManufacturerStatedMaximum: false,
       notes:
-        "Cervélo documents a maximum stem-spacer height of 30 mm for the ST35 system. Individual spacer component heights are not published, so intermediate buildable heights are not enumerated.",
+        "Sprint 12C.6: the 2023 S5 Retailer Assembly Manual v3.1 (Handlebar & Stem Components, p.7-8) documents the CO35 Stem Spacer kit HSS-S5F-KT as 5 mm spacers x3 and 7.5 mm spacers x2 (30 mm supplied capacity). The manual states no numeric maximum below-stem spacer height, so documentedMaximumBelowStem stays unknown; supplied kit capacity is not treated as a manufacturer-stated maximum. Stack Adjustment (p.19) requires complete kits without substitution or combination of parts, which is consistent with enumerating only subset sums of the supplied parts.",
       sources: [
+        {
+          label: "Cervélo 2023 S5 Retailer Assembly Manual v3.1 (Handlebar & Stem Components, p.7-8; Stack Adjustment, p.19)",
+          url: "https://cervelo.cdn.prismic.io/cervelo/4b0f94ea-7f5e-441a-87f9-abeaa8f7fede_S5_2023_manual_v3.1_web.pdf",
+        },
         {
           label: "Cervélo ST35 stem technical documentation",
           url: "https://www.cervelo.com/en-AU/support/manuals",
@@ -617,14 +624,21 @@ export const bikeConfigurations: BikeConfiguration[] = [
       },
     ],
     headset: {
-      spacerIncrement: null,
-      suppliedParts: [],
-      suppliedSpacerCapacity: null,
-      documentedMaximumBelowStem: 30,
-      isManufacturerStatedMaximum: true,
+      spacerIncrement: 2.5,
+      suppliedParts: [
+        { description: "CO35 stem spacer (HSS-S5F-KT)", height: 5, quantity: 3 },
+        { description: "CO35 stem spacer (HSS-S5F-KT)", height: 7.5, quantity: 2 },
+      ],
+      suppliedSpacerCapacity: 30,
+      documentedMaximumBelowStem: null,
+      isManufacturerStatedMaximum: false,
       notes:
-        "Documented maximum stem-spacer height of 30 mm. Component heights are not published.",
+        "Sprint 12C.6: the 2023 S5 Retailer Assembly Manual v3.1 (Handlebar & Stem Components, p.7-8) documents the CO35 Stem Spacer kit HSS-S5F-KT as 5 mm spacers x3 and 7.5 mm spacers x2 (30 mm supplied capacity). The manual states no numeric maximum below-stem spacer height, so documentedMaximumBelowStem stays unknown; supplied kit capacity is not treated as a manufacturer-stated maximum.",
       sources: [
+        {
+          label: "Cervélo 2023 S5 Retailer Assembly Manual v3.1 (Handlebar & Stem Components, p.7-8; Stack Adjustment, p.19)",
+          url: "https://cervelo.cdn.prismic.io/cervelo/4b0f94ea-7f5e-441a-87f9-abeaa8f7fede_S5_2023_manual_v3.1_web.pdf",
+        },
         {
           label: "Cervélo ST35 stem technical documentation",
           url: "https://www.cervelo.com/en-AU/support/manuals",

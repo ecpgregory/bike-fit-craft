@@ -122,3 +122,56 @@ describe("Sprint 12C.5 — Cervélo S5 rankability", () => {
     }
   });
 });
+
+/**
+ * Sprint 12C.6 — S5 spacer data recovery.
+ *
+ * The 2023 S5 Retailer Assembly Manual v3.1 documents the CO35 Stem Spacer kit
+ * (HSS-S5F-KT) as 5 mm x3 and 7.5 mm x2. It states no numeric maximum
+ * below-stem spacer height, so the supplied 30 mm kit capacity is recorded as
+ * capacity only, never as a manufacturer-stated maximum.
+ */
+describe("Sprint 12C.6 — Cervélo S5 documented spacer hardware", () => {
+  it("records the documented CO35 kit components for both sizes", () => {
+    for (const id of S5_IDS) {
+      const headset = configuration(id).headset!;
+      expect(headset.suppliedParts).toEqual([
+        { description: "CO35 stem spacer (HSS-S5F-KT)", height: 5, quantity: 3 },
+        { description: "CO35 stem spacer (HSS-S5F-KT)", height: 7.5, quantity: 2 },
+      ]);
+      expect(headset.suppliedSpacerCapacity).toBe(30);
+      expect(headset.spacerIncrement).toBe(2.5);
+    }
+  });
+
+  it("introduces no unsupported manufacturer maximum", () => {
+    for (const id of S5_IDS) {
+      const headset = configuration(id).headset!;
+      expect(headset.documentedMaximumBelowStem).toBeNull();
+      expect(headset.isManufacturerStatedMaximum).toBe(false);
+      // Note: the legacy bike-record field `maxSpacerHeight` still carries 30 mm
+      // (a pre-existing value outside this sprint's scope), so the derived
+      // constraint reports it. The configuration data itself states no maximum.
+      expect(
+        headset.sources.some((s) => s.url.includes("S5_2023_manual_v3.1_web.pdf")),
+      ).toBe(true);
+    }
+  });
+
+  it("enumerates only heights buildable from the documented parts", () => {
+    for (const id of S5_IDS) {
+      expect(deriveConstraintsFromBike(bike(id)).availableSpacerHeights).toEqual([
+        0, 5, 7.5, 10, 12.5, 15, 17.5, 20, 22.5, 25, 30,
+      ]);
+    }
+  });
+
+  it("leaves the stem angle unknown and both records unrankable", () => {
+    const result = optimiseFleet({ bikes, rider });
+    for (const id of S5_IDS) {
+      expect(configuration(id).cockpits[0]!.stemAngles).toEqual([]);
+      expect(result.rankedBikes.some((r) => r.bikeId === id)).toBe(false);
+      expect(result.unrankedBikes.find((u) => u.bikeId === id)!.outcome).toBe("NO_CANDIDATES");
+    }
+  });
+});
