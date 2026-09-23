@@ -53,17 +53,17 @@ describe("fleet classification totals across the established targets", () => {
       };
     });
 
-    // Sprint 12C.2 added the Pinarello Dogma F sizes 540 and 550 (15 ranked
-    // results). The envelope rule itself is unchanged; the extra viable result
-    // at 460/615 is a new fleet member, not a reclassification.
+    // Sprint 12D.1 added the Factor OSTRO VAM and O2 VAM sizes 54 / 56 (20
+    // ranked results). The envelope rule itself is unchanged; every additional
+    // viable result is a new fleet member, not a reclassification.
     expect(counts).toEqual([
-      { target: "450/600", ranked: 16, viable: 0 },
-      { target: "460/615", ranked: 16, viable: 1 },
-      { target: "470/631", ranked: 16, viable: 3 },
-      { target: "480/640", ranked: 16, viable: 2 },
-      { target: "490/650", ranked: 16, viable: 0 },
+      { target: "450/600", ranked: 20, viable: 1 },
+      { target: "460/615", ranked: 20, viable: 4 },
+      { target: "470/631", ranked: 20, viable: 5 },
+      { target: "480/640", ranked: 20, viable: 3 },
+      { target: "490/650", ranked: 20, viable: 0 },
     ]);
-    expect(counts.reduce((sum, c) => sum + c.viable, 0)).toBe(6);
+    expect(counts.reduce((sum, c) => sum + c.viable, 0)).toBe(13);
 
   });
 });
