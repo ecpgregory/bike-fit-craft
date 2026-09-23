@@ -330,8 +330,13 @@ export const bikes: Bike[] = [
     // describes the resulting cockpit geometry, not the geometric definition
     // required by stockStemAngle, and is not converted here.
     stockStemLength: 100,
-    // Cervélo documents a maximum stem-spacer height of 30 mm below the stem.
-    maxSpacerHeight: 30,
+    // Sprint 12C.7: maxSpacerHeight corrected to null. Cervélo documents a
+    // 30 mm supplied spacer-KIT capacity (2023 S5 Retailer Assembly Manual
+    // v3.1, Stack Adjustment, p.19), not a manufacturer-stated maximum
+    // below-stem spacer height; the numeric value was moved to the cockpit
+    // record's suppliedSpacerCapacity in Sprint 12C.6 and must not be
+    // asserted here as a maximum.
+    maxSpacerHeight: null,
     notes:
       "Source: Cervélo S5 geometry table and ST35 stem documentation (size 54). ST35 stem documented as supplied at 100 mm. ST35/HB14 rotation adjustment of ±5 deg is an adjustment range, not a stock rotation, and is therefore not recorded as stockHandlebarRotation.",
   },
@@ -359,7 +364,10 @@ export const bikes: Bike[] = [
     // describes the resulting cockpit geometry, not the geometric definition
     // required by stockStemAngle, and is not converted here.
     stockStemLength: 100,
-    maxSpacerHeight: 30,
+    // Sprint 12C.7: maxSpacerHeight corrected to null (see size 54 comment):
+    // 30 mm is the supplied spacer-kit capacity, not a manufacturer-stated
+    // maximum; recorded on the cockpit record's suppliedSpacerCapacity.
+    maxSpacerHeight: null,
     notes:
       "Source: Cervélo S5 geometry table and ST35 stem documentation (size 56). ST35 stem documented as supplied at 100 mm. ST35/HB14 rotation adjustment of ±5 deg is an adjustment range, not a stock rotation, and is therefore not recorded as stockHandlebarRotation.",
   },
