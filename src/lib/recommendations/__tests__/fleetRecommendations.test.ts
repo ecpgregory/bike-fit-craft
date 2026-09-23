@@ -107,11 +107,11 @@ describe("recommendation flow", () => {
   });
 
   it("exposes the solved RP3 and configuration for the recommended candidate", () => {
-    // Sprint 9.4B: the corrected Cannondale SuperSix EVO LAB71 54 now tops
-    // the ranking with the verified 100 mm SystemBar cockpit.
+    // Sprint 12D.1: the Factor O2 VAM 56 tops the ranking with a 90 mm
+    // Black Inc Integrated Barstem and 40 mm of spacers.
     const top = view.recommendations[0]!;
-    expect(top.predictedPosition?.x).toBeCloseTo(465.4, 1);
-    expect(top.configuration?.stemLength).toBe(100);
+    expect(top.predictedPosition?.x).toBeCloseTo(465.9, 1);
+    expect(top.configuration?.stemLength).toBe(90);
   });
 
   it("exposes source-backed cockpit context without changing the selected configuration", () => {
