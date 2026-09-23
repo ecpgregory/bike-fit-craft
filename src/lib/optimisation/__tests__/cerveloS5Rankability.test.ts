@@ -174,3 +174,55 @@ describe("Sprint 12C.6 — Cervélo S5 documented spacer hardware", () => {
     }
   });
 });
+
+/**
+ * Sprint 12C.7 — unsupported spacer-maximum correction.
+ *
+ * The 30 mm the bike records previously asserted in `maxSpacerHeight` is the
+ * supplied spacer-KIT capacity documented in the 2023 S5 Retailer Assembly
+ * Manual v3.1 (Stack Adjustment, p.19), not a manufacturer-stated maximum
+ * below-stem spacer height. Cervélo publishes no such maximum, so the field
+ * is null. The kit capacity stays on the cockpit record's
+ * suppliedSpacerCapacity (Sprint 12C.6); the ST35 stem angle remains unknown
+ * and both records remain NO_CANDIDATES.
+ */
+describe("Sprint 12C.7 — Cervélo S5 unsupported spacer-maximum correction", () => {
+  it("no longer asserts a 30 mm manufacturer maximum on either bike record", () => {
+    for (const id of S5_IDS) {
+      expect(bike(id).maxSpacerHeight).toBeNull();
+    }
+  });
+
+  it("retains the supplied kit capacity and documented parts on the cockpit records", () => {
+    for (const id of S5_IDS) {
+      const headset = configuration(id).headset!;
+      expect(headset.suppliedSpacerCapacity).toBe(30);
+      expect(headset.documentedMaximumBelowStem).toBeNull();
+      expect(headset.isManufacturerStatedMaximum).toBe(false);
+      expect(headset.suppliedParts).toEqual([
+        { description: "CO35 stem spacer (HSS-S5F-KT)", height: 5, quantity: 3 },
+        { description: "CO35 stem spacer (HSS-S5F-KT)", height: 7.5, quantity: 2 },
+      ]);
+    }
+  });
+
+  it("derives no maximum from the unknown bike-level value and keeps the same heights", () => {
+    for (const id of S5_IDS) {
+      const constraints = deriveConstraintsFromBike(bike(id));
+      expect(constraints.maximumSpacerHeight).toBeNull();
+      expect(constraints.maximumRecommendedSpacerHeight).toBeNull();
+      expect(constraints.availableSpacerHeights).toEqual([
+        0, 5, 7.5, 10, 12.5, 15, 17.5, 20, 22.5, 25, 30,
+      ]);
+    }
+  });
+
+  it("leaves both records NO_CANDIDATES while the stem angle is unknown", () => {
+    const result = optimiseFleet({ bikes, rider });
+    for (const id of S5_IDS) {
+      expect(configuration(id).cockpits[0]!.stemAngles).toEqual([]);
+      expect(result.rankedBikes.some((r) => r.bikeId === id)).toBe(false);
+      expect(result.unrankedBikes.find((u) => u.bikeId === id)!.outcome).toBe("NO_CANDIDATES");
+    }
+  });
+});
