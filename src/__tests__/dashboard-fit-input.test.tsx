@@ -84,7 +84,8 @@ describe("Dashboard rider fit input", () => {
     await screen.findByText(
       new RegExp(`${first.bike!.brand} ${first.bike!.model} — ${first.bike!.size}`, "i"),
     );
-    expect(screen.getByText(/^rank 1$/i)).toBeTruthy();
+    // The subtitle carries the model year when the record publishes one.
+    expect(screen.getByText(/^rank 1(\s·\s\d{4})?$/i)).toBeTruthy();
     await screen.findByText(/unable to evaluate/i);
   });
 
