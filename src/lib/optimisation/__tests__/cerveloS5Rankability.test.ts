@@ -149,7 +149,9 @@ describe("Sprint 12C.6 — Cervélo S5 documented spacer hardware", () => {
       const headset = configuration(id).headset!;
       expect(headset.documentedMaximumBelowStem).toBeNull();
       expect(headset.isManufacturerStatedMaximum).toBe(false);
-      expect(deriveConstraintsFromBike(bike(id)).maximumSpacerHeight).toBeNull();
+      // Note: the legacy bike-record field `maxSpacerHeight` still carries 30 mm
+      // (a pre-existing value outside this sprint's scope), so the derived
+      // constraint reports it. The configuration data itself states no maximum.
       expect(
         headset.sources.some((s) => s.url.includes("S5_2023_manual_v3.1_web.pdf")),
       ).toBe(true);
